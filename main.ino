@@ -5,7 +5,8 @@
 #define RELAY_ON        LOW
 #define RELAY_OFF       HIGH
 
-Seq pufferSeq;
+Seq pufferSeqForward;
+Seq pufferSeqReverse;
 Seq relaySeq[4];
 
 unsigned char PUFFER_PINS[4][2] = {  
@@ -19,6 +20,16 @@ void activate_puffer(int id, bool on) {
     Serial.print(F("PUFF:"));
     Serial.println(id);
     relaySeq[id].start(1);   
+}
+
+void start_forward() {
+    Serial.println(F("start_forward()"));
+    pufferSeqForward.start(1);
+}
+
+void start_reverse() {
+    Serial.println(F("start_reverse()"));
+    pufferSeqReverse.start(1);
 }
 
 void set_pin(int pin, bool state) {
@@ -47,11 +58,19 @@ void setup()
         relaySeq[i].append(new EvtCallbackIntBool(763,  0, set_pin, PUFFER_PINS[i][0], RELAY_OFF));
     }
 
-    // Add four puff enents - one for each puffer
-    pufferSeq.append(new EvtCallbackIntBool(1000, 1, activate_puffer, 0, true));
-    pufferSeq.append(new EvtCallbackIntBool(1500, 1, activate_puffer, 1, true));
-    pufferSeq.append(new EvtCallbackIntBool(2000, 1, activate_puffer, 2, true));
-    pufferSeq.append(new EvtCallbackIntBool(2500, 1, activate_puffer, 3, true));
+    // Add forward sequence
+    pufferSeqForward.append(new EvtCallbackIntBool(0,    0, activate_puffer, 0, true));
+    pufferSeqForward.append(new EvtCallbackIntBool(300,  0, activate_puffer, 1, true));
+    pufferSeqForward.append(new EvtCallbackIntBool(600,  0, activate_puffer, 2, true));
+    pufferSeqForward.append(new EvtCallbackIntBool(900,  0, activate_puffer, 3, true));
+    pufferSeqForward.append(new EvtCallback(1200, 0, start_reverse));
+
+    // Add reverse sequence
+    pufferSeqReverse.append(new EvtCallbackIntBool(0,    0, activate_puffer, 2, true));
+    pufferSeqReverse.append(new EvtCallbackIntBool(300,  0, activate_puffer, 1, true));
+    pufferSeqReverse.append(new EvtCallback(600, 0, start_forward));
+
+    start_forward();
 
     Serial.println(F("setup() done"));
 }
@@ -59,7 +78,8 @@ void setup()
 void loop()
 {
     // switch puffer relays as appropriate
-    pufferSeq.tick();
+    pufferSeqForward.tick();
+    pufferSeqReverse.tick();
     for(unsigned char i=0; i<4; i++) {
         relaySeq[i].tick();
     }

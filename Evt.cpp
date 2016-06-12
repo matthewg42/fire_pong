@@ -56,12 +56,6 @@ EvtCallback::~EvtCallback()
 
 void EvtCallback::fn()
 {
-	Serial.print(F("EvtCallback@"));
-	Serial.print((unsigned long)this);
-	Serial.print(F(" t="));
-	Serial.print(_millis);
-	Serial.print(F(" act="));
-	Serial.println(_activations);
 	_callback();
 }
 
