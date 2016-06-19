@@ -15,6 +15,14 @@ void dump_event(t_PufferEvent *e)
 	Serial.print(F(", checksum="));
 	Serial.print(e->checksum);
 	Serial.print(fp_event_validate(e) ? F(" [ok]") : F(" [INVALID]"));
+	Serial.print(F(") [offsets: id_set="));
+	Serial.print((int)&(e->id_set) - (int)e);
+	Serial.print(F(", type="));
+	Serial.print((int)&(e->type) - (int)e);
+	Serial.print(F(", duration="));
+	Serial.print((int)&(e->duration) - (int)e);
+	Serial.print(F(", checksum="));
+	Serial.print((int)&(e->checksum) - (int)e);
 	Serial.println(F(")"));
 }
 
@@ -29,6 +37,6 @@ void loop () {
 	event.duration = random(500);
 	fp_event_set_checksum(&event);
 	dump_event(&event);
-	delay(1000);
+	delay(10000);
 }
 
