@@ -35,7 +35,7 @@
  * \author Colin O'Flynn
  */
 
-#include "crc8.h"
+#include <crc8.h>
 
 /**
  * A very useful CRC8 as used by Dallas one-wire chips

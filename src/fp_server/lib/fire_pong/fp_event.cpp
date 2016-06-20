@@ -16,8 +16,8 @@
 
 */
 
-#include "fp_event.h"
-#include "crc8.h"
+#include <fp_event.h>
+#include <crc8.h>
 #include "string.h"
 
 static uint8_t fp_crc_buf[8];
