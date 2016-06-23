@@ -18,28 +18,204 @@
 
 #include <fp_event.h>
 #include <crc8.h>
+#ifdef DESKTOP
+#include <iostream>
+using namespace std;
+#else
+#include <Arduino.h>
+#endif
 #include "string.h"
 
-static uint8_t fp_crc_buf[8];
 
-// buf must be at least 7 bytes, pre-allocated...
-void fp_prepare_buf(t_PufferEvent* e)
+static uint8_t fp_event_serial_buf[FP_SERIAL_BUF_LEN];
+
+fp_event::fp_event() :
+	_type(0xff),
+	_complete(false),
+	_checksum(0)
 {
-	memcpy(&fp_crc_buf[0], &(e->id_set), 4);
-	memcpy(&fp_crc_buf[4], &(e->type),   1);
-	memcpy(&fp_crc_buf[5], &(e->type),   2);
 }
    
-void fp_event_set_checksum(t_PufferEvent* e)
+fp_event::fp_event(fp_id_t id_set, fp_type_t type, const fp_data_t* data, fp_length_t data_length) :
+	_id_set(id_set),
+	_type(type),
+	_data_length(data_length),
+	_checksum(0),
+	_complete(false)
 {
-	fp_prepare_buf(e);
-	e->checksum = crc8(fp_crc_buf, 7);
+	if (set_payload(data, data_length)) {
+		_complete = true;
+	}
 }
 
-int fp_event_validate(t_PufferEvent* e)
+	// Create an fp_event from a blob of serialized data 
+fp_event::fp_event(uint8_t* buf)
 {
-	fp_prepare_buf(e);
-	uint8_t ck = crc8(fp_crc_buf, 7);
-	return ck == e->checksum;
+	if (parse_serial_data(buf)) {
+		_complete = true;
+	} else {
+		_complete = false;
+	}
+}
+
+fp_event::~fp_event()
+{
+}
+
+void fp_event::reset() {
+	_id_set = 0;
+	_type = 0xff;
+	_data_length = 0;
+	_checksum = 0;
+	memset(_data, 0, FP_MAX_DATA_LEN);
+	_complete = false;
+}
+
+// Update all fields from a blob of serialized data
+// Truen true if parsed OK
+bool fp_event::parse_serial_data(uint8_t* buf)
+{
+	uint8_t* ptr = buf;
+	// Check magic
+	if (*(reinterpret_cast<fp_magic_t*>(ptr)) != FP_MAGIC) { return false; }
+	ptr += sizeof(fp_magic_t);
+
+	// Get and check the length of packet
+	fp_length_t packet_length = *(reinterpret_cast<fp_length_t*>(ptr));
+	ptr += sizeof(fp_length_t);
+	if ( packet_length > FP_SERIAL_BUF_LEN || packet_length < FP_MINIMUM_PACKET_LEN) { return false; }
+	_data_length = packet_length - FP_MINIMUM_PACKET_LEN;
+	if (_data_length > FP_MAX_DATA_LEN) { return false; }
+	
+	// Get the fixed length items
+	_id_set = *(reinterpret_cast<fp_id_t*>(ptr));
+	ptr += sizeof(fp_id_t);
+
+	_type = *(reinterpret_cast<fp_type_t*>(ptr));
+	ptr += sizeof(fp_type_t);
+
+	// Populate data, zero unused items
+	for(fp_length_t i=0; i<=FP_MAX_DATA_LEN; i++) {
+		if (i<_data_length) {
+			_data[i] = *(reinterpret_cast<fp_data_t*>(ptr));
+			ptr += sizeof(fp_data_t);
+		} else {
+			_data[i] = 0;
+		}
+	}
+
+	_checksum = *(reinterpret_cast<fp_checksum_t*>(ptr));
+	ptr += sizeof(fp_checksum_t);
+
+	// Finally, check we have the end magic
+	if (*(reinterpret_cast<fp_magic_t*>(ptr)) != FP_MAGIC) { return false; }
+	return true;
+}
+
+// Update the payload (and length). Also updates checksum
+bool fp_event::set_payload(const fp_data_t* data, fp_length_t length)
+{
+	if (length>FP_MAX_DATA_LEN) { return false; }
+
+	for(fp_length_t i=0; i<FP_MAX_DATA_LEN; i++) {
+		if (i<length) {
+			_data[i] = data[i];
+		} else {
+			_data[i] = 0;
+		}
+	}
+	_data_length = length;
+	_checksum = this->calculate_checksum();
+	return true;
+}
+
+// Update the checksum based on the rest of the fp_event
+fp_checksum_t fp_event::calculate_checksum()
+{
+	uint8_t* buf = serialize();
+	fp_length_t len = *(reinterpret_cast<fp_length_t*>(buf+sizeof(fp_magic_t)));
+	if (len>FP_SERIAL_BUF_LEN) { len=FP_SERIAL_BUF_LEN; }
+	return crc8(buf, len-sizeof(fp_checksum_t)-sizeof(fp_magic_t));
+}
+
+// Check that the checksum which is set matches the rest of the fp_event
+bool fp_event::validate_checksum()
+{
+	return _checksum == calculate_checksum();
+}
+
+bool fp_event::is_valid()
+{
+	return validate_checksum() && _complete;
+}
+
+//! Get a serialized blob of data which encapsulates the fp_event
+uint8_t* fp_event::serialize()
+{
+	uint8_t* ptr = fp_event_serial_buf;
+	fp_length_t* len_ptr;
+	memcpy(ptr, reinterpret_cast<uint8_t*>(&FP_MAGIC), sizeof(fp_magic_t));
+	ptr += sizeof(fp_magic_t);
+	len_ptr = reinterpret_cast<fp_length_t*>(ptr);
+	ptr += sizeof(fp_length_t);
+	memcpy(ptr, reinterpret_cast<uint8_t*>(&_id_set), sizeof(fp_id_t));
+	ptr += sizeof(fp_id_t);
+	memcpy(ptr, reinterpret_cast<uint8_t*>(&_type), sizeof(fp_type_t));
+	ptr += sizeof(fp_type_t);
+	if (_data_length > FP_MAX_DATA_LEN) { _data_length = FP_MAX_DATA_LEN; }
+	memcpy(ptr, reinterpret_cast<uint8_t*>(&_data), sizeof(fp_data_t) * _data_length);
+	ptr += sizeof(fp_data_t) * _data_length;
+	memcpy(ptr, reinterpret_cast<uint8_t*>(&_checksum), sizeof(fp_checksum_t));
+	ptr += sizeof(fp_checksum_t);
+	memcpy(ptr, reinterpret_cast<uint8_t*>(&FP_MAGIC), sizeof(fp_magic_t));
+	ptr += sizeof(fp_magic_t);
+	*len_ptr = ptr - fp_event_serial_buf;
+	return fp_event_serial_buf;
+}
+
+void fp_event::dump()
+{
+#ifdef DESKTOP
+    cout << "fp_event: id_set=0x" << hex << (long)_id_set 
+        << ", type=" << (int)_type 
+        << ", data_length=" << dec << (int)_data_length 
+        << ", data=\"" << _data 
+        << "\" [";
+	for (uint8_t i=0; i<FP_MAX_DATA_LEN && i<_data_length; i++) {
+		cout.fill('0');
+		cout.width(2);
+		cout << hex << (int)_data[i];
+		if (i<FP_MAX_DATA_LEN-1 && i<_data_length-1)
+			cout << " ";
+	}
+	//cout << "], cksum=" << hex << (int)_checksum 
+	cout << "], cksum=" << hex << (int)this->_checksum
+		<< " (" << (this->validate_checksum() ? "GOOD:0x" : "BAD:0x") << hex << (int)this->calculate_checksum() 
+		<< ") complete=" << _complete << ", valid=" << is_valid() << endl;
+#else
+	Serial.print(F("fp_event: id_set=0x"));
+	Serial.print((long)_id_set, HEX);
+	Serial.print(F(", type="));
+	Serial.print((int)_type, DEC);
+	Serial.print(F(", length="));
+	Serial.print((int)_data_length, DEC);
+	Serial.print(F(", data=\""));
+	Serial.print(reinterpret_cast<char*>(_data));
+	Serial.print(F("\" ["));
+	for (uint8_t i=0; i<FP_MAX_DATA_LEN && i<_data_length; i++) {
+		Serial.print((int)_data[i], HEX);
+		if (i<FP_MAX_DATA_LEN-1 && i<_data_length-1)
+			Serial.print(F(" "));
+	}
+	Serial.print(F("], cksum="));
+	Serial.print((int)this->_checksum, HEX);
+	Serial.print(F(" ("));
+	Serial.print(this->validate_checksum() ? F("GOOD:0x") : F("BAD:0x"));
+	Serial.print((int)this->calculate_checksum(), HEX); 
+	Serial.print(F(") complete="));
+	Serial.print(_complete);
+	Serial.print(F(", valid="));
+	Serial.println(is_valid());
+#endif
 }
 

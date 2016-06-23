@@ -3,4 +3,6 @@ docs/bs
 .*~
 **/build-uno
 **/build-pro5v328
+**/*.pyc
+**/*.o
 video
