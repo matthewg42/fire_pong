@@ -5,4 +5,5 @@ docs/bs
 **/build-pro5v328
 **/*.pyc
 **/*.o
+**/__pycache__
 video
