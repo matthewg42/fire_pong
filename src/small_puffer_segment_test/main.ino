@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include "Evt.h"
-#include "Seq.h"
+#include <Evt.h>
+#include <Seq.h>
 
 #define RELAY_ON        LOW
 #define RELAY_OFF       HIGH
