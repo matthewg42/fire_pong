@@ -7,15 +7,17 @@ Monitors inputs and sends puff events to puffers on serial bus.
 All values are little endian. On an Arduino (which is already little endian), we don't need to 
 swap any bytes around. If the master is not little-endian, it is the responsibility of the master on the bus to convert packets to little endian.
 
-|   |       | | |       | |
-|m|m|i|i|i|i|t|l|d|d|...|c|
+    |   | |       | |       | |   |
+    |m|m|l|i|i|i|i|t|d|d|...|c|m|m|
 
-m = magic == "fP" (uint8_t,uint8_t)
-i = Device ID Set (uint32_t)
-t = event type (uint8_t)
-l = data length (uint8_t)
-d = data bytes (array of uint8_t, length l)
-c = 8 bit CRC of all previous bytes (uint8_t)
+m = magic == "fP"
+l = packet length
+i = Device ID Set
+t = event type
+l = data length 
+d = data bytes
+c = 8 bit CRC of all previous bytes
+m = magic == "fP"
 
 ### Event Types
 
@@ -23,7 +25,8 @@ c = 8 bit CRC of all previous bytes (uint8_t)
 1.   RESET (resume normal processing of packets)
 2.   SPARK (turn on sparker for 2-byte millisecond duration)
 3.   SOLENOID (open solenoid valve for 2-byte millisecond duration)
-3.   DISPLAY (display a string
+4.   PUFF (start a puff sequence)
+5.   DISPLAY (display a string)
 
 ## Copyrights & Licenses
 
