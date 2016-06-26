@@ -6,42 +6,46 @@ import serial
 import sys
 import struct
 import random
+import os
 from fire_pong.fp_event import FpEvent
 from fire_pong.swipemote import SwipeMote
 
 global running
 global idx 
 global ok_idx
+global puff_delay
 
 def start_seq(player, strength):
-    global running, idx, ok_idx
+    global running, idx, ok_idx, puff_delay
+    puff_delay = 0.5 - (float(strength)/1400)
     if idx in ok_idx:
         play_audio('boing.wav')
-        print('POOOIIIINNNNGGG!')
+        print('POOOIIIINNNNGGG! %s' % ('#' * int(strength/3)))
         running = True
         idx = 0
     else:
         game_over()
 
 def play_audio(path):
+    FNULL = open(os.devnull, 'w')
     cmd = ['play', path]
-    subprocess.Popen(cmd)
+    subprocess.Popen(cmd, stdout=FNULL, stderr=FNULL)
 
 def game_over():
     global running, idx
     running = False
     idx = -1
     play_audio('explosion.wav')
-    for i in range(0, 20):
-        print('GAME OVER!')
-    time.sleep(5)
+    print('GAME OVER!')
+    time.sleep(3)
     print('OK, try again...')
 
 if __name__ == '__main__':
-    global running, idx, ok_idx
+    global running, idx, ok_idx, puff_delay
     idx = -1
     running = False
     ok_idx = [-1, 6, 7]
+    puff_delay = 0.5
 
     pong_seq = [ 
         FpEvent(0x1, 'FP_EVENT_PUFF', struct.pack('<H', 250)), 
@@ -83,12 +87,10 @@ if __name__ == '__main__':
         if idx > max(ok_idx):
             game_over()
 
-        if time.time() - last > 0.3 and running:
-            print("Sequence number:", idx)
+        if time.time() - last > puff_delay and running:
             last = time.time()
             if idx >= 0 and idx < len(pong_seq):
                 e = pong_seq[idx]
-                print('SEND: %s' % str(e))
                 ser.write(e.serialize())
             idx+=1
 
