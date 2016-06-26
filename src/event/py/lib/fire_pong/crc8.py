@@ -1,3 +1,4 @@
+import struct 
 
 CRC8INIT = 0x00
 CRC8POLY = 0x18
@@ -10,7 +11,7 @@ def crc8(data, length=None):
     crc = CRC8INIT   
     loop_count = 0
     for loop_count in range(0,length):
-        b = data[loop_count]
+        b = struct.unpack('<B', data[loop_count])[0]
         bit_counter = 8
         while True:
             feedback_bit = (crc ^ b) & 0x01;

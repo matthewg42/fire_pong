@@ -39,7 +39,7 @@ class FpEvent():
 
     def calculate_checksum(self):
         data = self.serialize()
-        length = int(data[2])
+        length = struct.unpack('<B', data[2])[0]
         return crc8(data, length-3)
 
     def validate_checksum(self):
