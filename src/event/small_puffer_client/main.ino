@@ -17,7 +17,9 @@ void setup() {
         puffer[i]->setup();
         id = id << 1;
     }
+#ifdef DEBUG
 	Serial.println(F("setup complete"));
+#endif
 }
 
 void loop () {
@@ -29,7 +31,9 @@ void loop () {
 
 void handle_event(FpEvent& e)
 {
+#ifdef DEBUG
     Serial.print("RECV: ");
+#endif
     e.dump();
     for (int i=0; i<8; i++) {
         puffer[i]->process_event(e);
