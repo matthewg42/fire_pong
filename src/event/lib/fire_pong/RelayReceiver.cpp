@@ -1,10 +1,12 @@
 #include <RelayReceiver.h>
 
 void set_pin(int pin, bool state) {
+#ifdef DEBUG
     Serial.print(F("Relay PIN "));
     Serial.print(pin);
     Serial.print(F(" : "));
     Serial.println(state==RELAY_ON ? F("ON") : F("OFF"));
+#endif
     digitalWrite(pin, state);
 }
 
