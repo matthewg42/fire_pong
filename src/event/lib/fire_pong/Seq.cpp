@@ -1,3 +1,4 @@
+#ifndef DESKTOP
 #include "Seq.h"
 #include <Arduino.h>
 
@@ -39,3 +40,14 @@ void Seq::tick()
 	}
 }
 
+void Seq::reset()
+{
+	for (int i=0; i<MAX_SEQ_SIZE; i++) {
+		if (_events[i] != NULL) {
+			delete _events[i];
+			_events[i] = NULL;
+		}
+	}
+}
+
+#endif

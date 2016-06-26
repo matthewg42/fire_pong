@@ -1,3 +1,4 @@
+#ifndef DESKTOP
 #include "Evt.h"
 #include <Arduino.h>
 
@@ -36,12 +37,14 @@ void Evt::start(int activations)
 
 void Evt::fn()
 {
+#ifndef DESKTOP
 	Serial.print(F("Evt@"));
 	Serial.print((unsigned long)this);
 	Serial.print(F(" t="));
 	Serial.print(_millis);
 	Serial.print(F(" act="));
 	Serial.println(_activations);
+#endif
 }
 
 EvtCallback::EvtCallback(unsigned long offset, int activations, void (*callback)()) :
@@ -76,4 +79,5 @@ void EvtCallbackIntBool::fn()
 	_callback(_iarg,_barg);
 }
 
+#endif
 

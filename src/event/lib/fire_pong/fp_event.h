@@ -34,6 +34,7 @@ typedef uint32_t fp_id_t;
 #define FP_EVENT_SOLENOID 3
 #define FP_EVENT_PUFF     4
 #define FP_EVENT_DISPLAY  5
+#define FP_EVENT_RELAY    6
 #define FP_STR(x)         (reinterpret_cast<const fp_data_t*>(x))
 
 // Magic is an unsigned short little endian, "fP", which when decoded turns
@@ -88,19 +89,31 @@ public:
 	bool set_payload(const fp_data_t* data, fp_length_t length);
 
 	// Update the checksum based on the rest of the fp_event
-	fp_checksum_t calculate_checksum();
+	fp_checksum_t calculate_checksum() const;
 
 	// Check that the checksum which is set matches the rest of the fp_event
-	bool validate_checksum();
+	bool validate_checksum() const;
 
 	// Check object has been set up corrctly and has a valid checksum
-	bool is_valid();
+	bool is_valid() const;
 
 	//! Get a serialized blob of data which encapsulates the fp_event
-	uint8_t* serialize();
+	uint8_t* serialize() const;
 
 	//! Dump to cout / Serial (depending on build)
-	void dump();
+	void dump() const;
+
+	//! Is the event for this ID?
+	bool id_match(fp_id_t id) const { return id & _id_set; }
+
+	//! Get the type of the event
+	const fp_type_t type() const { return _type; } 
+
+	//! Get the data for the event
+	const fp_data_t* data() const { return _data; }
+
+	//! Get the data for the event
+	const fp_length_t data_length() const { return _data_length; }
 
 private:
 	fp_id_t _id_set;

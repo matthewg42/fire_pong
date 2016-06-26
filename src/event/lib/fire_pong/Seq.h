@@ -11,6 +11,7 @@ public:
 	void append(Evt *e);
 	void start(int activations);
 	void tick();
+	void reset();
 
 private:
 	Evt* _events[MAX_SEQ_SIZE];

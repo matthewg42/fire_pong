@@ -26,13 +26,12 @@ using namespace std;
 #endif
 #include "string.h"
 
-
 static uint8_t fp_event_serial_buf[FP_SERIAL_BUF_LEN];
 
 fp_event::fp_event() :
 	_type(0xff),
-	_complete(false),
-	_checksum(0)
+	_checksum(0),
+	_complete(false)
 {
 }
    
@@ -130,7 +129,7 @@ bool fp_event::set_payload(const fp_data_t* data, fp_length_t length)
 }
 
 // Update the checksum based on the rest of the fp_event
-fp_checksum_t fp_event::calculate_checksum()
+fp_checksum_t fp_event::calculate_checksum() const
 {
 	uint8_t* buf = serialize();
 	fp_length_t len = *(reinterpret_cast<fp_length_t*>(buf+sizeof(fp_magic_t)));
@@ -139,41 +138,42 @@ fp_checksum_t fp_event::calculate_checksum()
 }
 
 // Check that the checksum which is set matches the rest of the fp_event
-bool fp_event::validate_checksum()
+bool fp_event::validate_checksum() const
 {
 	return _checksum == calculate_checksum();
 }
 
-bool fp_event::is_valid()
+bool fp_event::is_valid() const
 {
 	return validate_checksum() && _complete;
 }
 
 //! Get a serialized blob of data which encapsulates the fp_event
-uint8_t* fp_event::serialize()
+uint8_t* fp_event::serialize() const
 {
 	uint8_t* ptr = fp_event_serial_buf;
 	fp_length_t* len_ptr;
+	fp_length_t data_len = data_len;
 	memcpy(ptr, reinterpret_cast<uint8_t*>(&FP_MAGIC), sizeof(fp_magic_t));
 	ptr += sizeof(fp_magic_t);
 	len_ptr = reinterpret_cast<fp_length_t*>(ptr);
 	ptr += sizeof(fp_length_t);
-	memcpy(ptr, reinterpret_cast<uint8_t*>(&_id_set), sizeof(fp_id_t));
+	memcpy(ptr, reinterpret_cast<const uint8_t*>(&_id_set), sizeof(fp_id_t));
 	ptr += sizeof(fp_id_t);
-	memcpy(ptr, reinterpret_cast<uint8_t*>(&_type), sizeof(fp_type_t));
+	memcpy(ptr, reinterpret_cast<const uint8_t*>(&_type), sizeof(fp_type_t));
 	ptr += sizeof(fp_type_t);
-	if (_data_length > FP_MAX_DATA_LEN) { _data_length = FP_MAX_DATA_LEN; }
-	memcpy(ptr, reinterpret_cast<uint8_t*>(&_data), sizeof(fp_data_t) * _data_length);
-	ptr += sizeof(fp_data_t) * _data_length;
-	memcpy(ptr, reinterpret_cast<uint8_t*>(&_checksum), sizeof(fp_checksum_t));
+	if (data_len > FP_MAX_DATA_LEN) { data_len = FP_MAX_DATA_LEN; }
+	memcpy(ptr, reinterpret_cast<const uint8_t*>(&_data), sizeof(fp_data_t) * data_len);
+	ptr += sizeof(fp_data_t) * data_len;
+	memcpy(ptr, reinterpret_cast<const uint8_t*>(&_checksum), sizeof(fp_checksum_t));
 	ptr += sizeof(fp_checksum_t);
-	memcpy(ptr, reinterpret_cast<uint8_t*>(&FP_MAGIC), sizeof(fp_magic_t));
+	memcpy(ptr, reinterpret_cast<const uint8_t*>(&FP_MAGIC), sizeof(fp_magic_t));
 	ptr += sizeof(fp_magic_t);
 	*len_ptr = ptr - fp_event_serial_buf;
 	return fp_event_serial_buf;
 }
 
-void fp_event::dump()
+void fp_event::dump() const
 {
 #ifdef DESKTOP
     cout << "fp_event: id_set=0x" << hex << (long)_id_set 
@@ -200,7 +200,7 @@ void fp_event::dump()
 	Serial.print(F(", length="));
 	Serial.print((int)_data_length, DEC);
 	Serial.print(F(", data=\""));
-	Serial.print(reinterpret_cast<char*>(_data));
+	Serial.print(reinterpret_cast<const char*>(_data));
 	Serial.print(F("\" ["));
 	for (uint8_t i=0; i<FP_MAX_DATA_LEN && i<_data_length; i++) {
 		Serial.print((int)_data[i], HEX);
@@ -218,4 +218,5 @@ void fp_event::dump()
 	Serial.println(is_valid());
 #endif
 }
+
 
