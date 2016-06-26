@@ -32,6 +32,7 @@ events = [
 ]
 
 n=0
+held=False
         
 while 1:
     if ser.inWaiting() > 0:
@@ -43,6 +44,14 @@ while 1:
     if time.time() - last > 0.15:
         last = time.time()
         e = events[n%len(events)]
+        if n%100 == 99:
+            if held:
+                print("HALTING!")
+                e = FpEvent(0xFFFFFFFF, 'FP_EVENT_RESET')
+            else:
+                print("RESETTING!")
+                e = FpEvent(0xFFFFFFFF, 'FP_EVENT_HALT')
+            held = not held
         n+=1
         print('SEND:', str(e))
         ser.write(e.serialize())
