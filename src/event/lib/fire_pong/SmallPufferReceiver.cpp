@@ -37,8 +37,11 @@ void SmallPufferReceiver::setup()
 void SmallPufferReceiver::handle(const FpEvent& e)
 {
 	if (e.data_length() != sizeof(uint16_t)) {
+#ifdef DEBUG
 		Serial.print(F("SmallPufferReceiver::handle wrong data length: "));
 		Serial.println(e.data_length());
+#endif
+		return;
 	}
 	uint16_t duration;
 	duration = *(reinterpret_cast<const uint16_t*>(e.data()));
