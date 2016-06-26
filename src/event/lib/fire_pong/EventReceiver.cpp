@@ -5,7 +5,8 @@
 //extern uint8_t* fp_event_serial_buf;
 
 EventReceiver::EventReceiver(fp_id_t id) :
-	_id(id)
+	_id(id),
+	_halted(false)
 {
 }
 
@@ -13,9 +14,21 @@ EventReceiver::~EventReceiver()
 {
 }
 
-bool EventReceiver::want(const fp_event& e)
+void EventReceiver::process_event(const fp_event& e)
 {
-	return e.id_match(_id);
+	if (e.id_match(_id)) {
+		if (_halted) {
+			if (e.type() == FP_EVENT_RESET) {
+				_halted = false;
+			}
+			return;
+		} else if (e.type() == FP_EVENT_HALT) {
+			_halted = true;
+			return;
+		} else if (want(e)) {
+			handle(e);
+		}
+	}
 }
 
 EchoReceiver::EchoReceiver(fp_id_t id) :
@@ -30,7 +43,7 @@ EchoReceiver::~EchoReceiver()
 {
 	Serial.print(F("~EchoReceiver() id=0x"));
 	Serial.print(_id, HEX);
-	Serial.print(F(" setup()"));
+	Serial.print(F(" deconstruct"));
 }
 
 void EchoReceiver::handle(const fp_event& e)

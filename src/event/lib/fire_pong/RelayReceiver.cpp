@@ -1,4 +1,4 @@
-#include "RelayReceiver.h"
+#include <RelayReceiver.h>
 
 void set_pin(int pin, bool state) {
     Serial.print(F("Relay PIN "));
@@ -19,6 +19,11 @@ RelayReceiver::~RelayReceiver()
 	digitalWrite(_pin, RELAY_OFF);
 }
 
+bool RelayReceiver::want(const fp_event& e)
+{
+	return e.type() == FP_EVENT_RELAY;
+}
+
 void RelayReceiver::setup()
 {
 	pinMode(_pin, OUTPUT);
@@ -27,7 +32,6 @@ void RelayReceiver::setup()
 
 void RelayReceiver::handle(const fp_event& e)
 {
-    if (!want(e)) { return; }
 	if (e.data_length() != sizeof(uint16_t)) {
 		Serial.print(F("RelayReceiver::handle wrong data length: "));
 		Serial.println(e.data_length());
@@ -48,8 +52,4 @@ void RelayReceiver::tick()
 	_seq.tick();
 }
 
-bool RelayReceiver::want(const fp_event& e)
-{
-	return e.id_match(_id) && e.type() == FP_EVENT_RELAY;
-}
 

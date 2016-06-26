@@ -7,17 +7,21 @@ public:
 	EventReceiver(fp_id_t id);
 	~EventReceiver();
 
+	// must implement this for subclasses - it is called from process_event
+	virtual void handle(const fp_event& e) = 0;
+	// Used to determine what events will be passed to handle()
+	virtual bool want(const fp_event& e) {return true;}
+
 	// called in setup to set pin modes and the like
 	virtual void setup() {;}
-	// must implement this for subclasses
-	virtual void handle(const fp_event& e) = 0;
+	// This should be called in client code when an event is read
+	virtual void process_event(const fp_event& e);
 	// may over-ride this if you want your receiver to
 	// do something periodically
 	virtual void tick() {;}
-
-	virtual bool want(const fp_event& e);
 protected:
 	fp_id_t _id;
+	bool _halted;
 	
 };
 
