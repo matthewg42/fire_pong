@@ -62,18 +62,18 @@ static fp_magic_t FP_MAGIC=0x5066;
 #define FP_SERIAL_TYPE_OFFSET (FP_SERIAL_ID_OFFSET + sizeof(fl_id_t))
 #define FP_SERIAL_DATA_OFFSET (FP_SERIAL_TYPE_OFFSET + sizeof(fl_type_t))
 
-class fp_event {
+class FpEvent {
 public:
-	// Create an empty fp_event
-	fp_event();
+	// Create an empty FpEvent
+	FpEvent();
 
-	// Create an fp_event with a specified id and type
-	fp_event(fp_id_t id_set, fp_type_t type, const fp_data_t* data=0, fp_length_t data_length=0);
+	// Create an FpEvent with a specified id and type
+	FpEvent(fp_id_t id_set, fp_type_t type, const fp_data_t* data=0, fp_length_t data_length=0);
 
-	// Create an fp_event from a buffer of serialized data 
-	fp_event(fp_data_t* buf);
+	// Create an FpEvent from a buffer of serialized data 
+	FpEvent(fp_data_t* buf);
 
-	~fp_event();
+	~FpEvent();
 
 	void reset();
 
@@ -88,16 +88,16 @@ public:
 	// Returns true on success, else false
 	bool set_payload(const fp_data_t* data, fp_length_t length);
 
-	// Update the checksum based on the rest of the fp_event
+	// Update the checksum based on the rest of the FpEvent
 	fp_checksum_t calculate_checksum() const;
 
-	// Check that the checksum which is set matches the rest of the fp_event
+	// Check that the checksum which is set matches the rest of the FpEvent
 	bool validate_checksum() const;
 
 	// Check object has been set up corrctly and has a valid checksum
 	bool is_valid() const;
 
-	//! Get a serialized blob of data which encapsulates the fp_event
+	//! Get a serialized blob of data which encapsulates the FpEvent
 	uint8_t* serialize() const;
 
 	//! Dump to cout / Serial (depending on build)

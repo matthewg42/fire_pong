@@ -21,7 +21,7 @@ SmallPufferReceiver::~SmallPufferReceiver()
 	digitalWrite(_solenoid_pin, RELAY_OFF);
 }
 
-bool SmallPufferReceiver::want(const fp_event& e)
+bool SmallPufferReceiver::want(const FpEvent& e)
 {
 	return e.type() == FP_EVENT_PUFF;
 }
@@ -34,7 +34,7 @@ void SmallPufferReceiver::setup()
 	digitalWrite(_solenoid_pin, RELAY_OFF);
 }
 
-void SmallPufferReceiver::handle(const fp_event& e)
+void SmallPufferReceiver::handle(const FpEvent& e)
 {
 	if (e.data_length() != sizeof(uint16_t)) {
 		Serial.print(F("SmallPufferReceiver::handle wrong data length: "));

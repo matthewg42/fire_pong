@@ -1,4 +1,4 @@
-#include <fp_event.h>
+#include <FpEvent.h>
 #include <Arduino.h>
 #include <EventReceiver.h>
 
@@ -14,7 +14,7 @@ EventReceiver::~EventReceiver()
 {
 }
 
-void EventReceiver::process_event(const fp_event& e)
+void EventReceiver::process_event(const FpEvent& e)
 {
 	if (e.id_match(_id)) {
 		if (_halted) {
@@ -46,7 +46,7 @@ EchoReceiver::~EchoReceiver()
 	Serial.print(F(" deconstruct"));
 }
 
-void EchoReceiver::handle(const fp_event& e)
+void EchoReceiver::handle(const FpEvent& e)
 {
 	if (!want(e)) { return; }
 	Serial.print(F("EchoReceiver id=0x"));

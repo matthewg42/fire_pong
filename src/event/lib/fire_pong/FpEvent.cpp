@@ -16,7 +16,7 @@
 
 */
 
-#include <fp_event.h>
+#include <FpEvent.h>
 #include <crc8.h>
 #ifdef DESKTOP
 #include <iostream>
@@ -28,14 +28,14 @@ using namespace std;
 
 static uint8_t fp_event_serial_buf[FP_SERIAL_BUF_LEN];
 
-fp_event::fp_event() :
+FpEvent::FpEvent() :
 	_type(0xff),
 	_checksum(0),
 	_complete(false)
 {
 }
    
-fp_event::fp_event(fp_id_t id_set, fp_type_t type, const fp_data_t* data, fp_length_t data_length) :
+FpEvent::FpEvent(fp_id_t id_set, fp_type_t type, const fp_data_t* data, fp_length_t data_length) :
 	_id_set(id_set),
 	_type(type),
 	_data_length(data_length),
@@ -47,8 +47,8 @@ fp_event::fp_event(fp_id_t id_set, fp_type_t type, const fp_data_t* data, fp_len
 	}
 }
 
-	// Create an fp_event from a blob of serialized data 
-fp_event::fp_event(uint8_t* buf)
+	// Create an FpEvent from a blob of serialized data 
+FpEvent::FpEvent(uint8_t* buf)
 {
 	if (parse_serial_data(buf)) {
 		_complete = true;
@@ -57,11 +57,11 @@ fp_event::fp_event(uint8_t* buf)
 	}
 }
 
-fp_event::~fp_event()
+FpEvent::~FpEvent()
 {
 }
 
-void fp_event::reset() {
+void FpEvent::reset() {
 	_id_set = 0;
 	_type = 0xff;
 	_data_length = 0;
@@ -72,7 +72,7 @@ void fp_event::reset() {
 
 // Update all fields from a blob of serialized data
 // Truen true if parsed OK
-bool fp_event::parse_serial_data(uint8_t* buf)
+bool FpEvent::parse_serial_data(uint8_t* buf)
 {
 	uint8_t* ptr = buf;
 	// Check magic
@@ -112,7 +112,7 @@ bool fp_event::parse_serial_data(uint8_t* buf)
 }
 
 // Update the payload (and length). Also updates checksum
-bool fp_event::set_payload(const fp_data_t* data, fp_length_t length)
+bool FpEvent::set_payload(const fp_data_t* data, fp_length_t length)
 {
 	if (length>FP_MAX_DATA_LEN) { return false; }
 
@@ -128,8 +128,8 @@ bool fp_event::set_payload(const fp_data_t* data, fp_length_t length)
 	return true;
 }
 
-// Update the checksum based on the rest of the fp_event
-fp_checksum_t fp_event::calculate_checksum() const
+// Update the checksum based on the rest of the FpEvent
+fp_checksum_t FpEvent::calculate_checksum() const
 {
 	uint8_t* buf = serialize();
 	fp_length_t len = *(reinterpret_cast<fp_length_t*>(buf+sizeof(fp_magic_t)));
@@ -137,19 +137,19 @@ fp_checksum_t fp_event::calculate_checksum() const
 	return crc8(buf, len-sizeof(fp_checksum_t)-sizeof(fp_magic_t));
 }
 
-// Check that the checksum which is set matches the rest of the fp_event
-bool fp_event::validate_checksum() const
+// Check that the checksum which is set matches the rest of the FpEvent
+bool FpEvent::validate_checksum() const
 {
 	return _checksum == calculate_checksum();
 }
 
-bool fp_event::is_valid() const
+bool FpEvent::is_valid() const
 {
 	return validate_checksum() && _complete;
 }
 
-//! Get a serialized blob of data which encapsulates the fp_event
-uint8_t* fp_event::serialize() const
+//! Get a serialized blob of data which encapsulates the FpEvent
+uint8_t* FpEvent::serialize() const
 {
 	uint8_t* ptr = fp_event_serial_buf;
 	fp_length_t* len_ptr;
@@ -173,10 +173,10 @@ uint8_t* fp_event::serialize() const
 	return fp_event_serial_buf;
 }
 
-void fp_event::dump() const
+void FpEvent::dump() const
 {
 #ifdef DESKTOP
-    cout << "fp_event: id_set=0x" << hex << (long)_id_set 
+    cout << "FpEvent: id_set=0x" << hex << (long)_id_set 
         << ", type=" << (int)_type 
         << ", data_length=" << dec << (int)_data_length 
         << ", data=\"" << _data 
@@ -193,7 +193,7 @@ void fp_event::dump() const
 		<< " (" << (this->validate_checksum() ? "GOOD:0x" : "BAD:0x") << hex << (int)this->calculate_checksum() 
 		<< ") complete=" << _complete << ", valid=" << is_valid() << endl;
 #else
-	Serial.print(F("fp_event: id_set=0x"));
+	Serial.print(F("FpEvent: id_set=0x"));
 	Serial.print((long)_id_set, HEX);
 	Serial.print(F(", type="));
 	Serial.print((int)_type, DEC);

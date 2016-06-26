@@ -15,9 +15,9 @@ public:
     ~RelayReceiver();
 
 	virtual void setup();
-    virtual void handle(const fp_event& e);
+    virtual void handle(const FpEvent& e);
 	virtual void tick();
-	virtual bool want(const fp_event& e);
+	virtual bool want(const FpEvent& e);
 
 private:
 	uint8_t _pin;

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <fp_event.h>
+#include <FpEvent.h>
 
 #define PACKET_TIMEOUT_MS 100
 #define LED_PIN 13
@@ -47,7 +47,7 @@ void handle_packet()
         Serial.print(count);
         Serial.print(F(" bytes of data..."));
     }
-    fp_event e(buf);
+    FpEvent e(buf);
     if (e.is_valid()) {
         Serial.println("packet OK");
     } else {

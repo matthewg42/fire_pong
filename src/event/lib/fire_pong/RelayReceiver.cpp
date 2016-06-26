@@ -19,7 +19,7 @@ RelayReceiver::~RelayReceiver()
 	digitalWrite(_pin, RELAY_OFF);
 }
 
-bool RelayReceiver::want(const fp_event& e)
+bool RelayReceiver::want(const FpEvent& e)
 {
 	return e.type() == FP_EVENT_RELAY;
 }
@@ -30,7 +30,7 @@ void RelayReceiver::setup()
 	digitalWrite(_pin, RELAY_OFF);
 }
 
-void RelayReceiver::handle(const fp_event& e)
+void RelayReceiver::handle(const FpEvent& e)
 {
 	if (e.data_length() != sizeof(uint16_t)) {
 		Serial.print(F("RelayReceiver::handle wrong data length: "));

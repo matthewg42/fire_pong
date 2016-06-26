@@ -1,9 +1,9 @@
 #include <EventBuffer.h>
 #include <Arduino.h>
-#include <fp_event.h>
+#include <FpEvent.h>
 #include <RelayReceiver.h>
 
-void handle_event(fp_event& e);
+void handle_event(FpEvent& e);
 
 RelayReceiver *relay[8];
 EventBuffer buf(handle_event);
@@ -27,7 +27,7 @@ void loop () {
     }
 }
 
-void handle_event(fp_event& e)
+void handle_event(FpEvent& e)
 {
     Serial.print("RECV: ");
     e.dump();

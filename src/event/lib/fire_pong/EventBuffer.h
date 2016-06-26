@@ -1,10 +1,10 @@
 #pragma once
 
-#include <fp_event.h>
+#include <FpEvent.h>
 
 #define SERIAL_CLEAR_MS 30
 
-typedef void (*callback_function)(fp_event& e); 
+typedef void (*callback_function)(FpEvent& e); 
 
 class EventBuffer {
 public:

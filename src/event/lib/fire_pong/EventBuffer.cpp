@@ -1,6 +1,6 @@
 #include <EventBuffer.h>
 #include <Arduino.h>
-#include <fp_event.h>
+#include <FpEvent.h>
 
 EventBuffer::EventBuffer(callback_function cb)
 {
@@ -50,7 +50,7 @@ void EventBuffer::tick () {
             break;
         default:
             if (_ptr >= _packet_length) {
-				fp_event e(_buf);
+				FpEvent e(_buf);
 				_callback(e);
                 reset();
             }
