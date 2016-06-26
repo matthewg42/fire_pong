@@ -24,11 +24,7 @@ events = [
     FpEvent(0x1, 'FP_EVENT_PUFF', struct.pack('<H', 250)), 
     FpEvent(0x2, 'FP_EVENT_PUFF', struct.pack('<H', 250)),
     FpEvent(0x4, 'FP_EVENT_PUFF', struct.pack('<H', 250)),
-    FpEvent(0x8, 'FP_EVENT_PUFF', struct.pack('<H', 250)),
-    FpEvent(0x10, 'FP_EVENT_PUFF', struct.pack('<H', 250)),
-    FpEvent(0x20, 'FP_EVENT_PUFF', struct.pack('<H', 250)),
-    FpEvent(0x40, 'FP_EVENT_PUFF', struct.pack('<H', 250)),
-    FpEvent(0x80, 'FP_EVENT_PUFF', struct.pack('<H', 250))
+    FpEvent(0x8, 'FP_EVENT_PUFF', struct.pack('<H', 250))
 ]
 
 n=0
@@ -41,7 +37,7 @@ while 1:
             sys.stdout.write(data.decode())
         except UnicodeDecodeError:
             sys.stdout.write('?')
-    if time.time() - last > 0.15:
+    if time.time() - last > 0.4:
         last = time.time()
         e = events[n%len(events)]
         if n%100 == 99:
