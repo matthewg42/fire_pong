@@ -1,7 +1,10 @@
 
+from threading import Timer
 import cwiid
 import time
-from threading import Timer
+import logging
+
+log = logging
 
 class RunningMean:
     def __init__(self, n): 

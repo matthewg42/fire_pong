@@ -1,0 +1,18 @@
+{
+    "serial": {
+        "port": "/dev/ttyUSB0",
+        "baudrate": 115200,
+        "parity": "none",
+        "stopbits": 2,
+        "bytesize": 8
+    },
+    "small_puffers": {
+        "ids": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2046]
+    },
+    "large_puffers": {
+        "ids": [4096, 8192]
+    },
+    "display": {
+        "id": 16384
+    }
+}

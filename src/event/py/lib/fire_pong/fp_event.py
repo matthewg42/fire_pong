@@ -1,8 +1,11 @@
 """ FpEvents are serializable events for Fire Pong
 """
 
-import struct
 from fire_pong.crc8 import crc8
+import struct
+import logging
+
+log = logging
 
 class FpEvent():
     def __init__(self, id_set, fp_type, data=b''):
