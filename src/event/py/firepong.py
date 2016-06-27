@@ -13,6 +13,7 @@ import fire_pong.fp_event
 import fire_pong.scoreboard
 import fire_pong.swipemote
 import fire_pong.pongmatch
+import fire_pong.ponggame
 import fire_pong.fp_serial
 from fire_pong.pongmatch import PongMatch
 
@@ -120,6 +121,7 @@ def init_log():
     fire_pong.scoreboard.log = log
     fire_pong.fp_event.log = log
     fire_pong.pongmatch.log = log
+    fire_pong.ponggame.log = log
 
 def cleanup_and_exit(level):
     """ Remove PID file and exit the process """
