@@ -1,10 +1,10 @@
 
 from fire_pong.scoreboard import ScoreBoard
 from fire_pong.fp_event import FpEvent
-from fire_pong.buttons import SimButtons
-from fire_pong.ponggame import PongGame
+from fire_pong.buttons import get_buttons
 import logging
 import time
+import random
 
 log = logging
 
@@ -15,7 +15,7 @@ class PongMatch:
         self.config = config
         self.winning_score = self.config['pongmatch']['winning_score']
         self.scoreboard = ScoreBoard(config, self.serial)
-        self.buttons = SimButtons()
+        self.buttons = get_buttons(config)
         self.running = True
         
     def reset(self):
@@ -30,23 +30,30 @@ class PongMatch:
         self.state = state
         self.new_state = True
 
-    def do_io(self):
-        # check GPIO pins, set HALT state if emergency stop pressed etc.
-        pass
-
     def shutdown(self):
         self.state = PongMatch.MATCH_QUIT
 
     def run(self):
         log.debug('PongMatch: start')
         while self.running:
+            if self.buttons.getEmergencyStop():
+                self.update_state(PongMatch.HALT)
+
             if self.state == PongMatch.HALT:
-                if self.buttons.getStartButton():
-                    self.update_state(PongMatch.MATCH_START)
-                    next
                 if self.new_state:
                     self.new_state = False
                     self.scoreboard.display('HALT')
+                    next
+                if self.buttons.getStartButton():
+                    e = FpEvent(0xFFFFFFFF ^ self.config['display']['id'], 'FP_EVENT_RESET')
+                    log.debug('PongMatch SEND: %s' % str(e))
+                    self.serial.write(e.serialize())
+                    self.update_state(PongMatch.MATCH_START)
+                    next
+                else:
+                    e = FpEvent(0xFFFFFFFF ^ self.config['display']['id'], 'FP_EVENT_HALT')
+                    log.debug('PongMatch SEND: %s' % str(e))
+                    self.serial.write(e.serialize())
                     next
 
             if self.state == PongMatch.MATCH_START:
@@ -59,8 +66,8 @@ class PongMatch:
                     next
 
             if self.state == PongMatch.MATCH_GAME_ACTIVE:
-                game = PongGame(self.config, self.serial)
-                winner = game.run()
+                log.warning('TODO: pong game')
+                winner = random.randint(0, 1)
                 self.scores[winner] += 1
                 if self.scores[winner] >= self.winning_score:
                     self.update_state(PongMatch.MATCH_END)
@@ -90,7 +97,7 @@ class PongMatch:
                 self.scoreboard.display('bye!')
                 self.running = False
 
-            time.sleep(1)
+            time.sleep(0.2)
         log.debug('PongMatch: end')
             
     HALT = 0

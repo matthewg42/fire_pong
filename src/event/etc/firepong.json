@@ -6,6 +6,17 @@
         "stopbits": 2,
         "bytesize": 8
     },
+    "buttons": { 
+        "use": "simbuttons",
+        "simbuttons": {
+            "start": "/tmp/start",
+            "halt": "/tmp/halt"
+        },
+        "gpiobuttons": {
+            "start": 4,
+            "halt": 6
+        }
+    },
     "pongmatch": {
         "winning_score": 4
     },
