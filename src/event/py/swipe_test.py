@@ -81,8 +81,8 @@ if __name__ == '__main__':
             previous_ys[player].push(wiimotes[player].state['acc'][1])
             if previous_ys[player].all_over(SWIPE_MIN) and time.time() - last_swipes[player] > SWIPE_IDLE:
                 mean = previous_ys[player].mean()
-                swipe_strength = (mean-SWIPE_MIN)*100/(SWIPE_MAX-SWIPE_MIN)
-                print 'Swipe detected by %s, strength=%s [%s]' % (player, swipe_strength, previous_ys[player].last)
+                strength = (mean-SWIPE_MIN)*100/(SWIPE_MAX-SWIPE_MIN)
+                print 'Swipe detected by %s, strength=%s [%s]' % (player, strength, previous_ys[player].last)
                 rumble(player, 1)
                 Timer(0.3, rumble, (player, 0)).start()
                 last_swipes[player] = time.time()
