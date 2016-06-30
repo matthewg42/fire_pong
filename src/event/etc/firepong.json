@@ -26,6 +26,7 @@
             "back": 6
         },
         "keyboard": {
+            "tick": 0.02,
             "enabled": true,
             "start": "s",
             "emstop": "h",

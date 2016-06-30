@@ -62,8 +62,8 @@ class PongMatch(Mode):
 
         while not self.terminate:
             self.reset()
-            if ModeManager().push_mode(WaitStart()) is None:
-                return
+            #if ModeManager().push_mode(WaitStart()) is None:
+            #    return
             while max(self.score) < self.winning_score and not self.terminate:
                 if ModeManager().push_mode(CounterMode(start=3, end=1)) is None:
                     return
@@ -92,19 +92,55 @@ class PongGame(Mode):
 
     def run(self):
         log.debug('PongGame.run()')
-        for i in range(0,randint(1, 5)):
-            print("BOING!")
-            time.sleep(0.4)
-        if randint(1,100) % 2 == 0:
-            print('Player 1 Wins')
-            return 0
-        else:
-            print('Player 2 Wins')
-            return 1
+        seqs = [P1Seq(self.config), P2Seq(self.config)]
+        idx = randint(0,1)
+        while not self.terminate:
+            if ModeManager().push_mode(seqs[idx%2]) is None:
+                return
+            if randint(1, 3) == 1:
+                break
+            idx += 1
+        winner = idx%2
+        print('GAME OVER with winner = %d' % winner)
         log.debug('PongGame.run() ending')
+        return winner
         
     def event(self, event):
         if event in [EventButton('start'), EventQuit()]:
+            self.terminate = True
+
+class P1Seq(Mode):
+    def __init__(self, config):
+        Mode.__init__(self, config)
+        self.puffers = config['small_puffers']['ids']
+
+    def run(self):
+        log.debug('P1Seq.run()')
+        for i in self.puffers:
+            if self.terminate:
+                return
+            log.debug('P1Seq.run() activate puffer id %d' % i)
+            time.sleep(0.2)
+
+    def event(self, event):
+        if event in [EventQuit()]:
+            self.terminate = True
+
+class P2Seq(Mode):
+    def __init__(self, config):
+        Mode.__init__(self, config)
+        self.puffers = config['small_puffers']['ids']
+
+    def run(self):
+        log.debug('P2Seq.run()')
+        for i in reversed(self.puffers):
+            if self.terminate:
+                return
+            log.debug('P2Seq.run() activate puffer id %d' % i)
+            time.sleep(0.2)
+
+    def event(self, event):
+        if event in [EventQuit()]:
             self.terminate = True
 
 if __name__ == '__main__':

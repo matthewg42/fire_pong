@@ -2,6 +2,7 @@ import pygame
 import logging
 import threading
 import pygame
+import time
 
 log = logging
 
@@ -49,6 +50,7 @@ class Keyboard:
                             self.emstop = True
                         elif event.key == self.back_button:
                             self.back = True
+                time.sleep(self.config['InputManager']['keyboard']['tick'])
             pygame.quit()            
 
         def get_start(self):
