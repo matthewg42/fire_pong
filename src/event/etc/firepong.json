@@ -1,24 +1,40 @@
 {
     "serial": {
+        "doc": "Serial port parameters - these must match what is baked into the Arduino firmwares",
         "port": "/dev/ttyUSB0",
         "baudrate": 115200,
         "parity": "none",
         "stopbits": 2,
         "bytesize": 8
     },
-    "buttons": { 
-        "use": "simbuttons",
-        "simbuttons": {
-            "start": "/tmp/start",
-            "halt": "/tmp/halt"
+    "ModeManager": {
+        "doc": "Settings for the ModeManager",
+        "tick": 0.5
+    },
+    "InputManager": {
+        "doc": "Settings for the InputManager (buttons and wiimote setup)",
+        "tick": 0.02,
+        "wiimotes": {
+            "enabled": false,
+            "swipe_idle": 1.0,
+            "swipe_min": 165
         },
-        "gpiobuttons": {
+        "gpio": {
+            "enabled": false,
             "start": 4,
-            "halt": 6
+            "emstop": 5,
+            "back": 6
+        },
+        "keyboard": {
+            "enabled": true,
+            "start": "s",
+            "emstop": "h",
+            "back": "b"
         }
     },
-    "pongmatch": {
-        "winning_score": 4
+    "PongMatch": {
+        "doc": "Match specific settings",
+        "winning_score": 3
     },
     "small_puffers": {
         "ids": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2046]
