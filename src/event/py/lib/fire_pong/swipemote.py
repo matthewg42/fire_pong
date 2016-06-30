@@ -59,10 +59,10 @@ class SwipeMote:
             if time.time() - self.last_swipe > SwipeMote.IDLE and self.previous_ys.all_over(SwipeMote.SWIPE_MIN) :
                 self.last_swipe = time.time()
                 mean = self.previous_ys.mean()
-                swipe_strength = (mean-SwipeMote.SWIPE_MIN)*100/(SwipeMote.SWIPE_MAX-SwipeMote.SWIPE_MIN)
+                strength = (mean-SwipeMote.SWIPE_MIN)*100/(SwipeMote.SWIPE_MAX-SwipeMote.SWIPE_MIN)
                 self.rumble(1)
                 Timer(0.3, self.rumble, (0,)).start()
-                self.callback(self.name, swipe_strength)
+                self.callback(self.name, strength)
             
     # don't sample if it has been less than this time since the last sample
     RATE_LIMIT = 0.03

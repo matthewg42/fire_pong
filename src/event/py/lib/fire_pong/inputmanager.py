@@ -12,6 +12,7 @@ import logging
 import traceback
 import sys
 import fire_pong.swipemote
+from random import randint
 
 from fire_pong.keyboard import Keyboard
 from fire_pong.swipemote import SwipeMote
@@ -37,6 +38,7 @@ class InputManager:
                     SwipeMote.SWIPE_MIN = self.config['InputManager']['wiimotes']['swipe_min']
                     self.wm1 = SwipeMote('1UP', self.wiiswipe)
                     self.wm2 = SwipeMote('2UP', self.wiiswipe)
+                    self.discover()
             except KeyError as e:
                 log.exception('InputManager.__init__(): %s' % e)
 
@@ -52,16 +54,15 @@ class InputManager:
             self.event_handler = None
 
         def discover(self):
-            return
-            if self.wm1 is None:
-                self.wm1 = SwipeMote('1UP', self.wiiswipe)
+            if self.wm1 is not None:
                 self.wm1.discover()
+            if self.wm2 is not None:
+                self.wm2.discover()
 
         def run(self):
             last_second = time.time()
             try:
                 log.debug('InputManager[%s]: start' % tid())
-                self.discover()
                 while not self.terminate:
                     #log.debug('InputManager[%s]: tick' % tid())
                     t = time.time()
@@ -80,6 +81,10 @@ class InputManager:
                             self.emit(EventButton('back'))
                         if self.keyboard.get_quit():
                             self.emit(EventQuit())
+                        if self.keyboard.get_swipe1():
+                            self.emit(EventSwipe('1UP', randint(20, 80)))
+                        if self.keyboard.get_swipe2():
+                            self.emit(EventSwipe('2UP', randint(20, 80)))
 
                     time.sleep(self.config['InputManager']['tick'])
                         
@@ -103,12 +108,9 @@ class InputManager:
             # TODO: check it's a function!
             self.event_handler = handler
 
-        def wiiswipe(self, player_id, swipe_strength):
-            log.info('InputManager[%s]: wiiswipe(%s, %s)' % (tid(), player_id, swipe_strength))
-            self.emit(EventSwipe(player_id, swipe_strength))
-            self.swipes += 1
-            if self.swipes == 3:
-                self.shutdown()
+        def wiiswipe(self, player, strength):
+            log.info('InputManager[%s]: wiiswipe(%s, %s)' % (tid(), player, strength))
+            self.emit(EventSwipe(player, strength))
 
     instance = None
 

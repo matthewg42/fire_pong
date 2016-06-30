@@ -139,6 +139,7 @@ def sighandler(signum, frame):
     if signum in (signal.SIGINT, signal.SIGQUIT, signal.SIGTERM):
         log.info('sighandler() received signal %s, shutting down...' % signum)
         ModeManager().shutdown()
+        os.killpg(os.getpgid(os.getpid()), signal.SIGTERM)
     elif signum == signal.SIGHUP:
         log.info('sighandler() received signal HUP, reloading config')
         try:

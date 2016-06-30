@@ -27,14 +27,14 @@ class EventMessage(Event):
         return type(other) is EventMessage and self.message == other.message
 
 class EventSwipe(Event):
-    def __init__(self, player_id, swipe_strength):
+    def __init__(self, player, strength):
         Event.__init__(self)
-        self.player_id = player_id
-        self.swipe_strength = swipe_strength
+        self.player = player
+        self.strength = strength
     def __str__(self):
-        return 'EventSwipe@%.3f (player_id=%s, swipe_strength=%s)' % (self.time, self.player_id, self.swipe_strength)
+        return 'EventSwipe@%.3f (player=%s, strength=%s)' % (self.time, self.player, self.strength)
     def __eq__(self, other):
-        return type(other) is EventSwipe and self.player_id == other.player_id
+        return type(other) is EventSwipe and self.player == other.player
 
 class EventButton(Event):
     def __init__(self, button_id):

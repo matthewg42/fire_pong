@@ -9,6 +9,9 @@ from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 log = logging
 
+def strength2delay(strength):
+    return 0.8 - (float(strength)/300)
+
 class WaitStart(Mode):
     def __init__(self):
         Mode.__init__(self)
@@ -52,6 +55,7 @@ class PongMatch(Mode):
         Mode.__init__(self, config)
         self.winning_score = config['PongMatch']['winning_score']
         self.reset()
+        self.start_player = randint(1, 2)
 
     def reset(self):
         print('PongMatch NEW MATCH')
@@ -64,14 +68,20 @@ class PongMatch(Mode):
             self.reset()
             #if ModeManager().push_mode(WaitStart()) is None:
             #    return
+            print('%dUP to start!' % self.start_player)
             while max(self.score) < self.winning_score and not self.terminate:
                 if ModeManager().push_mode(CounterMode(start=3, end=1)) is None:
                     return
-                win = ModeManager().push_mode(PongGame(self.config))
+                win = ModeManager().push_mode(PongGame(self.config, self.start_player))
                 if win is None:
                     self.terminate = True
                 else:
-                    self.score[win] += 1
+                    self.score[win-1] += 1
+                if self.start_player == 1:
+                    self.start_player = 2
+                else:
+                    self.start_player = 1
+                print('Score now: 1UP=%d  2UP=%d' % tuple(self.score))
 
             if self.score[0] > self.score[1]:
                 print("Player 1 wins")
@@ -87,61 +97,56 @@ class PongMatch(Mode):
             self.terminate = True
 
 class PongGame(Mode):
-    def __init__(self, config):
+    def __init__(self, config, start_player):
         Mode.__init__(self, config)
+        self.puffers = self.config['PongGame']['puffers']
+        self.delay = self.config['PongGame']['initial_delay']
+        self.hit_idx = {'1UP': [-1, 0], '2UP': [len(self.puffers)-1, len(self.puffers)]}
+        self.win = None
+        self.start_player = start_player
+        if self.start_player == 1:
+            self.idx = 0
+            self.inc = 1
+        else:
+            self.idx = len(self.puffers)-1
+            self.inc = -1
 
     def run(self):
         log.debug('PongGame.run()')
-        seqs = [P1Seq(self.config), P2Seq(self.config)]
-        idx = randint(0,1)
-        while not self.terminate:
-            if ModeManager().push_mode(seqs[idx%2]) is None:
+            
+        while self.win is None:
+            if self.terminate:
                 return
-            if randint(1, 3) == 1:
+            if self.idx < -1:
+                self.win = 2
                 break
-            idx += 1
-        winner = idx%2
-        print('GAME OVER with winner = %d' % winner)
-        log.debug('PongGame.run() ending')
-        return winner
-        
+            elif self.idx >= len(self.puffers)+1:
+                self.win = 1
+                break
+            elif self.idx >= 0 and self.idx < len(self.puffers):
+                print("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
+            else:
+                print('[relief]')
+            self.idx += self.inc
+            time.sleep(self.delay)
+        print("WIN for: %dUP" % self.win)
+        return self.win
+            
     def event(self, event):
         if event in [EventButton('start'), EventQuit()]:
             self.terminate = True
 
-class P1Seq(Mode):
-    def __init__(self, config):
-        Mode.__init__(self, config)
-        self.puffers = config['small_puffers']['ids']
-
-    def run(self):
-        log.debug('P1Seq.run()')
-        for i in self.puffers:
-            if self.terminate:
-                return
-            log.debug('P1Seq.run() activate puffer id %d' % i)
-            time.sleep(0.2)
-
-    def event(self, event):
-        if event in [EventQuit()]:
-            self.terminate = True
-
-class P2Seq(Mode):
-    def __init__(self, config):
-        Mode.__init__(self, config)
-        self.puffers = config['small_puffers']['ids']
-
-    def run(self):
-        log.debug('P2Seq.run()')
-        for i in reversed(self.puffers):
-            if self.terminate:
-                return
-            log.debug('P2Seq.run() activate puffer id %d' % i)
-            time.sleep(0.2)
-
-    def event(self, event):
-        if event in [EventQuit()]:
-            self.terminate = True
+        if type(event) is EventSwipe:
+            print('Swipe by %s' % event.player)
+            if self.idx in self.hit_idx[event.player]:
+                print("Player %s HITS!" % event.player)
+                if event.player == '1UP':
+                    self.inc = 1
+                else:
+                    self.inc = -1
+                self.delay = strength2delay(event.strength)
+            else:
+                print('Miss!')
 
 if __name__ == '__main__':
     log.basicConfig(level=logging.DEBUG)
