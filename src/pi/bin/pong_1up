@@ -19,7 +19,7 @@ def start_seq(player, strength):
     global running, idx, ok_idx, puff_delay
     puff_delay = 0.5 - (float(strength)/1400)
     if idx in ok_idx:
-        play_audio('boing.wav')
+        play_audio('../share/firepong/boing.wav')
         print('POOOIIIINNNNGGG! %s' % ('#' * int(strength/3)))
         running = True
         idx = 0
@@ -35,7 +35,7 @@ def game_over():
     global running, idx
     running = False
     idx = -1
-    play_audio('explosion.wav')
+    play_audio('../share/firepong/explosion.wav')
     print('GAME OVER!')
     time.sleep(3)
     print('OK, try again...')

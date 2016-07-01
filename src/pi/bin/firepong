@@ -161,7 +161,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Fire Pong')
     parser.add_argument('-c', '--config-file', dest='config_file', 
-        default='/etc/firepong.json', 
+        default='../etc/firepong.json', 
         help='specify the path to the config file')
     parser.add_argument('-D', '--serial-device', dest='serial_device', 
         default=None, 

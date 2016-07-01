@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fp_event.h>
+#include <FpEvent.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -8,14 +8,14 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	uint16_t duration = 1234;
-	fp_event e0(1, FP_EVENT_HALT);
+	FpEvent e0(1, FP_EVENT_HALT);
 	e0.dump();
-	fp_event e1(0x87654321, FP_EVENT_PUFF, reinterpret_cast<uint8_t*>(&duration), sizeof(uint16_t));
+	FpEvent e1(0x87654321, FP_EVENT_PUFF, reinterpret_cast<uint8_t*>(&duration), sizeof(uint16_t));
 	e1.dump();
 	uint8_t buf[FP_SERIAL_BUF_LEN];
 	memset(buf, 0, FP_SERIAL_BUF_LEN);
 
-	fp_event e2(0x1, FP_EVENT_SPARK, FP_STR("data"), 4);
+	FpEvent e2(0x1, FP_EVENT_SPARK, FP_STR("data"), 4);
 	e2.dump();
 
     // MMLIIIIT[D...]CMM
@@ -35,11 +35,11 @@ int main(int argc, char** argv)
 	buf[13] = 'f';
 	buf[14] = 'P';
 
-	fp_event e3(buf);
+	FpEvent e3(buf);
 	e3.dump();
 	
 	buf[8] = 'D';
-	fp_event e4(buf);
+	FpEvent e4(buf);
 	e4.dump();
 	return 0;
 }

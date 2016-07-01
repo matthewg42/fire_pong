@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <crc8.h>
-#include <fp_event.h>
+#include <FpEvent.h>
 
 void setup() {
 	Serial.begin(115200);
@@ -10,7 +10,7 @@ void setup() {
 void loop () {
 	uint8_t buf[FP_SERIAL_BUF_LEN];
 	memset(buf, 0, FP_SERIAL_BUF_LEN);
-	fp_event e(0x1, FP_EVENT_SPARK, FP_STR("data"), 4);
+	FpEvent e(0x1, FP_EVENT_SPARK, FP_STR("data"), 4);
 	e.dump();
     // MMLIIIIT[D...]CMM
 	buf[0] = 'f';
@@ -29,11 +29,11 @@ void loop () {
 	buf[13] = 'f';
 	buf[14] = 'P';
 
-	fp_event e2(buf);
+	FpEvent e2(buf);
 	e2.dump();
 	
 	buf[8] = 'D';
-	fp_event e3(buf);
+	FpEvent e3(buf);
 	e3.dump();
 	delay(10000);
 }
