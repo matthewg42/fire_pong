@@ -17,6 +17,7 @@ class ScoreBoard:
             disp_id = self.get_id()
             if disp_id is not None:
                 e = FpEvent(disp_id, 'FP_EVENT_DISPLAY', message)
+                print('DISPLAY: %s' % message)
                 FpSerial().write(e.serialize())
 
     instance = None

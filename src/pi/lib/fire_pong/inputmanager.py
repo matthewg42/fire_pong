@@ -81,9 +81,9 @@ class InputManager:
                         if self.keyboard.get_quit():
                             self.emit(EventQuit())
                         if self.keyboard.get_swipe1():
-                            self.emit(EventSwipe('1UP', randint(20, 80)))
+                            self.emit(EventSwipe('1UP', randint(20, 300)))
                         if self.keyboard.get_swipe2():
-                            self.emit(EventSwipe('2UP', randint(20, 80)))
+                            self.emit(EventSwipe('2UP', randint(20, 300)))
 
                     time.sleep(fire_pong.util.config['InputManager']['tick'])
                         

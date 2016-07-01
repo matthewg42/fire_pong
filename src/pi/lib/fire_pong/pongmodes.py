@@ -1,6 +1,7 @@
 import logging
 import time
 import threading
+import struct
 import fire_pong.util
 from random import randint
 from fire_pong.mode import Mode
@@ -8,10 +9,14 @@ from fire_pong.fp_event import FpEvent
 from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
+from fire_pong.fp_serial import FpSerial
 log = logging
 
 def strength2delay(strength):
-    return 0.8 - (float(strength)/300)
+    d = 0.8 - (float(strength)/300)
+    if d <= 0.05:
+        d = 0.05
+    return d
 
 class WaitStart(Mode):
     def __init__(self):
@@ -42,7 +47,7 @@ class CounterMode(Mode):
     def run(self):
         log.debug('CounterMode.run()')
         while not self.terminate and self.count != self.end + self.step:
-            print('TODO: display event for count %d' % self.count)
+            ScoreBoard().display(str(self.count))
             self.count += self.step
             time.sleep(self.time)
         log.debug('CounterMode.run() countdown ended')
@@ -58,20 +63,24 @@ class PongMatch(Mode):
         self.start_player = randint(1, 2)
 
     def reset(self):
-        print('PongMatch NEW MATCH')
+        log.info('PongMatch: NEW MATCH')
         self.score = [0,0]
+
+    def display_score(self):
+        ScoreBoard().display('%d%d' % tuple(self.score))
 
     def run(self):
         log.debug('PongMatch.run()')
 
         while not self.terminate:
             self.reset()
-            if ModeManager().push_mode(WaitStart()) is None:
-                return
-            print('%dUP to start!' % self.start_player)
             while max(self.score) < self.winning_score and not self.terminate:
+                self.display_score()
+                if ModeManager().push_mode(WaitStart()) is None:
+                    return
                 if ModeManager().push_mode(CounterMode(start=3, end=1)) is None:
                     return
+                self.display_score()
                 win = ModeManager().push_mode(PongGame(self.start_player))
                 if win is None:
                     self.terminate = True
@@ -81,14 +90,16 @@ class PongMatch(Mode):
                     self.start_player = 2
                 else:
                     self.start_player = 1
-                print('Score now: 1UP=%d  2UP=%d' % tuple(self.score))
 
             if self.score[0] > self.score[1]:
-                print("Player 1 wins")
+                log.info("Player 1 wins")
+                ScoreBoard().display("1W")
             elif self.score[1] > self.score[0]:
-                print("Player 2 wins")
+                log.info("Player 2 wins")
+                ScoreBoard().display("2W")
             else:
-                print("It's a DRAW!")
+                log.info("It's a DRAW!")
+                ScoreBoard().display("Dr")
 
         log.debug('PongMatch.run() ended')
 
@@ -101,6 +112,7 @@ class PongGame(Mode):
         Mode.__init__(self)
         self.puffers = fire_pong.util.config['PongGame']['puffers']
         self.delay = fire_pong.util.config['PongGame']['initial_delay']
+        self.puff_duration = fire_pong.util.config['PongGame']['puff_duration']
         self.hit_idx = {'1UP': [-1, 0], '2UP': [len(self.puffers)-1, len(self.puffers)]}
         self.win = None
         self.start_player = start_player
@@ -124,12 +136,20 @@ class PongGame(Mode):
                 self.win = 1
                 break
             elif self.idx >= 0 and self.idx < len(self.puffers):
-                print("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
+                d = ['', '', '']
+                for i in range(0, len(self.puffers)):
+                    d[0] += '   ' if i != self.idx else ' @ '
+                    d[1] += '   ' if i != self.idx else ' @ '
+                    d[2] += ' | ' if i != self.idx else ' | '
+                for i in range(0,3):
+                    print(d[i])
+                log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
+                e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<I', self.puff_duration))
+                FpSerial().write(e.serialize())
             else:
-                print('[relief]')
+                log.info('[relief]')
             self.idx += self.inc
             time.sleep(self.delay)
-        print("WIN for: %dUP" % self.win)
         return self.win
             
     def event(self, event):
@@ -137,16 +157,16 @@ class PongGame(Mode):
             self.terminate = True
 
         if type(event) is EventSwipe:
-            print('Swipe by %s' % event.player)
+            log.debug('Swipe by %s' % event.player)
             if self.idx in self.hit_idx[event.player]:
-                print("Player %s HITS!" % event.player)
+                log.info("Player %s HITS!" % event.player)
                 if event.player == '1UP':
                     self.inc = 1
                 else:
                     self.inc = -1
                 self.delay = strength2delay(event.strength)
             else:
-                print('Miss!')
+                log.info('Player %s MISS!' % event.player)
 
 if __name__ == '__main__':
     log.basicConfig(level=logging.DEBUG)
