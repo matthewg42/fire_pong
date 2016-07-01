@@ -12,30 +12,29 @@ import logging
 import traceback
 import sys
 import fire_pong.swipemote
-from random import randint
-
+import fire_pong.util
 from fire_pong.keyboard import Keyboard
 from fire_pong.swipemote import SwipeMote
 from fire_pong.util import tid
 from fire_pong.events import *
+from random import randint
 
 log = logging
 
 # Follows the singleton pattern
 class InputManager:
     class __InputManager:
-        def __init__(self, config):
+        def __init__(self):
             self.thread = threading.Thread(target=self.run)
-            self.config = config
             self.terminate = False
 
             # Config wiimotes
             self.wm1 = None
             self.wm2 = None
             try:
-                if config['InputManager']['wiimotes']['enabled']:
-                    SwipeMote.IDLE = self.config['InputManager']['wiimotes']['swipe_idle']
-                    SwipeMote.SWIPE_MIN = self.config['InputManager']['wiimotes']['swipe_min']
+                if fire_pong.util.config['InputManager']['wiimotes']['enabled']:
+                    SwipeMote.IDLE = fire_pong.util.config['InputManager']['wiimotes']['swipe_idle']
+                    SwipeMote.SWIPE_MIN = fire_pong.util.config['InputManager']['wiimotes']['swipe_min']
                     self.wm1 = SwipeMote('1UP', self.wiiswipe)
                     self.wm2 = SwipeMote('2UP', self.wiiswipe)
                     self.discover()
@@ -45,8 +44,8 @@ class InputManager:
             # Configure keyboard input
             self.keyboard = None
             try:
-                if config['InputManager']['keyboard']['enabled']:
-                    self.keyboard = Keyboard(config)
+                if fire_pong.util.config['InputManager']['keyboard']['enabled']:
+                    self.keyboard = Keyboard()
                     self.keyboard.thread.start()
             except Exception as e:
                 log.exception('InputManager.__init__(): %s' % e)
@@ -86,7 +85,7 @@ class InputManager:
                         if self.keyboard.get_swipe2():
                             self.emit(EventSwipe('2UP', randint(20, 80)))
 
-                    time.sleep(self.config['InputManager']['tick'])
+                    time.sleep(fire_pong.util.config['InputManager']['tick'])
                         
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -114,9 +113,9 @@ class InputManager:
 
     instance = None
 
-    def __init__(self, config={'InputManager': {'tick': 0.02}}):
+    def __init__(self):
         if not InputManager.instance:
-            InputManager.instance = InputManager.__InputManager(config)
+            InputManager.instance = InputManager.__InputManager()
 
     def __getattr__(self, name):
         return getattr(self.instance, name)
@@ -138,8 +137,21 @@ if __name__ == '__main__':
 
     signal.signal(signal.SIGTERM, sh)
 
-    config = {'InputManager': {'tick': 0.02, 'keyboard': { 'enabled': True, 'start': 's', 'emstop': 'h', 'back': 'b' }}}
-    im = InputManager(config)
+    fire_pong.util.config = {
+        'InputManager': {
+            'tick': 0.02, 
+            'keyboard': { 
+                'tick': 0.02, 
+                'enabled': True, 
+                'start': 's', 
+                'emstop': 'h', 
+                'back': 'b', 
+                'swipe1': 'z',
+                'swipe2': 'COMMA'
+            }
+        }
+    }
+    im = InputManager()
     im.set_event_handler(eh)
     im.thread.start()
     im.thread.join()

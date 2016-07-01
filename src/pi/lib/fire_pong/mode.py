@@ -4,11 +4,12 @@ import time
 import threading
 log = logging
 
+import fire_pong.util
+
 class Mode(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, config={}):
-        self.config = config
+    def __init__(self):
         self.terminate = False
         self.thread = threading.Thread(target=self.run)
 

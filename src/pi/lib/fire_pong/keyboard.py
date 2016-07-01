@@ -4,13 +4,14 @@ import threading
 import pygame
 import time
 
+import fire_pong.util 
+
 log = logging
 
 # Follows the singleton pattern
 class Keyboard:
     class __Keyboard:
-        def __init__(self, config):
-            self.config = config
+        def __init__(self):
             self.thread = threading.Thread(target=self.run)
             self.terminate = False
             self.start_button = None
@@ -27,16 +28,16 @@ class Keyboard:
             try:
                 self.quit_button = pygame.K_ESCAPE
                 log.debug('Keyboard() set quit to ESCAPE key')
-                self.start_button = getattr(pygame, 'K_' + config['InputManager']['keyboard']['start'])
-                log.debug('Keyboard() set start to %s' % config['InputManager']['keyboard']['start'])
-                self.emstop_button = getattr(pygame, 'K_' + config['InputManager']['keyboard']['emstop'])
-                log.debug('Keyboard() set emstop to %s' % config['InputManager']['keyboard']['emstop'])
-                self.back_button = getattr(pygame, 'K_' + config['InputManager']['keyboard']['back'])
-                log.debug('Keyboard() set back to %s' % config['InputManager']['keyboard']['back'])
-                self.swipe1_button = getattr(pygame, 'K_' + config['InputManager']['keyboard']['swipe1'])
-                log.debug('Keyboard() set swipe1 to %s' % config['InputManager']['keyboard']['swipe1'])
-                self.swipe2_button = getattr(pygame, 'K_' + config['InputManager']['keyboard']['swipe2'])
-                log.debug('Keyboard() set swipe2 to %s' % config['InputManager']['keyboard']['swipe2'])
+                self.start_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['start'])
+                log.debug('Keyboard() set start to %s' % fire_pong.util.config['InputManager']['keyboard']['start'])
+                self.emstop_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['emstop'])
+                log.debug('Keyboard() set emstop to %s' % fire_pong.util.config['InputManager']['keyboard']['emstop'])
+                self.back_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['back'])
+                log.debug('Keyboard() set back to %s' % fire_pong.util.config['InputManager']['keyboard']['back'])
+                self.swipe1_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['swipe1'])
+                log.debug('Keyboard() set swipe1 to %s' % fire_pong.util.config['InputManager']['keyboard']['swipe1'])
+                self.swipe2_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['swipe2'])
+                log.debug('Keyboard() set swipe2 to %s' % fire_pong.util.config['InputManager']['keyboard']['swipe2'])
             except KeyError as e:
                 log.warning('Keyboard.__init__(): %s' % e)
                 pass
@@ -62,7 +63,7 @@ class Keyboard:
                             self.swipe1 = True
                         elif event.key == self.swipe2_button:
                             self.swipe2 = True
-                time.sleep(self.config['InputManager']['keyboard']['tick'])
+                time.sleep(fire_pong.util.config['InputManager']['keyboard']['tick'])
             pygame.quit()            
 
         def get_start(self):
@@ -112,24 +113,38 @@ class Keyboard:
 
     instance = None
 
-    def __init__(self, config={'InputManager': {'keyboard': {'back': 'b', 'start': 's', 'emstop': 'h'}}}):
+    def __init__(self):
         if not Keyboard.instance:
-            Keyboard.instance = Keyboard.__Keyboard(config)
+            Keyboard.instance = Keyboard.__Keyboard()
         
     def __getattr__(self, name):
         return getattr(self.instance, name)
 
 if __name__ == '__main__':
     import time
+    fire_pong.util.config = {
+        "InputManager": {
+            "tick": 0.02,
+            "keyboard": {
+                "tick": 0.02,
+                "enabled": True,
+                "start": "s",
+                "emstop": "h",
+                "back": "b",
+                "swipe1": "z",
+                "swipe2": "COMMA"
+            }
+        }
+    }
     log.basicConfig(level=logging.DEBUG)
     k = Keyboard()
     k.thread.start()
-    for _ in range(0,100):
-        print('start=%s emstop=%s back=%s' % (k.start, k.emstop, k.back))
+    for _ in range(0,50):
+        print('start=%s emstop=%s back=%s' % (k.get_start(), k.get_emstop(), k.get_back()))
         if k.emstop:
             break
         else:
-            time.sleep(0.01)
+            time.sleep(0.1)
     k.shutdown()
     k.thread.join()
 

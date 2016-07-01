@@ -3,6 +3,8 @@ from threading import Timer
 import cwiid
 import time
 import logging
+from fire_pong.scoreboard import ScoreBoard
+import fire_pong.util
 
 log = logging
 
@@ -37,20 +39,24 @@ class SwipeMote:
     def discover(self):
         while self.wm is None:
             try:
-                print('Put WiiMote for %s into discovery mode...' % self.name)
+                print('Put Wiimote for player %s in discovery mode' % self.name)
+                #ScoreBoard().display('D%s' % self.name)
                 self.wm = cwiid.Wiimote()
                 self.wm.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
                 self.last_swipe = 0
-                print('Connected to wiimote for %s' % self.name)
+                log.debug('Connected to wiimote for %s' % self.name)
+            except RuntimeError as e:
+                log.error('%s - run "sudo hciconfig hci0 up"?' % e)
             except Exception as e:
-                print('ERROR: %s / %s' % (type(e), e))
-                time.sleep(0.5)
+                log.error('While discovering WiiMote %s / %s' % (type(e), e))
+                ScoreBoard().display('ER%s' % self.name)
+                time.sleep(1.5)
         
     def rumble(self, state):
         try:
             self.wm.rumble = state
         except Exception as e:
-            print('SwipeMote(%s).rumble(%s) ERROR: %s', (self.name, self.state, e))
+            log.error('SwipeMote(%s).rumble(%s) %s', (self.name, self.state, e))
 
     def tick(self):
         if time.time() - self.last_sample > SwipeMote.RATE_LIMIT:
@@ -80,8 +86,13 @@ class SwipeMote:
     SAMPLES = 8
 
 if __name__ == '__main__':
+    import fire_pong.scoreboard
     def got(player, strength):
         print('Detected swipe for %s with strength: %s' % (player, strength))
+
+    log.basicConfig(level=logging.DEBUG)
+    fire_pong.scoreboard.log = log
+    fire_pong.util.set_test_config() 
 
     sm1 = SwipeMote ('Mouse', got)
     sm2 = SwipeMote ('Ian', got)

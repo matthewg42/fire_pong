@@ -1,58 +1,51 @@
 from fire_pong.fp_event import FpEvent
+from fire_pong.fp_serial import FpSerial
+import fire_pong.util
 import logging
-
 log = logging
 
 # Follows the singleton pattern
 class ScoreBoard:
     class __ScoreBoard:
-        def __init__(self, config, serial):
-            self.config = config
-            self.serial = serial
+        def __init__(self):
+            log.debug('ScoreBoard display id=%08X' % self.get_id())
 
         def get_id(self):
-            try:
-                return self.config['display']['id']
-            except:
-                return None
+            return fire_pong.util.config['display']['id']
 
         def display(self, message):
             disp_id = self.get_id()
             if disp_id is not None:
                 e = FpEvent(disp_id, 'FP_EVENT_DISPLAY', message)
-                log.debug('ScoreBoard SEND: %s' % str(e))
-                self.serial.write(e.serialize())
+                FpSerial().write(e.serialize())
 
     instance = None
 
-    def __init__(self, config={}, serial={}):
+    def __init__(self):
         if not ScoreBoard.instance:
-            ScoreBoard.instance = ScoreBoard.__ScoreBoard(config, serial)
+            ScoreBoard.instance = ScoreBoard.__ScoreBoard()
         
     def __getattr__(self, name):
         return getattr(self.instance, name)
 
 if __name__ == '__main__':
-    import serial
-    import os
-
     log.basicConfig(level=logging.DEBUG)
-
-    config = {'display': {'id': 0x8000}}
-    ser = None
+    fire_pong.fp_serial.log = log
+    fire_pong.util.config = {'display': { 'id': 0x1000 }, 
+              'serial': {
+                    'port': '/dev/ttyUSB0', 
+                    'baudrate': 115200, 
+                    'parity': 'none', 
+                    'stopbits': 2, 
+                    'bytesize': 8, 
+                    'debug': True}}
     
-    for port in ['/dev/ttyUSB0','/dev/ttyACM0']:
-        if os.path.exists(port):
-            ser = serial.Serial(port=port, baudrate=115200)
-
-    sb = ScoreBoard(config, ser)
+    sb = ScoreBoard()
     
     # we can use the object
-    sb.display('hi')
+    sb.display('bananas')
 
     # or, now it's initialized, we can also use the singleton approach...
-    ScoreBoard().display('bananas')
-    
-
+    ScoreBoard().display('hi')
 
 

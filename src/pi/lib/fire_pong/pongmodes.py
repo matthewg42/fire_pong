@@ -1,6 +1,7 @@
 import logging
 import time
 import threading
+import fire_pong.util
 from random import randint
 from fire_pong.mode import Mode
 from fire_pong.fp_event import FpEvent
@@ -51,9 +52,9 @@ class CounterMode(Mode):
             self.terminate = True
 
 class PongMatch(Mode):
-    def __init__(self, config={}):
-        Mode.__init__(self, config)
-        self.winning_score = config['PongMatch']['winning_score']
+    def __init__(self):
+        Mode.__init__(self)
+        self.winning_score = fire_pong.util.config['PongMatch']['winning_score']
         self.start_player = randint(1, 2)
 
     def reset(self):
@@ -71,7 +72,7 @@ class PongMatch(Mode):
             while max(self.score) < self.winning_score and not self.terminate:
                 if ModeManager().push_mode(CounterMode(start=3, end=1)) is None:
                     return
-                win = ModeManager().push_mode(PongGame(self.config, self.start_player))
+                win = ModeManager().push_mode(PongGame(self.start_player))
                 if win is None:
                     self.terminate = True
                 else:
@@ -96,10 +97,10 @@ class PongMatch(Mode):
             self.terminate = True
 
 class PongGame(Mode):
-    def __init__(self, config, start_player):
-        Mode.__init__(self, config)
-        self.puffers = self.config['PongGame']['puffers']
-        self.delay = self.config['PongGame']['initial_delay']
+    def __init__(self, start_player):
+        Mode.__init__(self)
+        self.puffers = fire_pong.util.config['PongGame']['puffers']
+        self.delay = fire_pong.util.config['PongGame']['initial_delay']
         self.hit_idx = {'1UP': [-1, 0], '2UP': [len(self.puffers)-1, len(self.puffers)]}
         self.win = None
         self.start_player = start_player

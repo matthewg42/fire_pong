@@ -5,7 +5,8 @@
         "baudrate": 115200,
         "parity": "none",
         "stopbits": 2,
-        "bytesize": 8
+        "bytesize": 8,
+        "debug": false
     },
     "ModeManager": {
         "doc": "Settings for the ModeManager",

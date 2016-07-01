@@ -9,13 +9,17 @@ import sys
 import time
 import json
 import threading
+import fire_pong.util
 import fire_pong.swipemote
 import fire_pong.fp_serial
+import fire_pong.fp_event
 import fire_pong.scoreboard
 import fire_pong.inputmanager
 import fire_pong.modemanager
 import fire_pong.pongmodes
+import fire_pong.swipemote
 
+from fire_pong.fp_serial import FpSerial
 from fire_pong.inputmanager import InputManager
 from fire_pong.pongmodes import *
 from fire_pong.modemanager import ModeManager
@@ -29,8 +33,8 @@ def main():
     global args, log, serial_bus
     init_log()
     try:
-        config = read_config_file()
-        sanity_checks(config)
+        fire_pong.util.config = read_config_file()
+        sanity_checks(fire_pong.util.config)
     except Exception as e:
         log.exception('%s' % e)
         cleanup_and_exit(1)
@@ -46,21 +50,21 @@ def main():
 
     # Open serial connection
     try:
-        serial_bus = fire_pong.fp_serial.open_serial(config)
+        FpSerial()
     except Exception as e:
         log.exception('Failed to open serial bus: %s' % e)
         cleanup_and_exit(4)
 
     # Configure score board (singleton)
     try:
-        fire_pong.scoreboard.ScoreBoard(config, serial_bus)
+        fire_pong.scoreboard.ScoreBoard()
     except Exception as e:
         log.exception('Failed to initialize ScoreBoard')
         cleanup_and_exit(5)
 
     # Start the input manager
     try:
-        InputManager(config).thread.start()
+        InputManager().thread.start()
     except Exception as e:
         log.exception('In ModeManager execution:')
         cleanup_and_exit(6)
@@ -68,7 +72,7 @@ def main():
 
     # Start the mode manager
     try:
-        mm = ModeManager(PongMatch(config))
+        mm = ModeManager(PongMatch())
         mm.thread.start()
     except Exception as e:
         log.exception('In ModeManager execution:')
@@ -90,6 +94,9 @@ def read_config_file():
     config['config_file_path'] = args.config_file
     if args.serial_device:
         config['serial']['port'] = args.serial_device
+    if 'serial' not in config:
+        config['serial'] = dict()
+    config['serial']['debug'] = args.serial_debug
     log.debug('config: %s' % config)
     return config
 
@@ -119,11 +126,14 @@ def init_log():
     # hoops brought to you by the combination of daemon and logging 
     # modules
     fire_pong.swipemote.log = log
-    fire_pong.fp_serial.log = log
     fire_pong.scoreboard.log = log
     fire_pong.inputmanager.log = log
     fire_pong.modemanager.log = log
     fire_pong.pongmodes.log = log
+    fire_pong.util.log = log
+    fire_pong.fp_event.log = log
+    fire_pong.fp_serial.log = log
+    fire_pong.swipemote.log = log
 
 def cleanup_and_exit(level):
     """ Remove PID file and exit the process """
@@ -174,6 +184,9 @@ if __name__ == '__main__':
     parser.add_argument('--debug', dest='logging_level', action='store_const',
         const=logging.DEBUG, default=logging.WARN, 
         help='write debugging output in the log')
+    parser.add_argument('--serial-debug', dest='serial_debug', action='store_const',
+        const=True, default=False, 
+        help='write dditional debugging for serial events (when --debug used)')
     parser.add_argument('--info', dest='logging_level', action='store_const',
         const=logging.INFO, help='write informational output in the log')
     parser.add_argument('--log-ts', dest='log_timestamps', 

@@ -8,6 +8,7 @@ import traceback
 import sys
 import signal
 import os
+import fire_pong.util
 
 from fire_pong.util import tid
 from fire_pong.inputmanager import InputManager
@@ -18,10 +19,9 @@ log = logging
 
 class ModeManager:
     class __ModeManager:
-        def __init__(self, start_mode, config):
-            self.config = config
+        def __init__(self, start_mode):
             try:
-                float(self.config['ModeManager']['tick'])
+                float(fire_pong.util.config['ModeManager']['tick'])
             except Exception as e:
                 raise Exception("could not find config item ModeManager.tick: %s" % type(e))
             self.thread = threading.Thread(target=self.run)
@@ -72,9 +72,9 @@ class ModeManager:
             self.terminate = True
 
     instance = None
-    def __init__(self, start_mode=DebugEventsMode(), config={'ModeManager': {'tick': 1}}):
+    def __init__(self, start_mode=DebugEventsMode()):
         if not ModeManager.instance:
-            ModeManager.instance = ModeManager.__ModeManager(start_mode, config)
+            ModeManager.instance = ModeManager.__ModeManager(start_mode)
    
     def __getattr__(self, name):
         return getattr(self.instance, name) 
@@ -84,9 +84,17 @@ if __name__ == '__main__':
     from fire_pong.mode import Mode
     import fire_pong.mode
 
+    log.basicConfig(level=logging.DEBUG)
+    fire_pong.util.config = {
+        "ModeManager": {
+            "doc": "Settings for the ModeManager",
+            "tick": 0.5
+        }
+    }
+
     class InnerMode(Mode):
-        def __init__(self, config={}, duration=3):
-            Mode.__init__(self, config)
+        def __init__(self, duration=3):
+            Mode.__init__(self)
             self.duration = duration
             
         def run(self):
@@ -101,8 +109,8 @@ if __name__ == '__main__':
             log.debug('InnerMode: %s' % event)
 
     class OuterMode(Mode):
-        def __init__(self, config={}):
-            Mode.__init__(self, config)
+        def __init__(self):
+            Mode.__init__(self)
 
         def run(self):
             log.info('OuterMode.run()')
