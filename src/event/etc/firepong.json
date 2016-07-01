@@ -40,8 +40,7 @@
         "winning_score": 3
     },
     "PongGame": {
-        "puffersold": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
-        "puffers": [1, 2, 4, 8],
+        "puffers": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
         "initial_delay": 0.4
     },
     "LargePuffers": {

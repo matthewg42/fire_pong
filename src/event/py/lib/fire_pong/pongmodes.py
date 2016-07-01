@@ -54,7 +54,6 @@ class PongMatch(Mode):
     def __init__(self, config={}):
         Mode.__init__(self, config)
         self.winning_score = config['PongMatch']['winning_score']
-        self.reset()
         self.start_player = randint(1, 2)
 
     def reset(self):
@@ -66,8 +65,8 @@ class PongMatch(Mode):
 
         while not self.terminate:
             self.reset()
-            #if ModeManager().push_mode(WaitStart()) is None:
-            #    return
+            if ModeManager().push_mode(WaitStart()) is None:
+                return
             print('%dUP to start!' % self.start_player)
             while max(self.score) < self.winning_score and not self.terminate:
                 if ModeManager().push_mode(CounterMode(start=3, end=1)) is None:
