@@ -19,7 +19,7 @@ class FpSerial:
             c['stopbits'] = {1: pyserial.STOPBITS_ONE, 2: pyserial.STOPBITS_TWO}[c['stopbits']]
             c['bytesize'] = {8: pyserial.EIGHTBITS, 7: pyserial.SEVENBITS}[c['bytesize']]
             log.debug('FpSerial serial config: %s' % c)
-            self.serial = pyserial.Serial(port=c['port'], parity=c['parity'], stopbits=c['stopbits'], bytesize=c['bytesize'])
+            self.serial = pyserial.Serial(port=c['port'], baudrate=c['baudrate'], parity=c['parity'], stopbits=c['stopbits'], bytesize=c['bytesize'])
             self.serial.isOpen()
 
         def write(self, buf):

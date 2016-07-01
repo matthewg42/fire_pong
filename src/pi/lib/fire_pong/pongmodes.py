@@ -14,8 +14,8 @@ log = logging
 
 def strength2delay(strength):
     d = 0.8 - (float(strength)/300)
-    if d <= 0.05:
-        d = 0.05
+    if d <= 0.2:
+        d = 0.2
     return d
 
 class WaitStart(Mode):
@@ -144,7 +144,8 @@ class PongGame(Mode):
                 for i in range(0,3):
                     print(d[i])
                 log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
-                e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<I', self.puff_duration))
+                e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', 250))
+                print(str(e))
                 FpSerial().write(e.serialize())
             else:
                 log.info('[relief]')

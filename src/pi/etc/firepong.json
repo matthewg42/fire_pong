@@ -4,9 +4,9 @@
         "port": "/dev/ttyUSB0",
         "baudrate": 115200,
         "parity": "none",
-        "stopbits": 2,
+        "stopbits": 1,
         "bytesize": 8,
-        "debug": false
+        "debug": true
     },
     "ModeManager": {
         "doc": "Settings for the ModeManager",
@@ -16,7 +16,7 @@
         "doc": "Settings for the InputManager (buttons and wiimote setup)",
         "tick": 0.02,
         "wiimotes": {
-            "enabled": false,
+            "enabled": true,
             "swipe_idle": 1,
             "swipe_min": 150
         },
