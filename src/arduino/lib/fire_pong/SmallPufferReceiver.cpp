@@ -52,9 +52,9 @@ void SmallPufferReceiver::handle(const FpEvent& e)
 		}
 		duration = *(reinterpret_cast<const uint16_t*>(e.data()));
 		_seq.reset();
-		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _sparker_pin,  RELAY_ON));   t += 70;
+		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _sparker_pin,  RELAY_ON));   t += 100;
 		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _solenoid_pin, RELAY_ON));   t += 13;
-		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _solenoid_pin, RELAY_OFF));  t += 150;
+		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _solenoid_pin, RELAY_OFF));  t += 200;
 		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _solenoid_pin, RELAY_ON));   t += duration;
 		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _solenoid_pin, RELAY_OFF));  t += 100;
 		_seq.append(new EvtCallbackIntBool(t, 0, set_pin, _sparker_pin,  RELAY_OFF));  

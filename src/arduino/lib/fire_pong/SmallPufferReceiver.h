@@ -7,8 +7,8 @@
 #define RELAY_ON        LOW
 #define RELAY_OFF       HIGH
 
-//! A simple receiver that controls a single relay. 
-//! data : uint16_t duration in ms for relay to be activated
+//! Controls an individual small puffer (i.e. sparker and solenoid relays)
+//! data : uint16_t duration in ms for main puff (100 is a typical value)
 class SmallPufferReceiver : public EventReceiver {
 public:
     SmallPufferReceiver(fp_id_t id, uint8_t sparker_pin, uint8_t solenoid_pin);
