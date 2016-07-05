@@ -1,8 +1,8 @@
 import pygame
 import logging
 import threading
-import pygame
 import time
+import os
 
 import fire_pong.util 
 
@@ -34,20 +34,50 @@ class Keyboard:
                     log.warning('Keyboard.__init__(): %s' % e)
                     pass
 
+        def init_display(self):
+            disp_no = os.getenv("DISPLAY")
+            if disp_no:
+                log.info('Using X with DISPLAY: %s' % disp_no)
+                self.screen = pygame.display.set_mode((800,600))
+                pygame.init()
+                pygame.display.set_caption('Fire Pong Keyboard Input')
+            else:
+                found = False
+                drivers = ['fbcon', 'directfb', 'svgalib']
+                for driver in drivers:
+                    if not os.getenv('SDL_VIDEODRIVER'):
+                        os.putenv('SDL_VIDEODRIVER', driver)
+                    try:
+                        pygame.display.init()
+                    except pygame.error as e:
+                        log.debug('Framebuffer driver %s failed: %s' % (driver, e))
+                        continue
+                    found = True
+                    log.info('Using framebuffer driver: %s' % driver)
+                    break
+                if not found:
+                    raise Exception('No working video driver found')
+                size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+                log.info('Display size: %d x %d' % (size[0], size[1]))
+                self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+            self.screen.fill((100, 50, 0))
+            pygame.font.init()
+            pygame.display.update()
+
         def run(self):
-            pygame.init()
-            gameDisplay = pygame.display.set_mode((800,600))
-            pygame.display.set_caption('Fire Pong Keyboard Input')
+            self.init_display()
             while not self.terminate:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.terminate = True
                     if event.type == pygame.KEYUP:
+                        log.debug('Keyboard KEYUP event: %s' % event)
                         if event.key in self.buttons:
                             log.debug('Keyboard: key %s pressed, triggering action %s' % (event.key, self.buttons[event.key]))
                             self.pressed[self.buttons[event.key]] = True       
-                        else:
-                            log.debug('Keyboard: button not bound: %s' % event)
+                        if event.scancode == 115:
+                            log.debug('Keyboard: btbutton 115 scancode, triggering action %s' % self.gain_action)
+                            self.pressed[self.gain_action] = True
                     elif self.gain_action is not None and event.type == pygame.ACTIVEEVENT and event.state == 2 and event.gain == 1:
                         log.debug('Keyboard: _gain pressed, triggering action %s' % self.gain_action)
                         self.pressed[self.gain_action] = True
@@ -106,7 +136,7 @@ if __name__ == '__main__':
     k = Keyboard()
     log.debug('supported actions: %s' % k.get_actions())
     k.thread.start()
-    while True:
+    for _ in range(0, 60):
         if k.get_pressed('quit'):
             break
         else:
