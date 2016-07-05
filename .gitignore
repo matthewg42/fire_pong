@@ -7,3 +7,7 @@ docs/bs
 **/*.o
 **/__pycache__
 video
+ansible/burn
+ansible/expand
+ansible/update
+ansible/firepong
