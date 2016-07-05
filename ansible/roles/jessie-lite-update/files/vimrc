@@ -1,0 +1,41 @@
+filetype off
+filetype on
+:syntax enable
+set lazyredraw
+"set cursorline
+set showmatch
+
+" turn off search highlight type \ <space> in move mode
+nnoremap <leader><space> :nohlsearch<CR>
+set incsearch
+set hlsearch
+
+set foldenable
+set foldlevelstart=10
+set foldnestmax=10
+nnoremap <space> za
+
+map Q :q<CR>
+autocmd! BufNewFile,BufRead *.ino setlocal ft=arduino
+autocmd! BufNewFile,BufRead *.pde setlocal ft=arduino
+autocmd! BufNewFile,BufRead *.go setlocal ft=go
+autocmd! BufNewFile,BufRead *.html.erb setlocal ft=eruby
+autocmd! BufNewFile,BufRead Guardfile setlocal ft=ruby
+autocmd FileType sql,cpp,c,h,go set tabstop=4|set shiftwidth=4|set noexpandtab|set nu
+autocmd FileType sh,perl,javascript,java,arduino,json,md set tabstop=4|set shiftwidth=4|set expandtab|set nu
+autocmd FileType python set tabstop=4|set shiftwidth=4|set expandtab|set nu|set wrap|set nolist|set formatoptions+=l
+autocmd FileType markdown set tabstop=4|set shiftwidth=4|set expandtab|set nolist|set formatoptions+=l
+autocmd FileType css,scss,ruby,eruby set tabstop=2|set shiftwidth=2|set expandtab|set nu
+
+function! NumberToggle()
+  if(&relativenumber == 1)
+    set number
+  else
+    set relativenumber
+  endif
+endfunc
+
+nnoremap <C-n> :call NumberToggle()<cr>
+
+let @c='mcy/ ji\[pa]`cB'
+

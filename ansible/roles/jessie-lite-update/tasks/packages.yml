@@ -1,0 +1,26 @@
+---
+
+- name: Update APT package cache and upgrade
+  apt: update_cache=yes
+
+- name: Install base packages selection
+  apt: pkg={{item}} state=installed
+  with_items:
+    - tmux
+    - python-pip
+    - python3-pip
+    - git
+    - vim
+
+- name: Update pip
+  shell: pip install -U pip
+
+- name: Update pip3
+  shell: pip3 install -U pip
+
+- name: Use pip to install RPi.GPIO 
+  shell: pip -q install RPi.GPIO
+
+- name: Use pip3 to install RPi.GPIO 
+  shell: pip3 -q install RPi.GPIO
+

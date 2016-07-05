@@ -1,0 +1,26 @@
+
+- name: create firepong install directories
+  file: path={{item}} owner=root mode=0775 state=directory
+  with_items:
+    - "{{firepong_prefix}}/bin"
+    - "{{firepong_prefix}}/lib/python2/dist-packages"
+    - "{{firepong_prefix}}/etc"
+
+- name: install firepong program
+  copy: src=../../../../src/pi/bin/firepong dest={{firepong_prefix}}/bin/firepong owner=root mode=0755
+
+- name: install fire_pong python modules
+  copy: src=../../../../src/pi/lib/fire_pong/ dest={{firepong_prefix}}/lib/python2/dist-packages/fire_pong/ owner=root 
+
+- name: install sample config file
+  copy: src=../../../../src/pi/etc/firepong.json dest=/{{firepong_prefix}}/etc/firepong.json owner=root mode=0664 
+
+- name: install firepong systemd service file
+  copy: src=firepong.service dest=/etc/systemd/system mode=644
+
+- name: replace path variable in firepong systemd service file
+  replace: dest=/etc/systemd/system/firepong.service regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
+- name: enable firepong systemd service
+  shell: systemctl enable firepong.service
+

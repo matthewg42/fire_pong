@@ -1,0 +1,11 @@
+---
+
+- name: Copy journald.conf
+  copy: src=journald.conf dest=/etc/systemd/journald.conf owner=root group=root mode=644
+
+- name: Make sure journal dir exists with proper permissions
+  file: path=/var/log/journal state=directory mode=2755 owner=root group=systemd-journal
+
+- name: Add pi user to journal group
+  shell: usermod -a -G systemd-journal pi
+

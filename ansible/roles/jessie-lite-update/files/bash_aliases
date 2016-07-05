@@ -1,0 +1,3 @@
+alias ls='ls --color=auto -F'
+alias ll='ls -lhtr'
+alias l='ll -A'

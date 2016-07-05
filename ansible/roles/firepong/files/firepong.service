@@ -1,0 +1,12 @@
+[Unit]
+Description=Firepong Controller
+
+[Service]
+Environment=PYTHONPATH={{firepong_prefix}}/lib/python2/dist-packages
+ExecStart={{firepong_prefix}}/bin/firepong -c {{firepong_prefix}}/etc/firepong.json --info
+RestartSec=3s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

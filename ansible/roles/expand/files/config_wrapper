@@ -1,0 +1,36 @@
+#!/bin/bash
+
+errex () {
+    e="${1:-2}"
+    shift
+    echo "$@" 1>&2
+    exit $e
+}
+
+tmp=$(mktemp)
+sed 's/INTERACTIVE=True/INTERACTIVE=False/g' /usr/bin/raspi-config > "$tmp" || errex "Failed to process raspi-config"
+cat >> "$tmp" <<EOD
+whiptail () {
+    echo "whiptail DUMMY $@"
+}
+
+EOD
+source /dev/stdin  < $tmp
+
+case "$1" in
+update)
+    do_update
+    ;;
+resize)
+    do_expand_rootfs
+    ;;
+serial)
+    do_serial 0
+    ;;
+*)
+    echo "Invalid command: $1"
+    exit 2
+    ;;
+esac
+
+

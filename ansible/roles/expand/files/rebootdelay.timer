@@ -1,0 +1,6 @@
+[Unit]
+Description=Delayed reboot
+
+[Timer]
+OnActiveSec=1
+Unit=reboot.target

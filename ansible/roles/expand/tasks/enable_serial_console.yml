@@ -1,0 +1,8 @@
+---
+
+- name: Copy resize script to pi /tmp dir
+  copy: src=config_wrapper dest=/tmp/config_wrapper mode=0755
+
+- name: Execute config_wrapper to enable serial console
+  shell: /tmp/config_wrapper serial
+

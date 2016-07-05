@@ -1,0 +1,14 @@
+---
+
+- name: Install base packages selection
+  apt: pkg={{item}} state=installed
+  with_items:
+    - bluez 
+    - bluetooth
+    - pi-bluetooth
+    - python-gobject
+    - python-pygame
+    - python-cwiid
+    - python-serial
+    - python-daemon
+

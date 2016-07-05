@@ -1,0 +1,6 @@
+[firepong-device]
+raspberrypi
+
+[firepong:children]
+firepong-device
+

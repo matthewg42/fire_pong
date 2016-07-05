@@ -1,0 +1,4 @@
+---
+- hosts: firepong
+  roles:
+    - firepong
