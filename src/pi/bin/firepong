@@ -18,6 +18,7 @@ import fire_pong.inputmanager
 import fire_pong.modemanager
 import fire_pong.pongmodes
 import fire_pong.swipemote
+import fire_pong.keyboard
 
 from fire_pong.fp_serial import FpSerial
 from fire_pong.inputmanager import InputManager
@@ -125,15 +126,16 @@ def init_log():
     # Set logging in our various modules to use our new logger. These 
     # hoops brought to you by the combination of daemon and logging 
     # modules
+    fire_pong.util.log = log
     fire_pong.swipemote.log = log
     fire_pong.scoreboard.log = log
     fire_pong.inputmanager.log = log
     fire_pong.modemanager.log = log
     fire_pong.pongmodes.log = log
-    fire_pong.util.log = log
     fire_pong.fp_event.log = log
     fire_pong.fp_serial.log = log
     fire_pong.swipemote.log = log
+    fire_pong.keyboard.log = log
 
 def cleanup_and_exit(level):
     """ Remove PID file and exit the process """

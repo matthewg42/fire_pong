@@ -14,33 +14,25 @@ class Keyboard:
         def __init__(self):
             self.thread = threading.Thread(target=self.run)
             self.terminate = False
-            self.start_button = None
-            self.emstop_button = None
-            self.back_button = None
-            self.swipe1_button = None
-            self.swipe2_button = None
-            self.start = False
-            self.emstop = False
-            self.back = False
-            self.quit = False
-            self.swipe1 = False
-            self.swipe2 = False
-            try:
-                self.quit_button = pygame.K_ESCAPE
-                log.debug('Keyboard() set quit to ESCAPE key')
-                self.start_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['start'])
-                log.debug('Keyboard() set start to %s' % fire_pong.util.config['InputManager']['keyboard']['start'])
-                self.emstop_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['emstop'])
-                log.debug('Keyboard() set emstop to %s' % fire_pong.util.config['InputManager']['keyboard']['emstop'])
-                self.back_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['back'])
-                log.debug('Keyboard() set back to %s' % fire_pong.util.config['InputManager']['keyboard']['back'])
-                self.swipe1_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['swipe1'])
-                log.debug('Keyboard() set swipe1 to %s' % fire_pong.util.config['InputManager']['keyboard']['swipe1'])
-                self.swipe2_button = getattr(pygame, 'K_' + fire_pong.util.config['InputManager']['keyboard']['swipe2'])
-                log.debug('Keyboard() set swipe2 to %s' % fire_pong.util.config['InputManager']['keyboard']['swipe2'])
-            except KeyError as e:
-                log.warning('Keyboard.__init__(): %s' % e)
-                pass
+            self.buttons = dict()
+            self.pressed = dict()
+            self.gain_action = None
+            for action in ['quit', 'start', 'emstop', 'back', 'swipe1', 'swipe2', 'btstart', 'btemstop']:
+                try:
+                    key = fire_pong.util.config['InputManager']['keyboard'][action]
+                    if action[0:2] == 'bt':
+                        action = action[2:]
+                    if key == '_gain':
+                        self.gain_action = action
+                        log.debug('Keyboard() for _gain input, action is: %s' % action)
+                    else:
+                        pygame_id = 'K_' + key
+                        self.buttons[getattr(pygame, pygame_id)] = action
+                        log.debug('Keyboard() for %s input set to key %s' % (action, pygame_id))
+                    self.pressed[action] = False
+                except KeyError as e:
+                    log.warning('Keyboard.__init__(): %s' % e)
+                    pass
 
         def run(self):
             pygame.init()
@@ -49,65 +41,36 @@ class Keyboard:
             while not self.terminate:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        terminate = True
+                        self.terminate = True
                     if event.type == pygame.KEYUP:
-                        if event.key == self.quit_button:
-                            self.quit = True
-                        if event.key == self.start_button:
-                            self.start = True
-                        elif event.key == self.emstop_button:
-                            self.emstop = True
-                        elif event.key == self.back_button:
-                            self.back = True
-                        elif event.key == self.swipe1_button:
-                            self.swipe1 = True
-                        elif event.key == self.swipe2_button:
-                            self.swipe2 = True
+                        if event.key in self.buttons:
+                            log.debug('Keyboard: key %s pressed, triggering action %s' % (event.key, self.buttons[event.key]))
+                            self.pressed[self.buttons[event.key]] = True       
+                        else:
+                            log.debug('Keyboard: button not bound: %s' % event)
+                    elif self.gain_action is not None and event.type == pygame.ACTIVEEVENT and event.state == 2 and event.gain == 1:
+                        log.debug('Keyboard: _gain pressed, triggering action %s' % self.gain_action)
+                        self.pressed[self.gain_action] = True
+                    
                 time.sleep(fire_pong.util.config['InputManager']['keyboard']['tick'])
-            pygame.quit()            
+            pygame.quit() 
 
-        def get_start(self):
-            if self.start:
-                self.start = False
+        def get_actions(self):
+            a = self.pressed.keys()
+            if self.gain_action:
+                a.append(self.gain_action)
+            return a
+
+        def get_pressed(self, action):
+            if action not in self.pressed:
+                log.warning('Keyboard.get_pressed: requested action %s, but it is not defined in the keyboard settings' % action)
+                return False
+            if self.pressed[action]:
+                self.pressed[action] = False
                 return True
             else:
                 return False
-
-        def get_emstop(self):
-            if self.emstop:
-                self.emstop = False
-                return True
-            else:
-                return False
-
-        def get_back(self):
-            if self.back:
-                self.back = False
-                return True
-            else:
-                return False
-
-        def get_quit(self):
-            if self.quit:
-                self.quit = False
-                return True
-            else:
-                return False
-
-        def get_swipe1(self):
-            if self.swipe1:
-                self.swipe1 = False
-                return True
-            else:
-                return False
-
-        def get_swipe2(self):
-            if self.swipe2:
-                self.swipe2 = False
-                return True
-            else:
-                return False
-
+            
         def shutdown(self):
             self.terminate = True
 
@@ -128,20 +91,23 @@ if __name__ == '__main__':
             "keyboard": {
                 "tick": 0.02,
                 "enabled": True,
+                "quit": "ESCAPE",
                 "start": "s",
                 "emstop": "h",
                 "back": "b",
                 "swipe1": "z",
-                "swipe2": "COMMA"
+                "swipe2": "COMMA",
+                "btstart": "RETURN",
+                "btemstop": "_gain"
             }
         }
     }
     log.basicConfig(level=logging.DEBUG)
     k = Keyboard()
+    log.debug('supported actions: %s' % k.get_actions())
     k.thread.start()
-    for _ in range(0,50):
-        print('start=%s emstop=%s back=%s' % (k.get_start(), k.get_emstop(), k.get_back()))
-        if k.emstop:
+    while True:
+        if k.get_pressed('quit'):
             break
         else:
             time.sleep(0.1)

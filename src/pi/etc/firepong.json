@@ -16,7 +16,7 @@
         "doc": "Settings for the InputManager (buttons and wiimote setup)",
         "tick": 0.02,
         "wiimotes": {
-            "enabled": true,
+            "enabled": false,
             "swipe_idle": 1,
             "swipe_min": 150
         },
@@ -27,13 +27,21 @@
             "back": 6
         },
         "keyboard": {
+            "doc": "keyboard values from pygame without K_ prefix, special _gain value for selfie button event",
             "tick": 0.02,
             "enabled": true,
-            "start": "s",
+            "quit": "ESCAPE",
+            "start": "SPACE",
             "emstop": "h",
             "back": "b",
             "swipe1": "z",
-            "swipe2": "COMMA"
+            "swipe2": "COMMA",
+            "btstart": "RETURN",
+            "btemstop": "_gain"
+        },
+        "btbutton": {
+            "doc": "for using the selfie remote button",
+            "enabled": true
         }
     },
     "PongMatch": {

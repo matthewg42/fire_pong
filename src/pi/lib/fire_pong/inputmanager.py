@@ -71,19 +71,18 @@ class InputManager:
                     if self.wm2:
                         self.wm2.tick()
 
+                    # polling for keypresses... ugly.  TODO: change to callback
                     if self.keyboard:
-                        if self.keyboard.get_start():
-                            self.emit(EventButton('start'))
-                        if self.keyboard.get_emstop():
-                            self.emit(EventButton('emstop'))
-                        if self.keyboard.get_back():
-                            self.emit(EventButton('back'))
-                        if self.keyboard.get_quit():
-                            self.emit(EventQuit())
-                        if self.keyboard.get_swipe1():
-                            self.emit(EventSwipe('1UP', randint(20, 300)))
-                        if self.keyboard.get_swipe2():
-                            self.emit(EventSwipe('2UP', randint(20, 300)))
+                        for action in self.keyboard.get_actions():
+                            if self.keyboard.get_pressed(action):
+                                if action == 'quit':
+                                    self.emit(EventQuit())
+                                elif action == 'swipe1':
+                                    self.emit(EventSwipe('1UP', randint(20, 300)))
+                                elif action == 'swipe2':
+                                    self.emit(EventSwipe('2UP', randint(20, 300)))
+                                else:
+                                    self.emit(EventButton(action))
 
                     time.sleep(fire_pong.util.config['InputManager']['tick'])
                         
@@ -143,11 +142,14 @@ if __name__ == '__main__':
             'keyboard': { 
                 'tick': 0.02, 
                 'enabled': True, 
+                'quit': 'ESCAPE', 
                 'start': 's', 
                 'emstop': 'h', 
                 'back': 'b', 
                 'swipe1': 'z',
-                'swipe2': 'COMMA'
+                'swipe2': 'COMMA',
+                'btstart': 'RETURN',
+                'btemstop': '_gain'
             }
         }
     }
