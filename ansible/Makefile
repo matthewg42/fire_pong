@@ -3,7 +3,7 @@ RASBIAN_IMAGE = $(HOME)/download/2016-05-27-raspbian-jessie-lite.img
 .PHONY: clean burn ssh-clean
 
 clean:
-	rm -f burn expand update firepong *.retry
+	rm -f burn expand update firepong quick-firepong *.retry
 
 burn:
 	sudo img2blockdev $(RASBIAN_IMAGE)
@@ -29,4 +29,9 @@ firepong: ssh-clean update
 	./reboot.sh pi raspberrypi
 	touch firepong
 
+quick-firepong:	ssh-clean expand
+	ansible-playbook -i inventory/firepong --sudo --user pi firepong.yml
+	./reboot.sh pi raspberrypi
+	touch quick-firepong
+	
 
