@@ -25,7 +25,7 @@ void setup() {
 
     // Should define PUFFER_SEGMENT_NUMBER in CFLAGS
     for (uint8_t i=1; i<PUFFER_SEGMENT_NUMBER; i++) {
-        id << 4;
+        id = id << 4;
     }
 
     for (uint8_t i=0; i<4; i++) {
