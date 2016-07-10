@@ -11,3 +11,4 @@ ansible/burn
 ansible/expand
 ansible/update
 ansible/firepong
+ansible/quick-firepong
