@@ -1,6 +1,9 @@
-#ifndef DESKTOP
 #include "Seq.h"
+#ifdef DESKTOP
+#define NULL 0
+#else
 #include <Arduino.h>
+#endif
 
 Seq::Seq()
 {
@@ -50,4 +53,3 @@ void Seq::reset()
 	}
 }
 
-#endif

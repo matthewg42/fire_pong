@@ -1,6 +1,7 @@
-#ifndef DESKTOP
 #include "Evt.h"
+#ifndef DESKTOP
 #include <Arduino.h>
+#endif
 
 Evt::Evt(unsigned long offset, int activations) : 
 	_offset(offset),
@@ -16,6 +17,7 @@ Evt::~Evt()
 
 void Evt::tick()
 {
+#ifndef DESKTOP
 	if (_activations != 0) {
 		if (millis() >= _millis) {
 			fn();
@@ -27,12 +29,15 @@ void Evt::tick()
 			}
 		}
 	}
+#endif
 }
 
 void Evt::start(int activations)
 {
+#ifndef DESKTOP
 	_activations = activations;
 	_millis = millis() + _offset;
+#endif
 }
 
 void Evt::fn()
@@ -79,5 +84,4 @@ void EvtCallbackIntBool::fn()
 	_callback(_iarg,_barg);
 }
 
-#endif
 

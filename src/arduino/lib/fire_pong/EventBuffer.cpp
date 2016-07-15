@@ -1,10 +1,41 @@
 #include <EventBuffer.h>
+#ifdef DESKTOP
+#include <iostream>
+#else
 #include <Arduino.h>
+#endif
 #include <FpEvent.h>
 
-EventBuffer::EventBuffer(callback_function cb)
+#ifdef DESKTOP
+EventBuffer::EventBuffer(callback_function cb, Heartbeat* heartbeat)
+{
+}
+
+int EventBuffer::wait_serial_clear() {
+    return 0;
+}
+
+void EventBuffer::reset() {
+    return;
+}
+
+void EventBuffer::tick () {
+    return;
+}
+
+void EventBuffer::setHeartbeat(Heartbeat::Mode mode)
+{
+    return;
+}
+
+#else
+
+EventBuffer::EventBuffer(callback_function cb, Heartbeat* heartbeat)
 {
 	_callback = cb;
+    _heartbeat = heartbeat;
+    _halted = false;
+    setHeartbeat(WAITING);
 	this->reset();
 }
 
@@ -27,6 +58,10 @@ void EventBuffer::reset() {
 }
 
 void EventBuffer::tick () {
+    if (millis() > _packet_timeout) {
+        reset();
+    }
+
 	if (Serial.available() > 0) {
 		_buf[_ptr] = Serial.read();
 		switch(_ptr++) {
@@ -35,6 +70,7 @@ void EventBuffer::tick () {
 				reset();
 			} else {
 				_last_packet_start = millis();
+                _packet_timeout = _last_packet_start + PACKET_TIMEOUT_MS;
 			}
 			break;
 		case 1:
@@ -51,10 +87,59 @@ void EventBuffer::tick () {
         default:
             if (_ptr >= _packet_length) {
 				FpEvent e(_buf);
-				_callback(e);
+                if (e.is_valid()) {
+#ifdef DEBUG
+                    Serial.print(F("Received VALID event:"));
+                    e.dump();
+#endif
+                    if (_halted) {
+                        // Only respond to RESET
+                        if (e.type() == FP_EVENT_RESET) {
+#ifdef DEBUG
+                            Serial.println(F("HALTED -> RESET"));
+#endif
+                            _halted = false;
+                            setHeartbeat(WAITING);
+                        }
+                        else {
+#ifdef DEBUG
+                            Serial.println(F("HALTED, not processing event"));
+#endif
+                        }
+                    }
+                    else if (e.type() == FP_EVENT_HALT) {
+#ifdef DEBUG
+                        Serial.println(F("Event was a HALT - HALTING"));
+#endif
+                        _halted = true;
+                        setHeartbeat(HALTED);
+                    }
+                    else {
+#ifdef DEBUG
+                        Serial.print(F("Sendig event to callback: "));
+                        Serial.println((unsigned long)_callback, HEX);
+#endif
+                        _callback(e);
+                    }
+                }
+                else {
+#ifdef DEBUG
+                    Serial.print(F("Invalid packet: "));
+                    e.dump();
+#endif
+                }
                 reset();
             }
 		}
 	}
 }
+
+void EventBuffer::setHeartbeat(Heartbeat::Mode mode)
+{
+    if (_heartbeat) {
+        _heartbeat->setMode(mode);
+    }
+}
+
+#endif // DESKTOP
 

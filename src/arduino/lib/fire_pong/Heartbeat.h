@@ -1,21 +1,21 @@
 #pragma once
 
-#define ON_MS_WAITING		50
-#define OFF_MS_WAITING		500
-#define ON_MS_RECEIVING		25
-#define OFF_MS_RECEIVING	25
-#define ON_MS_HALTED		1000
-#define OFF_MS_HALTED		150
-#define ON_MS_ERROR			1000
-#define OFF_MS_ERROR		1000
+#define ON_MS_NORMAL		50
+#define OFF_MS_NORMAL		500
+#define ON_MS_QUICK	    	25
+#define OFF_MS_QUICK	    25
+#define ON_MS_SLOW		    1000
+#define OFF_MS_SLOW	    	150
+#define ON_MS_SLOWER		1000
+#define OFF_MS_SLOWER		1000
 
 class Heartbeat {
 public:
 	enum Mode {
-		Waiting=0,
-		Receiving,
-		Halted,
-		Error
+		Normal=0,
+		Quick,
+		Slow,
+		Slower
 	};
 
 	Heartbeat(int pin);
@@ -27,7 +27,7 @@ public:
 	void tick();
 
 private:
-    void updatePin(bool on);
+    void updatePin(bool state);
 
 	Mode _mode;
 	int _pin;

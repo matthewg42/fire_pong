@@ -13,20 +13,23 @@
 #define RELAY_ON        LOW
 #define RELAY_OFF       HIGH
 
-//! A simple receiver that controls a single relay. 
-//! data : uint16_t duration in ms for relay to be activated
-class RelayReceiver : public EventReceiver {
+//! Controls an individual puffer by solenoid valve (e.g. large puffer)
+//! data : uint16_t duration in ms for main puff (100 is a typical value)
+class PufferReceiver : public EventReceiver {
 public:
-    RelayReceiver(fp_id_t id, uint8_t pin);
-    ~RelayReceiver();
+    PufferReceiver(fp_id_t id, uint8_t solenoid_pin);
+    ~PufferReceiver();
 
 	virtual void setup();
     virtual void handle(const FpEvent& e);
 	virtual void tick();
 	virtual bool want(const FpEvent& e);
 
-private:
-	uint8_t _pin;
+    static void set_pin(int pin, bool state);
+protected:
 	Seq _seq;
+
+	uint8_t _solenoid_pin;
+
 };
 

@@ -153,7 +153,7 @@ uint8_t* FpEvent::serialize() const
 {
 	uint8_t* ptr = fp_event_serial_buf;
 	fp_length_t* len_ptr;
-	fp_length_t data_len = data_len;
+	fp_length_t data_len = _data_length;
 	memcpy(ptr, reinterpret_cast<uint8_t*>(&FP_MAGIC), sizeof(fp_magic_t));
 	ptr += sizeof(fp_magic_t);
 	len_ptr = reinterpret_cast<fp_length_t*>(ptr);

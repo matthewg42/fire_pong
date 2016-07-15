@@ -1,9 +1,17 @@
 #include "Heartbeat.h"
+#ifdef DESKTOP
+#include <iostream>
+#else
 #include <Arduino.h>
+#endif
 
 Heartbeat::Heartbeat(int pin) :
-    _mode(Heartbeat::Waiting),
-	_pin(pin)
+    _mode(Heartbeat::Normal),
+	_pin(pin),
+    _pinState(true),
+    _lastStateFlip(0),
+    _onTime(0),
+    _offTime(0)
 {
 }
 
@@ -13,7 +21,9 @@ Heartbeat::~Heartbeat()
 
 void Heartbeat::setup()
 {
+#ifndef DESKTOP
     pinMode(_pin, OUTPUT);
+#endif
 	setMode(_mode);
 }
 
@@ -26,39 +36,46 @@ void Heartbeat::setMode(Mode mode)
 {
 	_mode = mode;
 	switch (_mode) {
-	case Waiting:
-        _onTime = ON_MS_WAITING;
-        _offTime = OFF_MS_WAITING;
+	case Normal:
+        _onTime = ON_MS_NORMAL;
+        _offTime = OFF_MS_NORMAL;
 		break;
-	case Receiving:
-        _onTime = ON_MS_RECEIVING;
-        _offTime = OFF_MS_RECEIVING;
+	case Quick:
+        _onTime = ON_MS_QUICK;
+        _offTime = OFF_MS_QUICK;
 		break;
-	case Halted:
-        _onTime = ON_MS_HALTED;
-        _offTime = OFF_MS_HALTED;
+	case Slow:
+        _onTime = ON_MS_SLOW;
+        _offTime = OFF_MS_SLOW;
 		break;
-	case Error:
-        _onTime = ON_MS_ERROR;
-        _offTime = OFF_MS_ERROR;
+	case Slower:
+        _onTime = ON_MS_SLOWER;
+        _offTime = OFF_MS_SLOWER;
 		break;
 	}
-    updatePin(false);
 }
 
 void Heartbeat::tick()
 {
+#ifdef DESKTOP
+    return;
+#else
     int wait = _pinState ? _onTime : _offTime;
     if (millis() - _lastStateFlip >= wait) {
         updatePin(!_pinState);
     }
+#endif
 }
 
-void Heartbeat::updatePin(bool on)
+void Heartbeat::updatePin(bool state)
 {
-    _pinState = on;
+#ifdef DESKTOP
+    return;
+#else
+    _pinState = state;
     digitalWrite(_pin, _pinState);
     _lastStateFlip = millis();
+#endif
 }
 
 
