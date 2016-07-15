@@ -35,7 +35,6 @@ EventBuffer::EventBuffer(callback_function cb, Heartbeat* heartbeat)
 	_callback = cb;
     _heartbeat = heartbeat;
     _halted = false;
-    setHeartbeat(WAITING);
 	this->reset();
 }
 
@@ -55,6 +54,9 @@ int EventBuffer::wait_serial_clear() {
 void EventBuffer::reset() {
 	_ptr = 0;
     _packet_length = 0;
+    if (!_halted) {
+        setHeartbeat(WAITING);
+    }
 }
 
 void EventBuffer::tick () {
@@ -132,6 +134,10 @@ void EventBuffer::tick () {
             }
 		}
 	}
+
+    if (_ptr > 0 && !_halted) {
+        setHeartbeat(RECEIVING);
+    }
 }
 
 void EventBuffer::setHeartbeat(Heartbeat::Mode mode)
