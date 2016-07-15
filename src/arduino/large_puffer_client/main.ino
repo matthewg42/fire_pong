@@ -4,10 +4,17 @@
 #include <LargePufferReceiver.h>
 #include <RelayReceiver.h>
 
+#define HEARTBEAT_PIN    13
+#define HEARTBEAT_OFF_MS 500
+#define HEARTBEAT_ON_MS  50
+
 void handle_event(FpEvent& e);
+void heartbeat_tick();
 
 LargePufferReceiver *puffer[2];
 EventBuffer buf(handle_event);
+unsigned long lastHeartbeat = 0;
+bool heartbeatOn = true;
 
 void setup() {
     uint32_t id = 0x1;
@@ -25,6 +32,17 @@ void loop () {
     buf.tick();
     for (uint8_t i=0; i<2; i++) {
         puffer[i]->tick();
+    }
+    heartbeat_tick();
+}
+
+void heartbeat_tick()
+{
+    unsigned long now = millis();
+    if (now - lastHeartbeat > (heartbeatOn ? HEARTBEAT_ON_MS : HEARTBEAT_OFF_MS)) {
+        heartbeatOn = !heartbeatOn;
+        digitalWrite(HEARTBEAT_PIN, heartbeatOn);
+        lastHeartbeat = now;
     }
 }
 
