@@ -33,7 +33,7 @@ private:
 	int _pin;
 	bool _pinState;
 	unsigned long _lastStateFlip;
-	int _onTime;
-	int _offTime;
+	unsigned int _onTime;
+	unsigned int _offTime;
 
 };

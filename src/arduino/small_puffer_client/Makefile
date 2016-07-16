@@ -1,9 +1,10 @@
-# Choose target board
+# Specify which segment we're building here (1, 2 or 3)
+SEGMENT=1
 
-#BOARD_TAG    = uno
-BOARD_TAG = pro5v328
+# Add -DDEBUG to have the program write debugging to serial
+CPPFLAGS = -DPUFFER_SEGMENT_NUMBER=$(SEGMENT)
 ARDUINO_LIBS = fire_pong
-CPPFLAGS = -DPUFFER_SEGMENT_NUMBER=1 -DDEBUG
+BOARD_TAG = pro5v328
 
 include ../arduino_inc.mk
 

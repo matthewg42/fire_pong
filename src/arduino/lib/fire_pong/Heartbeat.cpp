@@ -60,7 +60,7 @@ void Heartbeat::tick()
 #ifdef DESKTOP
     return;
 #else
-    int wait = _pinState ? _onTime : _offTime;
+    unsigned long wait = _pinState ? _onTime : _offTime;
     if (millis() - _lastStateFlip >= wait) {
         updatePin(!_pinState);
     }

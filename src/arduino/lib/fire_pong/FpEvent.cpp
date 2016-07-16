@@ -26,6 +26,11 @@ using namespace std;
 #endif
 #include "string.h"
 
+// Magic is an unsigned short little endian, "fP", which when decoded turns
+// out to be the value 0x5066.  We use a static not a #define so we can memcpy 
+// from it...
+static fp_magic_t FP_MAGIC=0x5066;
+
 static uint8_t fp_event_serial_buf[FP_SERIAL_BUF_LEN];
 
 FpEvent::FpEvent() :
