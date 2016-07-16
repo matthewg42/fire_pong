@@ -36,7 +36,7 @@ class ContinuousModeWait(Mode):
 
     def run(self):
         log.debug('ContinuousModeWait.run() START')
-        print("WAITING. Press START button to continue")
+        print("Continuous Mode. WAITING. Press START button to continue")
         while not self.terminate:
             time.sleep(0.5)
         log.debug('ContinuousModeWait.run() END')
@@ -102,12 +102,4 @@ class ContinuousModePuffs(Mode):
                 if self.delay < 0.08:
                     self.delay = 0.08
             print('DELAY set to %s' % self.delay)
-
-
-if __name__ == '__main__':
-    log.basicConfig(level=logging.DEBUG)
-    m = CounterMode(start=1, end=5, time=0.3)
-    m.thread.start()
-    m.thread.join()
-
 

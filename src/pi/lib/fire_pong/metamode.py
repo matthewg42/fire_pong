@@ -12,6 +12,7 @@ from fire_pong.fp_serial import FpSerial
 from fire_pong.modemanager import ModeManager
 from fire_pong.pongmode import *
 from fire_pong.continuousmode import *
+from fire_pong.singlemode import *
 
 log = logging
 
@@ -22,8 +23,9 @@ class MetaMode(Mode):
     def __init__(self):
         Mode.__init__(self)
         self.modes = [
-            {'name': 'ContinuousModeManager', 'display': 'MC', 'mode': ContinuousModeManager()},
-            {'name': 'PongMatch',             'display': 'MP', 'mode': PongMatch()}
+            {'name': 'ContinuousModeManager',   'display': 'C', 'mode': ContinuousModeManager()},
+            {'name': 'SingleMode',              'display': 'S', 'mode': SingleMode()},
+            {'name': 'PongMatch',               'display': 'P', 'mode': PongMatch()}
         ]
         self.idx = 0
         self.display = True
@@ -56,7 +58,7 @@ class MetaMode(Mode):
             self.activate = True
 
         if type(event) is EventSwipe:
-            if event.player == '1UP': 
+            if event.player == '2UP': 
                 self.idx = (self.idx + 1) % len(self.modes)
             else:
                 self.idx = (self.idx - 1) % len(self.modes)
