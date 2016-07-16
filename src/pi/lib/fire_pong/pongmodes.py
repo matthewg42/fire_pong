@@ -18,44 +18,6 @@ def strength2delay(strength):
         d = 0.2
     return d
 
-class WaitStart(Mode):
-    def __init__(self):
-        Mode.__init__(self)
-
-    def run(self):
-        log.debug('WaitStart.run()')
-        while not self.terminate:
-            time.sleep(0.5)
-        log.debug('WaitStart.run() ending')
-        
-    def event(self, event):
-        if event in [EventButton('start'), EventQuit()]:
-            self.terminate = True
-
-class CounterMode(Mode):
-    """ Designed for countdowns at the start of games """
-    def __init__(self, start=3, end=1, time=1):
-        Mode.__init__(self)
-        self.count = start
-        self.end = end
-        if start > end:
-            self.step = -1
-        else:
-            self.step = +1
-        self.time = time
-
-    def run(self):
-        log.debug('CounterMode.run()')
-        while not self.terminate and self.count != self.end + self.step:
-            ScoreBoard().display(str(self.count))
-            self.count += self.step
-            time.sleep(self.time)
-        log.debug('CounterMode.run() countdown ended')
-
-    def event(self, event):
-        if event in [EventButton('start'), EventQuit()]:
-            self.terminate = True
-
 class PongMatch(Mode):
     def __init__(self):
         Mode.__init__(self)
@@ -76,7 +38,7 @@ class PongMatch(Mode):
             self.reset()
             while max(self.score) < self.winning_score and not self.terminate:
                 self.display_score()
-                if ModeManager().push_mode(WaitStart()) is None:
+                if ModeManager().push_mode(PongWaitStart()) is None:
                     return
                 if ModeManager().push_mode(CounterMode(start=3, end=1)) is None:
                     return
@@ -102,6 +64,44 @@ class PongMatch(Mode):
                 ScoreBoard().display("Dr")
 
         log.debug('PongMatch.run() ended')
+
+    def event(self, event):
+        if event in [EventButton('start'), EventQuit()]:
+            self.terminate = True
+
+class PongWaitStart(Mode):
+    def __init__(self):
+        Mode.__init__(self)
+
+    def run(self):
+        log.debug('PongWaitStart.run()')
+        while not self.terminate:
+            time.sleep(0.5)
+        log.debug('PongWaitStart.run() ending')
+        
+    def event(self, event):
+        if event in [EventButton('start'), EventQuit()]:
+            self.terminate = True
+
+class CounterMode(Mode):
+    """ Designed for countdowns at the start of games """
+    def __init__(self, start=3, end=1, time=1):
+        Mode.__init__(self)
+        self.count = start
+        self.end = end
+        if start > end:
+            self.step = -1
+        else:
+            self.step = +1
+        self.time = time
+
+    def run(self):
+        log.debug('CounterMode.run()')
+        while not self.terminate and self.count != self.end + self.step:
+            ScoreBoard().display(str(self.count))
+            self.count += self.step
+            time.sleep(self.time)
+        log.debug('CounterMode.run() countdown ended')
 
     def event(self, event):
         if event in [EventButton('start'), EventQuit()]:
