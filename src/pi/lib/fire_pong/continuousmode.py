@@ -12,12 +12,6 @@ from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
 log = logging
 
-def strength2delay(strength):
-    d = 0.8 - (float(strength)/300)
-    if d <= 0.2:
-        d = 0.2
-    return d
-
 class ContinuousModeManager(Mode):
     ''' Cycle between waiting and continuous mode '''
     def __init__(self):
@@ -35,8 +29,6 @@ class ContinuousModeManager(Mode):
     def event(self, event):
         if event in [EventButton('start'), EventQuit()]:
             self.terminate = True
-
-
 
 class ContinuousModeWait(Mode):
     def __init__(self):
