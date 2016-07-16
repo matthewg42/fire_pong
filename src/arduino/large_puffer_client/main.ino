@@ -6,7 +6,7 @@
 
 #define HEARTBEAT_PIN       13
 #define LARGE_PUFFER_1_PIN  2
-#define LARGE_PUFFER_2_PIN  2
+#define LARGE_PUFFER_2_PIN  3
 
 void handle_event(FpEvent& e);
 
