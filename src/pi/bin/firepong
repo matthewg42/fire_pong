@@ -16,16 +16,15 @@ import fire_pong.fp_event
 import fire_pong.scoreboard
 import fire_pong.inputmanager
 import fire_pong.modemanager
-import fire_pong.pongmodes
+import fire_pong.pongmode
 import fire_pong.continuousmode
 import fire_pong.swipemote
 import fire_pong.keyboard
 
 from fire_pong.fp_serial import FpSerial
 from fire_pong.inputmanager import InputManager
-from fire_pong.pongmodes import *
-from fire_pong.continuousmode import *
 from fire_pong.modemanager import ModeManager
+from fire_pong.metamode import MetaMode
 
 global args
 global log
@@ -75,7 +74,7 @@ def main():
 
     # Start the mode manager
     try:
-        mm = ModeManager(ContinuousModeManager())
+        mm = ModeManager(MetaMode())
         mm.thread.start()
     except Exception as e:
         log.exception('In ModeManager execution:')
@@ -133,7 +132,9 @@ def init_log():
     fire_pong.scoreboard.log = log
     fire_pong.inputmanager.log = log
     fire_pong.modemanager.log = log
-    fire_pong.pongmodes.log = log
+    fire_pong.pongmode.log = log
+    fire_pong.continuousmode.log = log
+    fire_pong.metamode.log = log
     fire_pong.fp_event.log = log
     fire_pong.fp_serial.log = log
     fire_pong.swipemote.log = log
