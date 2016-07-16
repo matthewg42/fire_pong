@@ -17,12 +17,14 @@ import fire_pong.scoreboard
 import fire_pong.inputmanager
 import fire_pong.modemanager
 import fire_pong.pongmodes
+import fire_pong.continuousmode
 import fire_pong.swipemote
 import fire_pong.keyboard
 
 from fire_pong.fp_serial import FpSerial
 from fire_pong.inputmanager import InputManager
 from fire_pong.pongmodes import *
+from fire_pong.continuousmode import *
 from fire_pong.modemanager import ModeManager
 
 global args
@@ -73,7 +75,7 @@ def main():
 
     # Start the mode manager
     try:
-        mm = ModeManager(PongMatch())
+        mm = ModeManager(ContinuousModeManager())
         mm.thread.start()
     except Exception as e:
         log.exception('In ModeManager execution:')
