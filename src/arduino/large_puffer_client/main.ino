@@ -4,7 +4,9 @@
 #include <PufferReceiver.h>
 #include <Heartbeat.h>
 
-#define HEARTBEAT_PIN    13
+#define HEARTBEAT_PIN       13
+#define LARGE_PUFFER_1_PIN  2
+#define LARGE_PUFFER_2_PIN  2
 
 void handle_event(FpEvent& e);
 
@@ -18,8 +20,8 @@ void setup() {
 
     heartbeat.setup();
 
-    puffer[0] = new PufferReceiver(4096, 2);
-    puffer[1] = new PufferReceiver(8192, 3);
+    puffer[0] = new PufferReceiver(4096, LARGE_PUFFER_1_PIN);
+    puffer[1] = new PufferReceiver(8192, LARGE_PUFFER_2_PIN);
     delay(500);
 #ifdef DEBUG
 	Serial.println(F("large puffer firmware setup complete"));
