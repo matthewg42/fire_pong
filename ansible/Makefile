@@ -29,6 +29,9 @@ firepong: ssh-clean update
 	./reboot.sh pi raspberrypi
 	touch firepong
 
+fpupdate: 
+	ansible-playbook -i inventory/firepong --sudo --user pi firepong.yml
+
 quick-firepong:	ssh-clean expand
 	ansible-playbook -i inventory/firepong --sudo --user pi firepong.yml
 	./reboot.sh pi raspberrypi
