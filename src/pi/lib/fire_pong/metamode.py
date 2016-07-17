@@ -36,7 +36,7 @@ class MetaMode(Mode):
                 self.activate = False
                 ModeManager().push_mode(self.modes[self.idx]['mode'])
             if self.display:
-                print('MetaMode selection: %s; press START to activate' % self.modes[self.idx]['name'])
+                log.info('MetaMode selection: %s; press START to activate' % self.modes[self.idx]['name'])
                 ScoreBoard().display(self.modes[self.idx]['display'])
                 self.display = False
             time.sleep(0.2)

@@ -28,16 +28,17 @@ class SingleMode(Mode):
 
     def run(self):
         log.debug('SingleMode.run() START')
+        self.terminate = False
         while not self.terminate:
             if self.activate:
                 self.activate = False
                 log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
-                print('SingleMode PUFF')
+                log.info('SingleMode PUFF')
                 e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
-                print(str(e))
+                log.info(str(e))
                 FpSerial().write(e.serialize())
             if self.display:
-                print('SingleMode select puffer idx=%d; id=0x%08X; press START to activate' % (self.idx, self.puffers[self.idx]))
+                log.info('SingleMode select puffer idx=%d; id=0x%08X; press START to activate' % (self.idx, self.puffers[self.idx]))
                 ScoreBoard().display('%02d' % self.idx)
                 self.display = False
             time.sleep(0.2)

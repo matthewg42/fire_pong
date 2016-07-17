@@ -18,11 +18,13 @@ class ContinuousModeManager(Mode):
 
     def run(self):
         log.debug('ContinuousModeManager.run() START')
+        self.terminate = False
         while not self.terminate:
-            if ModeManager().push_mode(ContinuousModeWait()) is None:
-                return
-            if ModeManager().push_mode(ContinuousModePuffs()) is None:
-                return
+            if ModeManager().push_mode(ContinuousModeWait()) is False:
+                self.terminate = True
+                break
+            else:
+                ModeManager().push_mode(ContinuousModePuffs())
         log.debug('ContinuousModeManager.run() END')
         
     def event(self, event):
@@ -32,16 +34,23 @@ class ContinuousModeManager(Mode):
 class ContinuousModeWait(Mode):
     def __init__(self):
         Mode.__init__(self)
+        self.quit = False
 
     def run(self):
         log.debug('ContinuousModeWait.run() START')
-        print("Continuous Mode. WAITING. Press START button to continue")
+        log.info("Continuous Mode. WAITING. Press START button to continue")
         while not self.terminate:
             time.sleep(0.5)
         log.debug('ContinuousModeWait.run() END')
+        if self.quit:
+            return False
         
     def event(self, event):
-        if event in [EventButton('start'), EventQuit()]:
+        if event == EventQuit():
+            self.terminate = True
+            self.quit = True
+
+        if event == EventButton('start'):
             self.terminate = True
 
 class ContinuousModePuffs(Mode):
@@ -65,11 +74,11 @@ class ContinuousModePuffs(Mode):
                 d[1] += '   ' if i != self.idx else ' @ '
                 d[2] += ' | ' if i != self.idx else ' | '
             for i in range(0,3):
-                print(d[i])
+                log.info(d[i])
 
             log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
             e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
-            print(str(e))
+            log.info(str(e))
             FpSerial().write(e.serialize())
 
             # Move the frixel by inc
@@ -100,5 +109,5 @@ class ContinuousModePuffs(Mode):
                 self.delay -= 0.025
                 if self.delay < 0.08:
                     self.delay = 0.08
-            print('DELAY set to %s' % self.delay)
+            log.info('DELAY set to %s' % self.delay)
 

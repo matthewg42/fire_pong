@@ -22,6 +22,7 @@ class PongMatch(Mode):
         Mode.__init__(self)
         self.winning_score = fire_pong.util.config['PongMatch']['winning_score']
         self.start_player = randint(1, 2)
+        self.quit = False
 
     def reset(self):
         log.info('PongMatch: NEW MATCH')
@@ -33,14 +34,16 @@ class PongMatch(Mode):
     def run(self):
         log.debug('PongMatch.run()')
 
+        self.terminate = False
+        self.quit = False
         while not self.terminate:
             self.reset()
             while max(self.score) < self.winning_score and not self.terminate:
                 self.display_score()
                 if ModeManager().push_mode(PongWaitStart()) is None:
-                    return
+                    return None
                 if ModeManager().push_mode(CounterMode(start=3, end=1)) is None:
-                    return
+                    return None
                 self.display_score()
                 win = ModeManager().push_mode(PongGame(self.start_player))
                 if win is None:
@@ -114,6 +117,7 @@ class PongGame(Mode):
         self.puff_duration = fire_pong.util.config['PongGame']['puff_duration']
         self.hit_idx = {'1UP': [-1, 0], '2UP': [len(self.puffers)-1, len(self.puffers)]}
         self.win = None
+        self.quit = False
         self.start_player = start_player
         if self.start_player == 1:
             self.idx = 0
@@ -141,19 +145,26 @@ class PongGame(Mode):
                     d[1] += '   ' if i != self.idx else ' @ '
                     d[2] += ' | ' if i != self.idx else ' | '
                 for i in range(0,3):
-                    print(d[i])
+                    log.info(d[i])
                 log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
                 e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
-                print(str(e))
+                log.info(str(e))
                 FpSerial().write(e.serialize())
             else:
                 log.info('[relief]')
             self.idx += self.inc
             time.sleep(self.delay)
-        return self.win
+        if self.quit:
+            return None
+        else:
+            return self.win
             
     def event(self, event):
-        if event in [EventButton('start'), EventQuit()]:
+        if event == EventQuit():
+            self.quit = True
+            self.terminate = True
+
+        if event == EventButton('start'):
             self.terminate = True
 
         if type(event) is EventSwipe:

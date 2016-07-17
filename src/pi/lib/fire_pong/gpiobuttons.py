@@ -32,12 +32,8 @@ class GpioButtons:
 
         def button(self, action):
             if time.time() - self.debounce[action] > self.debounce_time:
-                log.info('GpioButtons button %s GENERATING EVENT' % action)
                 self.callback(action)
                 self.debounce[action] = time.time()
-            else:
-                pass
-                #log.debug('GpioButtons button %s debounced' % action)
 
         def quit(self):
             self.button(str(inspect.stack()[0][3]))

@@ -57,8 +57,8 @@ class ModeManager:
         def dispatcher(self, event):
             log.debug('ModeManager.dispatcher received: %s' % event)
             propagate = True
-            if type(event) is EventQuit:
-                self.shutdown()
+            #if type(event) is EventQuit:
+            #    self.shutdown()
 
             if propagate and self.event_handler:
                 log.debug('ModeManager.dispatcher propagating to %s' % self.event_handler)
