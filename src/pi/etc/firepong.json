@@ -22,7 +22,7 @@
         },
         "gpio": {
             "doc": "pin IDs here are from the BCM pin numbering scheme",
-            "enabled": true,
+            "enabled": false,
             "quit": 6,
             "start": 13,
             "swipe1": 19,
@@ -32,7 +32,7 @@
         "keyboard": {
             "doc": "keyboard values from pygame without K_ prefix, special _gain value for selfie button event",
             "tick": 0.02,
-            "enabled": false,
+            "enabled": true,
             "quit": "ESCAPE",
             "start": "SPACE",
             "emstop": "h",

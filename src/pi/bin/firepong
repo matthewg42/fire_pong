@@ -72,7 +72,6 @@ def main():
         from fire_pong.metamode import MetaMode
         mm = ModeManager(MetaMode())
         mm.thread.start()
-        log.info('ModeManager initialized OK; set to MetaMode')
     except Exception as e:
         log.exception('In ModeManager execution:')
         cleanup_and_exit(6)

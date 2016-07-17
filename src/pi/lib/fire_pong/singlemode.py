@@ -16,8 +16,9 @@ from fire_pong.util import log
 # A mode for selecting other modes
 
 class SingleMode(Mode):
-    ''' Allows switching between modes '''
+    ''' Puff a single puffer, selected with swipes '''
     def __init__(self):
+        log.debug('SingleMode.__init__() START')
         Mode.__init__(self)
         self.puffers = fire_pong.util.config['PongGame']['puffers']
         self.puffers.extend(fire_pong.util.config['LargePuffers']['ids'])
@@ -28,7 +29,6 @@ class SingleMode(Mode):
 
     def run(self):
         log.debug('SingleMode.run() START')
-        self.terminate = False
         while not self.terminate:
             if self.activate:
                 self.activate = False
@@ -43,6 +43,7 @@ class SingleMode(Mode):
                 self.display = False
             time.sleep(0.2)
         log.debug('SingleMode.run() END')
+        return None
         
     def event(self, event):
         log.debug('SingleMode.event: received %s' % str(event))

@@ -21,9 +21,10 @@ class MetaMode(Mode):
     def __init__(self):
         Mode.__init__(self)
         self.modes = [
-            {'name': 'ContinuousModeManager',   'display': 'C', 'mode': ContinuousModeManager()},
+#            {'name': 'ContinuousModeManager',   'display': 'C', 'mode': ContinuousModeManager()},
             {'name': 'SingleMode',              'display': 'S', 'mode': SingleMode()},
-            {'name': 'PongMatch',               'display': 'P', 'mode': PongMatch()}
+#            {'name': 'PongMatch',               'display': 'P', 'mode': PongMatch()}
+            {'name': 'Quit',                    'display': 'Q', 'mode': None}
         ]
         self.idx = 0
         self.display = True
@@ -34,16 +35,18 @@ class MetaMode(Mode):
         while not self.terminate:
             if self.activate:
                 self.activate = False
-                ModeManager().push_mode(self.modes[self.idx]['mode'])
+                if self.modes[self.idx]['mode'] is None:
+                    return 'Quit selected'
+                else:
+                    ModeManager().push_mode(self.modes[self.idx]['mode'])
             if self.display:
                 log.info('MetaMode selection: %s; press START to activate' % self.modes[self.idx]['name'])
                 ScoreBoard().display(self.modes[self.idx]['display'])
                 self.display = False
             time.sleep(0.2)
         log.debug('MetaMode.run() END')
+        return 'END'
         
-    # if ModeManager().push_mode(ContinuousModePuffs()) is None:
-
     def event(self, event):
         log.debug('MetaMode.event: received %s' % str(event))
         if event == EventQuit():
