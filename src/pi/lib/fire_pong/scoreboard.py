@@ -1,8 +1,7 @@
 from fire_pong.fp_event import FpEvent
 from fire_pong.fp_serial import FpSerial
+from fire_pong.util import log
 import fire_pong.util
-import logging
-log = logging
 
 # Follows the singleton pattern
 class ScoreBoard:
@@ -30,6 +29,8 @@ class ScoreBoard:
         return getattr(self.instance, name)
 
 if __name__ == '__main__':
+    import logging
+    log = logging
     log.basicConfig(level=logging.DEBUG)
     fire_pong.fp_serial.log = log
     fire_pong.util.config = {'display': { 'id': 0x1000 }, 

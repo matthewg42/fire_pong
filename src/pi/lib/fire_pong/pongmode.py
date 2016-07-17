@@ -1,16 +1,15 @@
-import logging
 import time
 import threading
 import struct
 import fire_pong.util
 from random import randint
+from fire_pong.util import log
 from fire_pong.mode import Mode
 from fire_pong.fp_event import FpEvent
 from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
-log = logging
 
 def strength2delay(strength):
     d = 0.8 - (float(strength)/300)
@@ -170,6 +169,8 @@ class PongGame(Mode):
                 log.info('Player %s MISS!' % event.player)
 
 if __name__ == '__main__':
+    import logging
+    log = logging
     log.basicConfig(level=logging.DEBUG)
     m = CounterMode(start=1, end=5, time=0.3)
     m.thread.start()

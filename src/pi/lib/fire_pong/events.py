@@ -1,7 +1,5 @@
-import logging
 import time
-
-log = logging
+from fire_pong.util import log
 
 class Event(object):
     def __init__(self):
@@ -46,6 +44,8 @@ class EventButton(Event):
         return type(other) is EventButton and self.button_id == other.button_id
 
 if __name__ == '__main__':
+    import logging
+    log = logging
     log.basicConfig(level=logging.INFO)
     for e in [Event(), EventSwipe('player 1', 100), EventButton('emstop')]:
         log.info('is a EventSwipe: %s; str: %s' % (type(e) is EventSwipe, e))

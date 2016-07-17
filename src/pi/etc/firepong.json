@@ -21,15 +21,18 @@
             "swipe_min": 150
         },
         "gpio": {
-            "enabled": false,
-            "start": 4,
-            "emstop": 5,
-            "back": 6
+            "doc": "pin IDs here are from the BCM pin numbering scheme",
+            "enabled": true,
+            "quit": 6,
+            "start": 13,
+            "swipe1": 19,
+            "swipe2": 26,
+            "debounce_time": 0.2
         },
         "keyboard": {
             "doc": "keyboard values from pygame without K_ prefix, special _gain value for selfie button event",
             "tick": 0.02,
-            "enabled": true,
+            "enabled": false,
             "quit": "ESCAPE",
             "start": "SPACE",
             "emstop": "h",

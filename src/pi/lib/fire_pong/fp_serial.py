@@ -1,9 +1,7 @@
 
 import serial as pyserial
-import logging
 import fire_pong.util 
-
-log = logging
+from fire_pong.util import log
 
 # Follows the singleton pattern
 class FpSerial:

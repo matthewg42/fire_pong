@@ -1,4 +1,3 @@
-import logging
 import time
 import threading
 import struct
@@ -13,8 +12,7 @@ from fire_pong.modemanager import ModeManager
 from fire_pong.pongmode import *
 from fire_pong.continuousmode import *
 from fire_pong.singlemode import *
-
-log = logging
+from fire_pong.util import log
 
 # A mode for selecting other modes
 
@@ -49,7 +47,8 @@ class MetaMode(Mode):
     def event(self, event):
         log.debug('MetaMode.event: received %s' % str(event))
         if event == EventQuit():
-            self.terminate = True
+            self.idx = (self.idx + 1) % len(self.modes)
+            self.display = True
 
         if event == EventButton('start'):
             log.info('MetaMode.event activating mode %s' % self.modes[self.idx]['name'])

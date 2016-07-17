@@ -1,4 +1,3 @@
-import logging
 import time
 import threading
 import struct
@@ -12,8 +11,7 @@ from fire_pong.fp_serial import FpSerial
 from fire_pong.modemanager import ModeManager
 from fire_pong.pongmode import *
 from fire_pong.continuousmode import *
-
-log = logging
+from fire_pong.util import log
 
 # A mode for selecting other modes
 

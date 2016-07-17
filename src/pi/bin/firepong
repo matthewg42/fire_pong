@@ -9,22 +9,8 @@ import sys
 import time
 import json
 import threading
-import fire_pong.util
-import fire_pong.swipemote
-import fire_pong.fp_serial
-import fire_pong.fp_event
-import fire_pong.scoreboard
-import fire_pong.inputmanager
-import fire_pong.modemanager
-import fire_pong.pongmode
-import fire_pong.continuousmode
-import fire_pong.swipemote
-import fire_pong.keyboard
 
-from fire_pong.fp_serial import FpSerial
-from fire_pong.inputmanager import InputManager
-from fire_pong.modemanager import ModeManager
-from fire_pong.metamode import MetaMode
+import fire_pong.util
 
 global args
 global log
@@ -50,32 +36,43 @@ def main():
         else:
             open(args.pid_file, 'w').write(pid)
 
-    # Open serial connection
+
+# Open serial connection
     try:
+        from fire_pong.fp_serial import FpSerial
         FpSerial()
+        log.info('FpSerial initialized OK')
     except Exception as e:
         log.exception('Failed to open serial bus: %s' % e)
         cleanup_and_exit(4)
 
     # Configure score board (singleton)
     try:
-        fire_pong.scoreboard.ScoreBoard()
+        from fire_pong.scoreboard import ScoreBoard
+        ScoreBoard()
+        log.info('ScoreBoard initialized OK')
     except Exception as e:
         log.exception('Failed to initialize ScoreBoard')
         cleanup_and_exit(5)
 
     # Start the input manager
     try:
-        InputManager().thread.start()
+        from fire_pong.inputmanager import InputManager
+        im = InputManager()
+        im.thread.start()
+        log.info('InputManager initialized OK')
     except Exception as e:
-        log.exception('In ModeManager execution:')
+        log.exception('In InputManager init:')
         cleanup_and_exit(6)
 
 
     # Start the mode manager
     try:
+        from fire_pong.modemanager import ModeManager
+        from fire_pong.metamode import MetaMode
         mm = ModeManager(MetaMode())
         mm.thread.start()
+        log.info('ModeManager initialized OK; set to MetaMode')
     except Exception as e:
         log.exception('In ModeManager execution:')
         cleanup_and_exit(6)
@@ -128,17 +125,6 @@ def init_log():
     # hoops brought to you by the combination of daemon and logging 
     # modules
     fire_pong.util.log = log
-    fire_pong.swipemote.log = log
-    fire_pong.scoreboard.log = log
-    fire_pong.inputmanager.log = log
-    fire_pong.modemanager.log = log
-    fire_pong.pongmode.log = log
-    fire_pong.continuousmode.log = log
-    fire_pong.metamode.log = log
-    fire_pong.fp_event.log = log
-    fire_pong.fp_serial.log = log
-    fire_pong.swipemote.log = log
-    fire_pong.keyboard.log = log
 
 def cleanup_and_exit(level):
     """ Remove PID file and exit the process """

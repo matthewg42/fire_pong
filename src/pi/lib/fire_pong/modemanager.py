@@ -3,19 +3,16 @@
 
 import threading
 import time
-import logging
 import traceback
 import sys
 import signal
 import os
 import fire_pong.util
 
-from fire_pong.util import tid
+from fire_pong.util import tid, log
 from fire_pong.inputmanager import InputManager
 from fire_pong.mode import DebugEventsMode
 from fire_pong.events import *
-
-log = logging
 
 class ModeManager:
     class __ModeManager:
@@ -83,7 +80,8 @@ if __name__ == '__main__':
     from fire_pong.events import *
     from fire_pong.mode import Mode
     import fire_pong.mode
-
+    import logging
+    log = logging
     log.basicConfig(level=logging.DEBUG)
     fire_pong.util.config = {
         "ModeManager": {

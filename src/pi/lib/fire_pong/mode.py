@@ -1,10 +1,9 @@
 import abc
-import logging
 import time
 import threading
-log = logging
 
 import fire_pong.util
+from fire_pong.util import log
 
 class Mode(object):
     __metaclass__ = abc.ABCMeta
@@ -39,6 +38,8 @@ class DebugEventsMode(Mode):
 if __name__ == '__main__':
     import threading
     from fire_pong.inputevents import *
+    import logging
+    log = logging
     log.basicConfig(level=logging.DEBUG)
     m = DebugEventsMode()
     m.thread.start()

@@ -1,12 +1,10 @@
 import pygame
-import logging
 import threading
 import time
 import os
 
 import fire_pong.util 
-
-log = logging
+from fire_pong.util import log
 
 # Follows the singleton pattern
 class Keyboard:
@@ -115,6 +113,8 @@ class Keyboard:
 
 if __name__ == '__main__':
     import time
+    import logging
+    log = logging
     fire_pong.util.config = {
         "InputManager": {
             "tick": 0.02,

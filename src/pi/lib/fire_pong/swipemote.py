@@ -2,11 +2,9 @@
 from threading import Timer
 import cwiid
 import time
-import logging
 from fire_pong.scoreboard import ScoreBoard
 import fire_pong.util
-
-log = logging
+from fire_pong.util import log
 
 class RunningMean:
     def __init__(self, n): 
@@ -87,6 +85,8 @@ class SwipeMote:
 
 if __name__ == '__main__':
     import fire_pong.scoreboard
+    import logging
+    log = logging
     def got(player, strength):
         print('Detected swipe for %s with strength: %s' % (player, strength))
 

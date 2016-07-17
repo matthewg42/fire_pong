@@ -1,8 +1,8 @@
-import logging
 import time
 import threading
 import struct
 import fire_pong.util
+from fire_pong.util import log
 from random import randint
 from fire_pong.mode import Mode
 from fire_pong.fp_event import FpEvent
@@ -10,7 +10,6 @@ from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
-log = logging
 
 class ContinuousModeManager(Mode):
     ''' Cycle between waiting and continuous mode '''
