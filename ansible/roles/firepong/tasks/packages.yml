@@ -11,4 +11,12 @@
     - python-cwiid
     - python-serial
     - python-daemon
+    - python-dev
+    - wiringpi
+
+- name: Use pip to install wiringpi
+  shell: pip -q install wiringpi
+
+- name: Use pip3 to install wiringpi
+  shell: pip3 -q install wiringpi
 

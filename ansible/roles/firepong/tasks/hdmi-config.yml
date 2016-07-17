@@ -1,0 +1,8 @@
+---
+
+- name: force HDMI enable at boot even if no cable plugged in
+  lineinfile: dest=/boot/config.txt line="hdmi_force_hotplug=1" state=present
+
+- name: force HDMI enable at boot even if no cable plugged in
+  lineinfile: dest=/boot/config.txt line="hdmi_drive=2" state=present
+
