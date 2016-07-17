@@ -22,6 +22,8 @@ void setup() {
 
     puffer[0] = new PufferReceiver(4096, LARGE_PUFFER_1_PIN);
     puffer[1] = new PufferReceiver(8192, LARGE_PUFFER_2_PIN);
+    puffer[0]->setup();
+    puffer[1]->setup();
     delay(500);
 #ifdef DEBUG
 	Serial.println(F("large puffer firmware setup complete"));
