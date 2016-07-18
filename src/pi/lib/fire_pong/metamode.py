@@ -21,10 +21,10 @@ class MetaMode(Mode):
     def __init__(self):
         Mode.__init__(self)
         self.modes = [
-            {'name': 'ContinuousModeManager',   'display': 'C', 'mode': ContinuousModeManager()},
-            {'name': 'SingleMode',              'display': 'S', 'mode': SingleMode()},
-            {'name': 'PongMatch',               'display': 'P', 'mode': PongMatch()},
-            {'name': 'PongVictory',             'display': 'V', 'mode': PongVictory(1)},
+            {'name': 'ContinuousModeManager',   'display': 'C', 'mode': ContinuousModeManager},
+            {'name': 'SingleMode',              'display': 'S', 'mode': SingleMode},
+            {'name': 'PongMatch',               'display': 'P', 'mode': PongMatch},
+            {'name': 'PongVictory',             'display': 'V', 'mode': PongVictory},
             {'name': 'Quit',                    'display': 'Q', 'mode': None}
         ]
         self.idx = 0
@@ -40,7 +40,7 @@ class MetaMode(Mode):
                     return 'Quit selected'
                 else:
                     try:
-                        ModeManager().push_mode(self.modes[self.idx]['mode'])
+                        ModeManager().push_mode(self.modes[self.idx]['mode']())
                     except Exception as e:
                         log.error('in mode %s : %s : %s' % (self.modes[self.idx]['name'], type(e), e))
             if self.display:

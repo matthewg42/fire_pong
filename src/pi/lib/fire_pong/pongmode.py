@@ -129,7 +129,7 @@ class PongGame(Mode):
         self.puffers = fire_pong.util.config['PongGame']['puffers']
         self.delay = fire_pong.util.config['PongGame']['initial_delay']
         self.puff_duration = fire_pong.util.config['PongGame']['puff_duration']
-        self.hit_idx = {'1UP': [-1, 0], '2UP': [len(self.puffers)-1, len(self.puffers)]}
+        self.hit_idx = {'1UP': [0, 1], '2UP': [len(self.puffers)-2, len(self.puffers)-1]}
         self.win = None
         self.quit = False
         self.start_player = start_player
@@ -147,10 +147,10 @@ class PongGame(Mode):
         while self.win is None:
             if self.terminate:
                 return
-            if self.idx < -1:
+            if self.idx < 0:
                 self.win = 2
                 break
-            elif self.idx >= len(self.puffers)+1:
+            elif self.idx >= len(self.puffers):
                 self.win = 1
                 break
             elif self.idx >= 0 and self.idx < len(self.puffers):
@@ -165,8 +165,6 @@ class PongGame(Mode):
                 e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
                 log.info(str(e))
                 FpSerial().write(e.serialize())
-            else:
-                log.info('[relief]')
             self.idx += self.inc
             time.sleep(self.delay)
         if self.quit:
@@ -194,8 +192,10 @@ class PongGame(Mode):
 class PongVictory(Mode):
     ''' Wait for player to swipe, and then do single fast run of small
         puffers, followed by single big puffer next to ossposing player '''
-    def __init__(self, player):
+    def __init__(self, player=None):
         Mode.__init__(self)
+        if player == None:
+            player = randint(1, 2)
         self.player = player
         self.puffers = fire_pong.util.config['PongGame']['puffers']
         self.puff_duration = fire_pong.util.config['PongGame']['puff_duration']
@@ -252,8 +252,8 @@ class PongVictory(Mode):
 
         if type(event) is EventSwipe:
             if event.player == '%dUP' % self.player:
-                self.delay = strength2delay(event.strength) / 2.0
-                self.large_puff_duration_ms = 500.0 / self.delay
+                self.delay = strength2delay(event.strength) / 3.0
+                self.large_puff_duration_ms = 100.0 / self.delay
                 log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
                             event.player, 
                             event.strength, 
