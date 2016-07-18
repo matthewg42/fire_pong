@@ -11,13 +11,13 @@ from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
 
-class ContinuousModeManager(Mode):
+class ContinuousMode(Mode):
     ''' Cycle between waiting and continuous mode '''
     def __init__(self):
         Mode.__init__(self)
 
     def run(self):
-        log.debug('ContinuousModeManager.run() START')
+        log.debug('ContinuousMode.run() START')
         self.terminate = False
         while not self.terminate:
             if ModeManager().push_mode(ContinuousModeWait()) is False:
@@ -25,7 +25,7 @@ class ContinuousModeManager(Mode):
                 break
             else:
                 ModeManager().push_mode(ContinuousModePuffs())
-        log.debug('ContinuousModeManager.run() END')
+        log.debug('ContinuousMode.run() END')
         
     def event(self, event):
         if event == EventQuit():

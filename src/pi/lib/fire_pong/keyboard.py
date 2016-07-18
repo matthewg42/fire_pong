@@ -8,6 +8,11 @@ from fire_pong.util import log
 
 # Follows the singleton pattern
 class Keyboard:
+    COLBG =   (150, 0,   0  )
+    COLFONT = (210, 210, 210)
+    FONTSIZE = 450
+    FONTOFFSET = (100,100)
+
     class __Keyboard:
         def __init__(self):
             self.thread = threading.Thread(target=self.run)
@@ -15,6 +20,7 @@ class Keyboard:
             self.buttons = dict()
             self.pressed = dict()
             self.gain_action = None
+            self.screen = None
             for action in ['quit', 'start', 'emstop', 'back', 'swipe1', 'swipe2', 'btstart', 'btemstop']:
                 try:
                     key = fire_pong.util.config['InputManager']['keyboard'][action]
@@ -38,6 +44,7 @@ class Keyboard:
                 log.info('Using X with DISPLAY: %s' % disp_no)
                 self.screen = pygame.display.set_mode((800,600))
                 pygame.init()
+                pygame.font.init()
                 pygame.display.set_caption('Fire Pong Keyboard Input')
             else:
                 found = False
@@ -58,8 +65,9 @@ class Keyboard:
                 size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
                 log.info('Display size: %d x %d' % (size[0], size[1]))
                 self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-            self.screen.fill((100, 50, 0))
+            self.screen.fill(Keyboard.COLBG)
             pygame.font.init()
+            self.font = pygame.font.Font(None, Keyboard.FONTSIZE)
             pygame.display.update()
 
         def run(self):
@@ -101,6 +109,13 @@ class Keyboard:
             
         def shutdown(self):
             self.terminate = True
+
+        def display_text(self, text):
+            ''' display a string, centred and big enough to fill the display '''
+            if self.screen:
+                self.screen.fill(Keyboard.COLBG)
+                self.screen.blit(self.font.render(text, 1, Keyboard.COLFONT), Keyboard.FONTOFFSET)
+                pygame.display.update()
 
     instance = None
 

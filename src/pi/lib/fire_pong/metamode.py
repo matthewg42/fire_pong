@@ -21,9 +21,9 @@ class MetaMode(Mode):
     def __init__(self):
         Mode.__init__(self)
         self.modes = [
-            {'name': 'ContinuousModeManager',   'display': 'C', 'mode': ContinuousModeManager},
+            {'name': 'ContinuousMode',          'display': 'C', 'mode': ContinuousMode},
             {'name': 'SingleMode',              'display': 'S', 'mode': SingleMode},
-            {'name': 'PongMatch',               'display': 'P', 'mode': PongMatch},
+            {'name': 'PongMode',                'display': 'P', 'mode': PongMode},
             {'name': 'PongVictory',             'display': 'V', 'mode': PongVictory},
             {'name': 'Quit',                    'display': 'Q', 'mode': None}
         ]
@@ -42,7 +42,7 @@ class MetaMode(Mode):
                     try:
                         ModeManager().push_mode(self.modes[self.idx]['mode']())
                     except Exception as e:
-                        log.error('in mode %s : %s : %s' % (self.modes[self.idx]['name'], type(e), e))
+                        log.exception('in mode %s : %s : %s' % (self.modes[self.idx]['name'], type(e), e))
             if self.display:
                 log.info('MetaMode selection: %s; press START to activate' % self.modes[self.idx]['name'])
                 ScoreBoard().display(self.modes[self.idx]['display'])

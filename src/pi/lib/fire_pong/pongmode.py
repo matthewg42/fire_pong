@@ -17,30 +17,30 @@ def strength2delay(strength):
         d = 0.2
     return d
 
-class PongMatch(Mode):
+class PongMode(Mode):
     def __init__(self):
         Mode.__init__(self)
         self.winning_score = fire_pong.util.config['PongMatch']['winning_score']
         self.start_player = randint(1, 2)
 
     def reset(self):
-        log.info('PongMatch: NEW MATCH')
+        log.info('PongMode: NEW MATCH')
         self.score = [0,0]
 
     def display_score(self):
         ScoreBoard().display('%d%d' % tuple(self.score))
 
     def run(self):
-        log.debug('PongMatch.run() START')
+        log.debug('PongMode.run() START')
 
         while not self.terminate:
             self.reset()
             while max(self.score) < self.winning_score and not self.terminate:
                 self.display_score()
                 if ModeManager().push_mode(PongWaitStart()) is False:
-                    return 'PongMatch Quit'
+                    return 'PongMode Quit'
                 if ModeManager().push_mode(PongCounterMode(start=3, end=1)) is False:
-                    return 'PongMatch Quit'
+                    return 'PongMode Quit'
                 self.display_score()
                 win = ModeManager().push_mode(PongGame(self.start_player))
                 if win is None:
@@ -64,7 +64,7 @@ class PongMatch(Mode):
                 log.info("It's a DRAW!")
                 ScoreBoard().display("Dr")
 
-        log.debug('PongMatch.run() END')
+        log.debug('PongMode.run() END')
 
     def event(self, event):
         if event == EventQuit():
@@ -165,8 +165,8 @@ class PongGame(Mode):
                 e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
                 log.info(str(e))
                 FpSerial().write(e.serialize())
-            self.idx += self.inc
             time.sleep(self.delay)
+            self.idx += self.inc
         if self.quit:
             return None
         else:
