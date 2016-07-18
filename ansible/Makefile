@@ -5,7 +5,7 @@ RASBIAN_IMAGE = $(HOME)/download/2016-05-27-raspbian-jessie-lite.img
 all: firepong
 
 clean:
-	rm -f burn ssh-clean expand update firepong_prep firepong *.retry
+	rm -f burn ssh-clean expand update firepong_prep *.retry
 
 burn:
 	sudo img2blockdev $(RASBIAN_IMAGE)
@@ -34,6 +34,5 @@ firepong_prep: update
 
 firepong: firepong_prep
 	ansible-playbook -i inventory/firepong --sudo --user pi firepong_install.yml
-	touch firepong
 
 

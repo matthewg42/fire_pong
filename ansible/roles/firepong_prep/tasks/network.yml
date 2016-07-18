@@ -1,0 +1,5 @@
+---
+
+- name: Install wpa_supplicant.conf
+  copy: src=wpa_supplicant.conf owner=root dest=/etc/wpa_supplicant/wpa_supplicant.conf mode=0600
+

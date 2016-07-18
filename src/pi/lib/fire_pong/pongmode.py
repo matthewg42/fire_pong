@@ -247,12 +247,18 @@ class PongVictory(Mode):
 
     def event(self, event):
         log.info('PongVictory.debug: %s' % event)
+        strength = None
         if event == EventQuit():
             self.terminate = True
 
+        if event == EventButton('start'):
+            strength = randint(20,120)
         if type(event) is EventSwipe:
             if event.player == '%dUP' % self.player:
-                self.delay = strength2delay(event.strength) / 3.0
+                strength = event.strength
+
+            if strength:
+                self.delay = strength2delay(strength) / 3.0
                 self.large_puff_duration_ms = 100.0 / self.delay
                 log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
                             event.player, 

@@ -12,8 +12,8 @@
 - name: install fire_pong python modules
   copy: src=../../../../src/pi/lib/fire_pong/ dest={{firepong_prefix}}/lib/python2/dist-packages/fire_pong/ owner=root 
 
-- name: install sample config file
-  copy: src=../../../../src/pi/etc/firepong.json dest=/{{firepong_prefix}}/etc/firepong.json owner=root mode=0664 
+- name: install pi-specific config file
+  copy: src=firepong.json dest=/{{firepong_prefix}}/etc/firepong.json owner=root mode=0664 
 
 - name: install firepong systemd service file
   copy: src=firepong.service dest=/etc/systemd/system mode=644
@@ -23,4 +23,10 @@
 
 - name: enable firepong systemd service
   shell: systemctl enable firepong.service
+
+- name: stop firepong systemd service
+  shell: systemctl stop firepong.service
+
+- name: start firepong systemd service
+  shell: systemctl start firepong.service
 
