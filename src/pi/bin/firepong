@@ -21,8 +21,7 @@ def main():
     global args, log, serial_bus
     init_log()
     try:
-        fire_pong.util.config = read_config_file()
-        sanity_checks(fire_pong.util.config)
+        fire_pong.util.load_config(args)
     except Exception as e:
         log.exception('%s' % e)
         cleanup_and_exit(1)
@@ -82,27 +81,6 @@ def main():
     log.info('main() end')
     cleanup_and_exit(0)
 
-def read_config_file():
-    """ Reads configuration file and returns a dict with configuration in """
-    global args, log
-    if not os.path.exists(args.config_file):
-        raise Exception('config file not readable: %s' % args.config_file)
-    with open(args.config_file) as json_file:
-        config = json.load(json_file)
-    config['config_file_path'] = args.config_file
-    if args.serial_device:
-        config['serial']['port'] = args.serial_device
-    if 'serial' not in config:
-        config['serial'] = dict()
-    config['serial']['debug'] = args.serial_debug
-    log.debug('config: %s' % config)
-    return config
-
-def sanity_checks(config):
-    # If there are any compulsorary config file argss... check here and
-    # raise exceptions on failures. 
-    pass 
-
 def init_log():
     """ Initialize the log - use syslog if running as a daemon """
     global args, log
@@ -136,26 +114,21 @@ def cleanup_and_exit(level):
 def sighandler(signum, frame):
     """ Shut down gracefully """
     global log 
-    if signum in (signal.SIGINT, signal.SIGQUIT, signal.SIGTERM):
-        log.info('sighandler() received signal %s, shutting down...' % signum)
-        ModeManager().shutdown()
-        os.killpg(os.getpgid(os.getpid()), signal.SIGTERM)
-    elif signum == signal.SIGHUP:
+    log.info('sighandler() received signal %s' % signum)
+    if signum == signal.SIGHUP:
         log.info('sighandler() received signal HUP, reloading config')
         try:
-            config = read_config_file()
-            sanity_checks(config)
+            fire_pong.util.load_config(args)
         except Exception as e:
             log.error('while loading config file: %s' % e)
             return(1)
-        InputManager().apply_config(config)
-        ModeManager().apply_config(config)
     else:
-        log.info('sighandler() received signal %s, not used at present - ignoring' % signum)
+        log.info('sighandler() received signal %s, - ignoring' % signum)
 
 if __name__ == '__main__':
     import argparse
     import daemon
+    import signal
 
     global args
 
@@ -183,6 +156,14 @@ if __name__ == '__main__':
         action='store_const', const=True, default=False, 
         help='write informational output in the log')
     args = parser.parse_args()
+
+    for sig in [signal.SIGHUP, 
+                signal.SIGUSR1, 
+                signal.SIGUSR2,
+                signal.SIGTERM, 
+                signal.SIGQUIT, 
+                signal.SIGINT]:
+        signal.signal(sig, sighandler)
 
     if args.daemon:
         with daemon.DaemonContext(umask=0o022):

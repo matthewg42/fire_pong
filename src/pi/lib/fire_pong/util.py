@@ -1,6 +1,8 @@
 import threading
 import re
 import logging
+import os
+import json
 
 log = logging
 
@@ -17,6 +19,21 @@ def tid_num():
         return 0
     else:
         return int(n)
+
+def load_config(args):
+    global config
+    """ Reads configuration file and sets the config (module variable) """
+    if not os.path.exists(args.config_file):
+        raise Exception('config file not readable: %s' % args.config_file)
+    with open(args.config_file) as json_file:
+        config = json.load(json_file)
+    config['config_file_path'] = args.config_file
+    if args.serial_device:
+        config['serial']['port'] = args.serial_device
+    if 'serial' not in config:
+        config['serial'] = dict()
+    config['serial']['debug'] = args.serial_debug
+    log.debug('load_config: config=%s' % config)
 
 def set_test_config():
     global config
