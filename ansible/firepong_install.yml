@@ -1,4 +1,4 @@
 ---
 - hosts: firepong
   roles:
-    - firepong
+    - firepong_install

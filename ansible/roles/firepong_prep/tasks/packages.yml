@@ -17,6 +17,3 @@
 - name: Use pip to install wiringpi
   shell: pip -q install wiringpi
 
-- name: Use pip3 to install wiringpi
-  shell: pip3 -q install wiringpi
-

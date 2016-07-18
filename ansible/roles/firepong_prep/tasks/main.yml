@@ -1,6 +1,5 @@
 ---
 
 - include: packages.yml
-- include: install-firepong.yml
 - include: hdmi-config.yml
 

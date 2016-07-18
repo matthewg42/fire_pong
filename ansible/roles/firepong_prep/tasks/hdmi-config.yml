@@ -6,3 +6,6 @@
 - name: force HDMI enable at boot even if no cable plugged in
   lineinfile: dest=/boot/config.txt line="hdmi_drive=2" state=present
 
+- name: prevent framebuffer blanking
+  lineinfile: dest=/etc/kbd/config regexp=^BLANK_TIME= line=BLANK_TIME=0
+

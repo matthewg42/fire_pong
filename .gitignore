@@ -8,7 +8,8 @@ docs/bs
 **/__pycache__
 video
 ansible/burn
+ansible/ssh-clean
 ansible/expand
 ansible/update
+ansible/firepong_prep
 ansible/firepong
-ansible/quick-firepong
