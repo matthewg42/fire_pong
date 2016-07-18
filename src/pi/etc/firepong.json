@@ -27,7 +27,7 @@
             "start": 13,
             "swipe1": 19,
             "swipe2": 26,
-            "debounce_time": 0.2
+            "debounce_time": 0.3 
         },
         "keyboard": {
             "doc": "keyboard values from pygame without K_ prefix, special _gain value for selfie button event",

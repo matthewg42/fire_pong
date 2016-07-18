@@ -28,7 +28,7 @@ class ContinuousModeManager(Mode):
         log.debug('ContinuousModeManager.run() END')
         
     def event(self, event):
-        if event in [EventButton('start'), EventQuit()]:
+        if event == EventQuit():
             self.terminate = True
 
 class ContinuousModeWait(Mode):
@@ -44,6 +44,8 @@ class ContinuousModeWait(Mode):
         log.debug('ContinuousModeWait.run() END')
         if self.quit:
             return False
+        else:
+            return True
         
     def event(self, event):
         if event == EventQuit():
