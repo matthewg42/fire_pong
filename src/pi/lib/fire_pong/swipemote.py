@@ -37,8 +37,8 @@ class SwipeMote:
     def discover(self):
         while self.wm is None:
             try:
-                print('Put Wiimote for player %s in discovery mode' % self.name)
-                #ScoreBoard().display('D%s' % self.name)
+                log.info('Put Wiimote for player %s in discovery mode' % self.name)
+                ScoreBoard().display('D%s' % self.name[0])
                 self.wm = cwiid.Wiimote()
                 self.wm.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
                 self.last_swipe = 0
