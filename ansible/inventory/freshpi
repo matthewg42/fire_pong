@@ -1,0 +1,6 @@
+[freshpi-device]
+raspberrypi
+
+[freshpi:children]
+freshpi-device
+

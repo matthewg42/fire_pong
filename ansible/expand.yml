@@ -1,5 +1,5 @@
 ---
-- hosts: firepong
+- hosts: freshpi
   vars:
     - password: '$6$AC3bbCF7!$Pct31fZVh0rr4dGZBPnAZUKgjc0E00MPlO/wuBFtczmHWKS1XsaTctY8HyO14.FrpOtj4v/B1cucemzhhUv19/'
       # crypted password, generated on a Linux box using: echo 'import crypt,getpass; print (crypt.crypt(getpass.getpass(), "$6$AC3bdCF7!"))' | python -

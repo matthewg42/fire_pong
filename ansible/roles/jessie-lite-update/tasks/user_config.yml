@@ -1,11 +1,20 @@
 ---
 
 - name: Copy vimrc to pi user
-  copy: src=vimrc dest=/home/pi/.vimrc mode=0644
+  copy: src=vimrc owner=pi dest=/home/pi/.vimrc mode=0644
+
+- name: Copy vimrc to root
+  copy: src=vimrc owner=root dest=/root/.vimrc mode=0644
 
 - name: Copy bashrc to pi user
-  copy: src=bashrc dest=/home/pi/.bashrc mode=0644
+  copy: src=bashrc owner=pi dest=/home/pi/.bashrc mode=0644
+
+- name: Copy bashrc to root
+  copy: src=root_bashrc owner=root dest=/root/.bashrc mode=0600
 
 - name: Copy tmux.conf to pi user
-  copy: src=tmux.conf dest=/home/pi/.tmux.conf mode=0644
+  copy: src=tmux.conf owner=pi dest=/home/pi/.tmux.conf mode=0644
+
+- name: Copy tmux.conf to root user
+  copy: src=tmux.conf owner=root dest=/root/.tmux.conf mode=0600
 

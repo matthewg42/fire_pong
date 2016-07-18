@@ -1,4 +1,2 @@
 ---
-hostname: raspberrypi
-inventory: inventory/firepong
 firepong_prefix: /opt/firepong

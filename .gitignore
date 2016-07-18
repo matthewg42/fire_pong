@@ -13,3 +13,4 @@ ansible/expand
 ansible/update
 ansible/firepong_prep
 ansible/firepong
+ansible/*.retry

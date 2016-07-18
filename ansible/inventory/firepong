@@ -1,5 +1,5 @@
 [firepong-device]
-raspberrypi
+firepong
 
 [firepong:children]
 firepong-device

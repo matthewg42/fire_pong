@@ -1,34 +1,41 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 2 ] && [ $# -ne 3 ]; then
     cat <<EOD
 Usage:
-  $0 username hostname 
+  $0 username hostname [newhostname]
 
 EOD
     exit 1
 fi
 
-ssh "$1@$2" sudo reboot
+user="$1"
+shift
+reboothost="$1"
+shift
+waithost="$1"
+[ "$waithost" = "" ] && waithost="$reboothost"
+
+ssh "$user@$reboothost" sudo reboot
 sleep 5
 n=0
-cmd="ping -c 1 -W 1 $2"
+cmd="ping -c 1 -W 1 $waithost"
 while ! $cmd > /dev/null 2>&1; do
     if [ $n -eq 0 ]; then
-        echo -n "waiting for $2 to be pingable "
+        echo -n "waiting for $waithost to be pingable "
     else
         echo -n "."
     fi  
     sleep 1 
     let n+=1
 done
-echo "$2 pingable..."
+echo "$waithost pingable..."
 
 n=0
-cmd="ssh $1@$2 exit"
+cmd="ssh $user@$waithost exit"
 while ! $cmd > /dev/null 2>&1; do
     if [ $n -eq 0 ]; then
-        echo -n "waiting for ssh to come up for $1@$2 "
+        echo -n "waiting for ssh to come up for $user@$waithost "
     else
         echo -n "."
     fi  
