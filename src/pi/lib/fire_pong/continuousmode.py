@@ -13,6 +13,7 @@ from fire_pong.fp_serial import FpSerial
 
 class ContinuousMode(Mode):
     ''' Cycle between waiting and continuous mode '''
+    __displayname__ = 'CM'
     def __init__(self):
         Mode.__init__(self)
 

@@ -9,9 +9,9 @@ from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
 from fire_pong.fp_serial import FpSerial
 from fire_pong.modemanager import ModeManager
-from fire_pong.pongmode import *
-from fire_pong.continuousmode import *
-from fire_pong.singlemode import *
+from fire_pong.pongmode import PongMode, PongVictory
+from fire_pong.continuousmode import ContinuousMode
+from fire_pong.singlemode import SingleMode
 from fire_pong.util import log
 
 # A mode for selecting other modes
@@ -20,13 +20,7 @@ class MetaMode(Mode):
     ''' Allows switching between modes '''
     def __init__(self):
         Mode.__init__(self)
-        self.modes = [
-            {'name': 'ContinuousMode',          'display': 'C', 'mode': ContinuousMode},
-            {'name': 'SingleMode',              'display': 'S', 'mode': SingleMode},
-            {'name': 'PongMode',                'display': 'P', 'mode': PongMode},
-            {'name': 'PongVictory',             'display': 'V', 'mode': PongVictory},
-            {'name': 'Quit',                    'display': 'Q', 'mode': None}
-        ]
+        self.modes = [ PongMode, ContinuousMode, SingleMode, PongVictory, QuitMode ]
         self.idx = 0
         self.display = True
         self.activate = False
@@ -36,16 +30,16 @@ class MetaMode(Mode):
         while not self.terminate:
             if self.activate:
                 self.activate = False
-                if self.modes[self.idx]['mode'] is None:
-                    return 'Quit selected'
+                if self.modes[self.idx] is QuitMode:
+                    return 'Quit'
                 else:
                     try:
-                        ModeManager().push_mode(self.modes[self.idx]['mode']())
+                        ModeManager().push_mode(self.modes[self.idx]())
                     except Exception as e:
-                        log.exception('in mode %s : %s : %s' % (self.modes[self.idx]['name'], type(e), e))
+                        log.exception('in mode %s : %s : %s' % (self.modes[self.idx].__name__, type(e), e))
             if self.display:
-                log.info('MetaMode selection: %s; press START to activate' % self.modes[self.idx]['name'])
-                ScoreBoard().display(self.modes[self.idx]['display'])
+                log.info('MetaMode selection: %s; press START to activate' % self.modes[self.idx].__name__)
+                ScoreBoard().display(self.modes[self.idx].displayname())
                 self.display = False
             time.sleep(0.2)
         log.debug('MetaMode.run() END')
@@ -58,15 +52,20 @@ class MetaMode(Mode):
             self.display = True
 
         if event == EventButton('start'):
-            log.info('MetaMode.event activating mode %s' % self.modes[self.idx]['name'])
+            log.info('MetaMode.event activating mode %s' % self.modes[self.idx].__name__)
             self.display = True
             # we can't actually push a mode in an event handler, so we set the flag to do it in the main loop instead
             self.activate = True
 
-        if type(event) is EventSwipe:
-            if event.player == '2UP': 
-                self.idx = (self.idx + 1) % len(self.modes)
-            else:
-                self.idx = (self.idx - 1) % len(self.modes)
-            self.display = True
+class QuitMode(Mode):
+    def __init__(self):
+        Mode.__init__(self)
+        __displayname__ = 'Q'
+
+    def run(self):
+        return
+
+    def event(self, event):
+        return
+
 

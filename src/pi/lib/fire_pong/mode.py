@@ -7,7 +7,6 @@ from fire_pong.util import log
 
 class Mode(object):
     __metaclass__ = abc.ABCMeta
-
     def __init__(self):
         self.terminate = False
         self.thread = threading.Thread(target=self.run)
@@ -23,7 +22,21 @@ class Mode(object):
     def shutdown(self):
         self.terminate = True
 
+    @classmethod
+    def displayname(cls):
+        ''' returns a short (no more than 2 characters) name for use on the display in MetaMode '''
+        try:
+            # if class.__displayname__ is defined, use that
+            log.debug('cls = %s' % cls)
+            return cls.__displayname__
+        except Exception as e:
+            log.warning('could not find __displayname__ class variable: %s: %s' % (type(e), e))
+            # otherwise just use the first character of the mode class name
+            # capitalized.
+            return cls.__name__[0].upper()
+
 class DebugEventsMode(Mode):
+    __displayname__ = 'mD'
     def __init__(self):
         Mode.__init__(self)
 
@@ -37,13 +50,14 @@ class DebugEventsMode(Mode):
 
 if __name__ == '__main__':
     import threading
-    from fire_pong.inputevents import *
+    from fire_pong.events import *
     import logging
     log = logging
     log.basicConfig(level=logging.DEBUG)
+    log.info('DebugEventsMode.displayname() = %s' % DebugEventsMode.displayname())
     m = DebugEventsMode()
     m.thread.start()
-    for e in [InputMessageEvent('bananas'), InputSwipeEvent('1UP', 128)]:
+    for e in [EventMessage('bananas'), EventSwipe('1UP', 128)]:
         time.sleep(0.5)
         m.event(e)
     m.shutdown()

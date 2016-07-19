@@ -18,6 +18,7 @@ def strength2delay(strength):
     return d
 
 class PongMode(Mode):
+    __displayname__ = 'PM'
     def __init__(self):
         Mode.__init__(self)
         self.winning_score = fire_pong.util.config['PongMatch']['winning_score']
@@ -190,6 +191,7 @@ class PongGame(Mode):
                 log.info('Player %s MISS!' % event.player)
 
 class PongVictory(Mode):
+    __displayname__ = 'PV'
     ''' Wait for player to swipe, and then do single fast run of small
         puffers, followed by single big puffer next to ossposing player '''
     def __init__(self, player=None):

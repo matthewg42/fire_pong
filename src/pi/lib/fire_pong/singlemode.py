@@ -16,6 +16,7 @@ from fire_pong.util import log
 # A mode for selecting other modes
 
 class SingleMode(Mode):
+    __displayname__ = 'SP'
     ''' Puff a single puffer, selected with swipes '''
     def __init__(self):
         log.debug('SingleMode.__init__() START')
