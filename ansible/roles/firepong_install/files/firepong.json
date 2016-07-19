@@ -16,7 +16,7 @@
         "doc": "Settings for the InputManager (buttons and wiimote setup)",
         "tick": 0.02,
         "wiimotes": {
-            "enabled": false,
+            "enabled": true,
             "swipe_idle": 1,
             "swipe_min": 150
         },
