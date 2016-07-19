@@ -62,7 +62,9 @@
         "initial_delay": 0.4
     },
     "LargePuffers": {
-        "ids": [4096, 8192]
+        "ids": [4096, 8192],
+        "puff_duration": 300,
+        "cycle_duration": 5000
     },
     "display": {
         "id": 16384

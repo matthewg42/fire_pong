@@ -13,7 +13,7 @@ from fire_pong.menumode import MenuMode
 class SetupMenuMode(MenuMode):
     __displayname__ = 'SU'
     def __init__(self):
-        MenuMode.__init__(self, [TestSparker, TestSolenoid, SinglePuff])
+        MenuMode.__init__(self, [TestSparker, TestSolenoid, SinglePuff, LargePuff, LargePuffCycle])
 
 class IndiviualMode(Mode):
     ''' A mode which allows some operation to be called for individual IDs
@@ -119,5 +119,32 @@ class SinglePuff(IndiviualMode):
         log.info(str(e))
         FpSerial().write(e.serialize())
 
+class LargePuff(IndiviualMode):
+    ''' Do a long puff for a big puffer '''
+    __displayname__ = 'LP'
+    def __init__(self):
+        puffers = config['LargePuffers']['ids']
+        IndiviualMode.__init__(self, puffers, self.callback)
+        self.duration = config['LargePuffers']['puff_duration']
+
+    def callback(self, idmask):
+        log.info("PUFF id=%08X" % idmask)
+        e = FpEvent(idmask, 'FP_EVENT_PUFF', struct.pack('<H', self.duration))
+        log.info(str(e))
+        FpSerial().write(e.serialize())
+
+class LargePuffCycle(IndiviualMode):
+    ''' Do a very long puff for a bif puffer (used while cycling accumulator '''
+    __displayname__ = 'LC'
+    def __init__(self):
+        puffers = config['LargePuffers']['ids']
+        IndiviualMode.__init__(self, puffers, self.callback)
+        self.duration = config['LargePuffers']['cycle_duration']
+
+    def callback(self, idmask):
+        log.info("PUFF id=%08X" % idmask)
+        e = FpEvent(idmask, 'FP_EVENT_PUFF', struct.pack('<H', self.duration))
+        log.info(str(e))
+        FpSerial().write(e.serialize())
         
     
