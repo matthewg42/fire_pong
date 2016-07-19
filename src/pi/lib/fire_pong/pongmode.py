@@ -1,9 +1,8 @@
 import time
 import threading
 import struct
-import fire_pong.util
 from random import randint
-from fire_pong.util import log
+from fire_pong.util import log, config
 from fire_pong.mode import Mode
 from fire_pong.fp_event import FpEvent
 from fire_pong.scoreboard import ScoreBoard
@@ -21,7 +20,7 @@ class PongMode(Mode):
     __displayname__ = 'PM'
     def __init__(self):
         Mode.__init__(self)
-        self.winning_score = fire_pong.util.config['PongMatch']['winning_score']
+        self.winning_score = config['PongMatch']['winning_score']
         self.start_player = randint(1, 2)
 
     def reset(self):
@@ -127,9 +126,9 @@ class PongCounterMode(Mode):
 class PongGame(Mode):
     def __init__(self, start_player):
         Mode.__init__(self)
-        self.puffers = fire_pong.util.config['PongGame']['puffers']
-        self.delay = fire_pong.util.config['PongGame']['initial_delay']
-        self.puff_duration = fire_pong.util.config['PongGame']['puff_duration']
+        self.puffers = config['PongGame']['puffers']
+        self.delay = config['PongGame']['initial_delay']
+        self.puff_duration = config['PongGame']['puff_duration']
         self.hit_idx = {'1UP': [0, 1], '2UP': [len(self.puffers)-2, len(self.puffers)-1]}
         self.win = None
         self.quit = False
@@ -199,15 +198,15 @@ class PongVictory(Mode):
         if player == None:
             player = randint(1, 2)
         self.player = player
-        self.puffers = fire_pong.util.config['PongGame']['puffers']
-        self.puff_duration = fire_pong.util.config['PongGame']['puff_duration']
+        self.puffers = config['PongGame']['puffers']
+        self.puff_duration = config['PongGame']['puff_duration']
         self.large_puff_duration_ms = 100
         self.idx = 0
         if player == 1:
-            self.large_puffer = fire_pong.util.config['LargePuffers']['ids'][0]
+            self.large_puffer = config['LargePuffers']['ids'][0]
         else:
             self.puffers.reverse()
-            self.large_puffer = fire_pong.util.config['LargePuffers']['ids'][1]
+            self.large_puffer = config['LargePuffers']['ids'][1]
         self.delay = None
 
     def run(self):

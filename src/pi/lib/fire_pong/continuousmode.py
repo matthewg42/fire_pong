@@ -1,15 +1,13 @@
 import time
 import threading
 import struct
-import fire_pong.util
-from fire_pong.util import log
-from random import randint
+from fire_pong.util import log, config
 from fire_pong.mode import Mode
 from fire_pong.fp_event import FpEvent
-from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
+from fire_pong.scoreboard import ScoreBoard
 
 class ContinuousMode(Mode):
     ''' Cycle between waiting and continuous mode '''
@@ -40,6 +38,7 @@ class ContinuousModeWait(Mode):
     def run(self):
         log.debug('ContinuousModeWait.run() START')
         log.info("Continuous Mode. WAITING. Press START button to continue")
+        ScoreBoard().display('CW')
         while not self.terminate:
             time.sleep(0.5)
         log.debug('ContinuousModeWait.run() END')
@@ -59,9 +58,9 @@ class ContinuousModeWait(Mode):
 class ContinuousModePuffs(Mode):
     def __init__(self):
         Mode.__init__(self)
-        self.puffers = fire_pong.util.config['PongGame']['puffers']
-        self.delay = fire_pong.util.config['PongGame']['initial_delay']
-        self.puff_duration = fire_pong.util.config['PongGame']['puff_duration']
+        self.puffers = config['PongGame']['puffers']
+        self.delay = config['PongGame']['initial_delay']
+        self.puff_duration = config['PongGame']['puff_duration']
         self.idx = 0
         self.inc = 1
         self.terminate = False
@@ -69,6 +68,7 @@ class ContinuousModePuffs(Mode):
     def run(self):
         log.debug('ContinuousModePuffs.run() START')
             
+        ScoreBoard().display('CP')
         while self.terminate is False:
             # Print a little graphic of the puffers showing which one is active...
             d = ['', '', '']

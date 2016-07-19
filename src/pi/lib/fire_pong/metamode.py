@@ -1,18 +1,14 @@
 import time
 import threading
 import struct
-import fire_pong.util
-from random import randint
+from fire_pong.util import log
 from fire_pong.mode import Mode
-from fire_pong.fp_event import FpEvent
 from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
-from fire_pong.fp_serial import FpSerial
 from fire_pong.modemanager import ModeManager
 from fire_pong.pongmode import PongMode, PongVictory
 from fire_pong.continuousmode import ContinuousMode
 from fire_pong.singlemode import SingleMode
-from fire_pong.util import log
 
 # A mode for selecting other modes
 
