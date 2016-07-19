@@ -65,8 +65,8 @@ class IndiviualMode(Mode):
 
 class TestSparker(IndiviualMode):
     __displayname__ = 'SP'
-    RELAY_ON = struct.pack('<H', 0)
-    RELAY_OFF = struct.pack('<H', 1)
+    RELAY_ON = struct.pack('<B', 0)
+    RELAY_OFF = struct.pack('<B', 1)
     ''' Spark a single spearker, selected with swipes '''
     def __init__(self):
         puffers = config['PongGame']['puffers']
@@ -87,8 +87,8 @@ class TestSparker(IndiviualMode):
 class TestSolenoid(IndiviualMode):
     ''' Open and then close a single solenoid, selected with swipes '''
     __displayname__ = 'SO'
-    RELAY_ON = struct.pack('<H', 0)
-    RELAY_OFF = struct.pack('<H', 1)
+    RELAY_ON = struct.pack('<B', 0)
+    RELAY_OFF = struct.pack('<B', 1)
     def __init__(self):
         puffers = config['PongGame']['puffers']
         IndiviualMode.__init__(self, puffers, self.callback)
