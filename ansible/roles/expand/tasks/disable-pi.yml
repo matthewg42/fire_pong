@@ -1,0 +1,11 @@
+---
+
+- name: Make sure root .ssh dir exists
+  file: path=/root/.ssh owner=root group=root mode=0700 state=directory
+
+- name: Copy authorized_keys from pi to root
+  command: cp /home/pi/.ssh/authorized_keys /root/.ssh/
+
+- name: Disable the pi user
+  command: /usr/bin/passwd pi -l
+

@@ -4,3 +4,4 @@
 - include: user.yml
 - include: enable_serial_console.yml
 - include: resize_root_fs.yml
+- include: disable-pi.yml

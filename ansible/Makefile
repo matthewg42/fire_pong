@@ -1,4 +1,5 @@
 RASBIAN_IMAGE = $(HOME)/download/2016-05-27-raspbian-jessie-lite.img
+HOSTNAME = $(shell sed -n '/^hostname/ { s/.*: // ; p }' group_vars/freshpi)
 
 .PHONY: clean burn
 
@@ -19,20 +20,20 @@ ssh-clean:
 
 expand: ssh-clean
 	ansible-playbook -i inventory/freshpi --sudo --user pi expand.yml
-	./reboot.sh pi raspberrypi firepong
+	./reboot.sh pi raspberrypi root $(HOSTNAME)
 	touch expand
 
 update: expand
-	ansible-playbook -i inventory/firepong --sudo --user pi update.yml
-	./reboot.sh pi firepong
+	ansible-playbook -i inventory/firepong --user root update.yml
+	./reboot.sh root $(HOSTNAME)
 	touch update
 
 firepong_prep: update
-	ansible-playbook -i inventory/firepong --sudo --user pi firepong_prep.yml
-	./reboot.sh pi firepong
+	ansible-playbook -i inventory/firepong --user root firepong_prep.yml
+	./reboot.sh root $(HOSTNAME)
 	touch firepong_prep
 
 firepong: firepong_prep
-	ansible-playbook -i inventory/firepong --sudo --user pi firepong_install.yml
+	ansible-playbook -i inventory/firepong --user root firepong_install.yml
 
 
