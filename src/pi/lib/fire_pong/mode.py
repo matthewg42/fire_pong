@@ -24,7 +24,7 @@ class Mode(object):
 
     @classmethod
     def displayname(cls):
-        ''' returns a short (no more than 2 characters) name for use on the display in MetaMode '''
+        ''' returns a short (no more than 2 characters) name for use on the display in MenuMode '''
         try:
             # if class.__displayname__ is defined, use that
             log.debug('cls = %s' % cls)

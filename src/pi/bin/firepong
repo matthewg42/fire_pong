@@ -68,8 +68,8 @@ def main():
     # Start the mode manager
     try:
         from fire_pong.modemanager import ModeManager
-        from fire_pong.metamode import MetaMode
-        mm = ModeManager(MetaMode())
+        from fire_pong.mainmenumode import MainMenuMode
+        mm = ModeManager(MainMenuMode())
         mm.thread.start()
     except Exception as e:
         log.exception('In ModeManager execution:')
