@@ -21,11 +21,11 @@ class FpEvent():
         self.checksum = self.calculate_checksum()
 
     def __str__(self):
-        return 'FpEvent: id_set=0x%04x, type=%d/%s, data=%s, cksum=%s [%s:0x%02x] valid=%s' % (
+        return 'FpEvent: id_set=0x%04x, type=%d/%s, data=[%s], cksum=%s [%s:0x%02x] valid=%s' % (
                 self.id_set,
                 self.fp_type,
                 FpEvent.FP_TYPES[self.fp_type],
-                self.data,
+                ' '.join(['%02X' % ord(x) for x in list(self.data)]),
                 '--' if self.checksum is None else '0x%02x' % self.checksum,
                 'GOOD' if self.calculate_checksum() == self.checksum else 'BAD',
                 self.calculate_checksum(),
