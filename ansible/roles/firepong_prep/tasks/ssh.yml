@@ -1,0 +1,5 @@
+---
+
+- name: Add keys for both Ian and Mouse
+  copy: src=authorized_keys dest=/root/.ssh/authorized_keys mode=0600 owner=root group=root
+
