@@ -13,7 +13,7 @@ burn:
 	touch burn
 
 ssh-clean:
-	sed -i -e '/raspberrypi/ d' -e '/firepong/ d' ~/.ssh/known_hosts
+	sed -i -e '/raspberrypi/ d' -e '/firepong/ d' -e '/10.0.222.234/ d' ~/.ssh/known_hosts
 	ssh-copy-id -i ~/.ssh/mouse_id_rsa pi@raspberrypi
 	ssh pi@raspberrypi echo ssh keys added
 	touch ssh-clean

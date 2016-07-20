@@ -1,0 +1,5 @@
+SoundDriver = ALSA
+AlsaMixer1  = Loopback
+AlsaDevice  = plughw:1,0
+MusicDir = /opt/firepong/share/music
+

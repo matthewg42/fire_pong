@@ -3,3 +3,9 @@
 - name: auto-load loopback also module at boot
   copy: src=modules dest=/etc/modules mode=0644 owner=root group=root
 
+- name: create moc config directory
+  file: path=/root/.moc owner=root mode=0700 state=directory
+
+- name: copy moc config file
+  copy: src=moc_config dest=/root/.moc/config mode=0600 owner=root group=root
+
