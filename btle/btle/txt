@@ -1,0 +1,1 @@
+every Client Characteristic Configuration attribute has a UUID of 0x2902, even though there may be a dozen of them in a single GATT database.

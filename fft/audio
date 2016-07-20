@@ -1,0 +1,7 @@
+Start with vumeter: https://github.com/andrebispo5/VumeterRasPi/blob/master/vumeter.py
+
+modprobe snd-aloop
+
+start vumeter
+
+play audio with: aplay -D plughw:1,0 [file]

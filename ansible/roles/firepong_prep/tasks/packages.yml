@@ -12,6 +12,7 @@
     - python-serial
     - python-daemon
     - python-dev
+    - python-alsaaudio
     - wiringpi
 
 - name: Use pip to install wiringpi

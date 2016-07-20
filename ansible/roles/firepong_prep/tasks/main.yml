@@ -2,5 +2,6 @@
 
 - include: packages.yml
 - include: hdmi-config.yml
+- include: alsa-loop.yml
 - include: network.yml
 
