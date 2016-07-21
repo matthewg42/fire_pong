@@ -66,6 +66,9 @@
         "puff_duration": 300,
         "cycle_duration": 5000
     },
+    "MusicMode": {
+        "path": "/opt/firepong/share/music"
+    },
     "display": {
         "id": 16384
     }
