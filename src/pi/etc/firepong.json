@@ -23,10 +23,10 @@
         "gpio": {
             "doc": "pin IDs here are from the BCM pin numbering scheme",
             "enabled": false,
-            "quit": 6,
-            "start": 13,
-            "swipe1": 19,
-            "swipe2": 26,
+            "quit": 4,
+            "start": 17,
+            "swipe1": 27,
+            "swipe2": 22,
             "debounce_time": 0.3 
         },
         "keyboard": {
