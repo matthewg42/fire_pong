@@ -4,6 +4,7 @@ Description=Firepong Controller
 [Service]
 Environment=PYTHONPATH={{firepong_prefix}}/lib/python2/dist-packages
 ExecStart={{firepong_prefix}}/bin/firepong -c {{firepong_prefix}}/etc/firepong.json --info
+KillSignal=SIGKILL
 RestartSec=3s
 Restart=always
 
