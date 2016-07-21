@@ -23,10 +23,10 @@
         "gpio": {
             "doc": "pin IDs here are from the BCM pin numbering scheme",
             "enabled": false,
-            "quit": 6,
-            "start": 13,
-            "swipe1": 19,
-            "swipe2": 26,
+            "quit": 4,
+            "start": 17,
+            "swipe1": 27,
+            "swipe2": 22,
             "debounce_time": 0.3 
         },
         "keyboard": {
@@ -44,7 +44,7 @@
         },
         "btbutton": {
             "doc": "for using the selfie remote button",
-            "enabled": true
+            "enabled": false
         }
     },
     "PongMatch": {
@@ -62,7 +62,13 @@
         "initial_delay": 0.4
     },
     "LargePuffers": {
-        "ids": [4096, 8192]
+        "ids": [4096, 8192],
+        "puff_duration": 300,
+        "cycle_duration": 5000
+    },
+    "MusicMode": {
+        "path": "/opt/firepong/share/music",
+        "puff_duration": 100
     },
     "display": {
         "id": 16384

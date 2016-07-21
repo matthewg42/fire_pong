@@ -19,6 +19,7 @@ class ScoreBoard:
             return fire_pong.util.config['display']['id']
 
         def display(self, message):
+            message = str(message)
             disp_id = self.get_id()
             if disp_id is not None:
                 e = FpEvent(disp_id, 'FP_EVENT_DISPLAY', message)

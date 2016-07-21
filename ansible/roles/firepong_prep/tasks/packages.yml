@@ -12,7 +12,9 @@
     - python-serial
     - python-daemon
     - python-dev
+    - python-alsaaudio
     - wiringpi
+    - moc
 
 - name: Use pip to install wiringpi
   shell: pip -q install wiringpi
