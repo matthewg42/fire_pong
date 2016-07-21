@@ -20,8 +20,6 @@ class SequenceTestMode(MenuMode):
 class SmallPufferSequence(Mode):
     ''' to be sub-classed - will execute sequence member function on a
         random small puffer whenever the start button is pressed '''
-    RELAY_ON = pack('<B', 0)
-    RELAY_OFF = pack('<B', 1)
     def __init__(self):
         Mode.__init__(self)
         self.puffers = config['PongGame']['puffers']
@@ -52,12 +50,12 @@ class SmallPufferSequence(Mode):
             self.idx = random.randint(0,len(self.puffers)-1)
 
     def spark(self, pufferid, on=False):
-        e = FpEvent(pufferid, 'FP_EVENT_SPARK', SmallPufferSequence.RELAY_ON if on else SmallPufferSequence.RELAY_OFF)
+        e = FpEvent(pufferid, 'FP_EVENT_SPARK', FpEvent.RELAY_ON if on else FpEvent.RELAY_OFF)
         log.info('%s.spark() sending: %s' % (self.__class__.__name__, str(e)))
         FpSerial().write(e.serialize())
 
     def solenoid(self, pufferid, on=False):
-        e = FpEvent(pufferid, 'FP_EVENT_SOLENOID', SmallPufferSequence.RELAY_ON if on else SmallPufferSequence.RELAY_OFF)
+        e = FpEvent(pufferid, 'FP_EVENT_SOLENOID', FpEvent.RELAY_ON if on else FpEvent.RELAY_OFF)
         log.info('%s.solenoid() sending: %s' % (self.__class__.__name__, str(e)))
         FpSerial().write(e.serialize())
 

@@ -18,8 +18,6 @@ class SetupMenuMode(MenuMode):
 
 class TestSparker(IndividualMode):
     __displayname__ = 'SP'
-    RELAY_ON = struct.pack('<B', 0)
-    RELAY_OFF = struct.pack('<B', 1)
     ''' Spark a single spearker, selected with swipes '''
     def __init__(self):
         puffers = config['PongGame']['puffers']
@@ -28,20 +26,18 @@ class TestSparker(IndividualMode):
 
     def callback(self, idmask):
         log.info("SPARK START id=%08X" % idmask)
-        e = FpEvent(idmask, 'FP_EVENT_SPARK', self.RELAY_ON)
+        e = FpEvent(idmask, 'FP_EVENT_SPARK', FpEvent.RELAY_ON)
         log.info(str(e))
         FpSerial().write(e.serialize())
         time.sleep(self.duration)
         log.info("SPARK STOP id%08X" % idmask)
-        e = FpEvent(idmask, 'FP_EVENT_SPARK', self.RELAY_OFF)
+        e = FpEvent(idmask, 'FP_EVENT_SPARK', FpEvent.RELAY_OFF)
         log.info(str(e))
         FpSerial().write(e.serialize())
         
 class TestSolenoid(IndividualMode):
     ''' Open and then close a single solenoid, selected with swipes '''
     __displayname__ = 'SO'
-    RELAY_ON = struct.pack('<B', 0)
-    RELAY_OFF = struct.pack('<B', 1)
     def __init__(self):
         puffers = config['PongGame']['puffers']
         IndividualMode.__init__(self, puffers, self.callback)
@@ -49,12 +45,12 @@ class TestSolenoid(IndividualMode):
 
     def callback(self, idmask):
         log.info("SOLENOID OPEN id=%08X" % idmask)
-        e = FpEvent(idmask, 'FP_EVENT_SOLENOID', self.RELAY_ON)
+        e = FpEvent(idmask, 'FP_EVENT_SOLENOID', FpEvent.RELAY_ON)
         log.info(str(e))
         FpSerial().write(e.serialize())
         time.sleep(self.duration)
         log.info("SOLENOID CLOSE id%08X" % idmask)
-        e = FpEvent(idmask, 'FP_EVENT_SOLENOID', self.RELAY_OFF)
+        e = FpEvent(idmask, 'FP_EVENT_SOLENOID', FpEvent.RELAY_OFF)
         log.info(str(e))
         FpSerial().write(e.serialize())
     

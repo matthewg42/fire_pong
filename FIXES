@@ -1,6 +1,6 @@
 Following big test, 2016-07-21 at Ian's place:
 
-0.  Reverse RELAY_ON and RELAY_OFF, and centralize somewhere
+0.  Reverse RELAY_ON and RELAY_OFF, and centralize somewhere [DONE]
 1.  VictoryMode:
     a.  fix direction of small puff sequence
     b.  make bigg puffer puff shorter (s/100/30 works well)
