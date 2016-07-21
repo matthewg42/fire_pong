@@ -2,8 +2,8 @@ Following big test, 2016-07-21 at Ian's place:
 
 0.  Reverse RELAY_ON and RELAY_OFF, and centralize somewhere [DONE]
 1.  VictoryMode:
-    a.  fix direction of small puff sequence
-    b.  make bigg puffer puff shorter (s/100/30 works well)
+    a.  fix direction of small puff sequence [DONE]
+    b.  make big puffer puff shorter (s/100/30 works well) [DONE]
 2.  MusicMode fixes: 
     a.  When re-entering mode, cannot open device (still open from pervious use)
     b.  Too much fire - calm it down & re-tweak algorithm to focus more on bass
@@ -14,3 +14,5 @@ Following big test, 2016-07-21 at Ian's place:
 5.  Small Puffer Firmware:
     a.  Watchdog resets
     b.  auto-close solenoid / sparker after being on for more than 2 seconds
+    c.  add new PUFFn modes for alternative puff sequences
+    d.  work out what happens when sequences overlap (refuse to start new seq when one is already running for a given puffer)

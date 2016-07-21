@@ -197,6 +197,7 @@ class PongVictory(Mode):
         Mode.__init__(self)
         if player == None:
             player = randint(1, 2)
+        player = int(player)
         self.player = player
         self.puffers = config['PongGame']['puffers']
         self.puff_duration = config['PongGame']['puff_duration']
@@ -260,7 +261,7 @@ class PongVictory(Mode):
 
             if strength:
                 self.delay = strength2delay(strength) / 3.0
-                self.large_puff_duration_ms = 100.0 / self.delay
+                self.large_puff_duration_ms = 25.0 / self.delay
                 log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
                             event.player, 
                             event.strength, 
