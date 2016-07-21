@@ -6,8 +6,8 @@ from fire_pong.util import log
 import struct
 
 class FpEvent():
-    RELAY_ON = pack('<B', 1)
-    RELAY_OFF = pack('<B', 0)
+    RELAY_ON = struct.pack('<B', 1)
+    RELAY_OFF = struct.pack('<B', 0)
 
     def __init__(self, id_set, fp_type, data=b''):
         self.id_set = id_set
