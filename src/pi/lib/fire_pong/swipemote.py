@@ -5,25 +5,7 @@ import time
 from fire_pong.scoreboard import ScoreBoard
 import fire_pong.util
 from fire_pong.util import log
-
-class RunningMean:
-    def __init__(self, n): 
-        self.n = n 
-        self.last = []
-    
-    def push(self, n): 
-        self.last.append(n)
-        if len(self.last) > self.n:
-            self.last.pop(0)
-
-    def mean(self):
-        return sum(self.last) / len(self.last)
-
-    def all_over(self, n):
-        for l in self.last:
-            if l < n:
-                return False
-        return True
+from fire_pong.runningmean import RunningMean
 
 class SwipeMote:
     def __init__(self, name, callback):
