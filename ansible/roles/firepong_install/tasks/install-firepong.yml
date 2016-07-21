@@ -13,8 +13,14 @@
 - name: install fire_pong python modules
   copy: src=../../../../src/pi/lib/fire_pong/ dest={{firepong_prefix}}/lib/python2/dist-packages/fire_pong/ owner=root 
 
-- name: install pi-specific config file
-  copy: src=firepong.json dest=/{{firepong_prefix}}/etc/firepong.json owner=root mode=0664 
+- name: install config file
+  copy: src=../../../../src/pi/etc/firepong.json dest=/{{firepong_prefix}}/etc/firepong.json owner=root mode=0664 
+
+- name: copy program to modify config
+  copy: src=config_edit.py dest=/tmp/config_edit.py owner=root mode=0755 
+
+- name: call config editor to customize config file
+  shell: /tmp/config_edit.py /{{firepong_prefix}}/etc/firepong.json
 
 - name: install firepong systemd service file
   copy: src=firepong.service dest=/etc/systemd/system mode=644

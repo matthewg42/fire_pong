@@ -44,7 +44,7 @@
         },
         "btbutton": {
             "doc": "for using the selfie remote button",
-            "enabled": true
+            "enabled": false
         }
     },
     "PongMatch": {
