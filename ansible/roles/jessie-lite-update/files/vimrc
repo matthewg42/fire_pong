@@ -7,6 +7,10 @@ set showmatch
 
 " turn off search highlight type \ <space> in move mode
 nnoremap <leader><space> :nohlsearch<CR>
+
+" quick toggling of line numbering \ n
+noremap <F3> :set invnumber<CR>
+
 set incsearch
 set hlsearch
 
