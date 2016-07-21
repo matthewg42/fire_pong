@@ -1,22 +1,31 @@
 
-		 ###  #  # #    ####
-		 #  # #  # #    #
-		 ###  #  # #    ##   --------------
-		 #  # #  # #    #
-		 #  # #  # #    #
-		 #  #  ##  #### ####
+                            /             /
+                           || |          || |
+                         |\|\/|        |\|\/|
+                         \    /        \    /
+                          \MM/          \MM/
+                             _     _     _
+                            | \   / \   / |
+                            \  \ |   | /  /
+                             \  \ \_/ /  /
+                              \  \___/  /
+__________      .__            \       /   __________                     \|/
+\______   \__ __|  |   ____     |     |    \____    /___________  ____    -+-
+ |       _/  |  \  | _/ __ \    |     |      /     // __ \_  __ \/  _ \   /|\
+ |    |   \  |  /  |_\  ___/    |     |     /     /\  ___/|  | \(  <_> )
+ |____|_  /____/|____/\___  >   |     |    /_______ \___  >__|   \____/
+        \/                \/    /      \           \/   \/
+                               /   /\   \
+                           ___/   /  \   \
+                          /      /    \  |
+                          \_____/     |  |
+                                       \_/
 
-				#### #### ###   ##  \|/
-				   # #    #  # #  # -+-
-		 --------------   #  ###  ###  #  # /|\
-				 #   #    #  # #  #
-				#    #    #  # #  #
-				#### #### #  #  ##
+                   * More of a guideline, really
 
-		    * More of a guideline, really
 
-Firepong install root:               /opt/firepong
-Edit config                          vi /opt/firepong/etc/firepong.json
+Firepong install root:               {{firepong_prefix}}
+Edit config                          vi {{firepong_prefix}}/etc/firepong.json
 Restart firepong daemon:             systemctl restart firepong
 Follow all logs:                     journalctl -f
 Follow only the firepong log:        journalctl -f -u firepong
