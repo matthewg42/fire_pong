@@ -30,7 +30,7 @@ with open(path) as json_file:
 
 config['InputManager']['keyboard']['enabled'] = False
 config['InputManager']['gpio']['enabled'] = True
-config['InputManager']['wiimotes']['enabled'] = True
+config['InputManager']['wiimotes']['disabled'] = True
 
 # Save the original file as a ~ backup
 subprocess.call(['mv', path, path + '~'])

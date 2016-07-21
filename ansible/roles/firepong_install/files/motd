@@ -1,0 +1,26 @@
+
+		 ###  #  # #    ####
+		 #  # #  # #    #
+		 ###  #  # #    ##   --------------
+		 #  # #  # #    #
+		 #  # #  # #    #
+		 #  #  ##  #### ####
+
+				#### #### ###   ##  \|/
+				   # #    #  # #  # -+-
+		 --------------   #  ###  ###  #  # /|\
+				 #   #    #  # #  #
+				#    #    #  # #  #
+				#### #### #  #  ##
+
+		    * More of a guideline, really
+
+Firepong install root:               /opt/firepong
+Edit config                          vi /opt/firepong/etc/firepong.json
+Restart firepong daemon:             systemctl restart firepong
+Follow all logs:                     journalctl -f
+Follow only the firepong log:        journalctl -f -u firepong
+
+Daemon will auto-restart after a few seconds if Q is selected from main menu
+
+

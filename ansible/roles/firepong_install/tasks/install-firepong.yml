@@ -37,3 +37,10 @@
 - name: start firepong systemd service
   shell: systemctl start firepong.service
 
+- name: install motd
+  copy: src=motd dest=/etc/motd mode=644
+
+- name: replace variable in motd
+  replace: dest=/etc/motd regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
+
