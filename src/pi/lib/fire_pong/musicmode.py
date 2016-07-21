@@ -159,7 +159,7 @@ class MusicPlayMode(Mode):
                             self.threshold,
                             '  '.join(puffer_state)))
                     if puffmask != 0:
-                        e = FpEvent(puffmask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration)
+                        e = FpEvent(puffmask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration))
                         log.debug('PUFF event: %s' % str(e))
                         FpSerial().write(e.serialize())
                     self.out.write(data)
