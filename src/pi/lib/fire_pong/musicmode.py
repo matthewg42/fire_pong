@@ -9,7 +9,7 @@ import math
 import numpy as np
 import random
 from os import listdir
-from struct import pack,unpack
+from struct import pack, unpack
 from fire_pong.util import log, config
 from fire_pong.mode import Mode
 from fire_pong.scoreboard import ScoreBoard
@@ -131,6 +131,7 @@ class MusicPlayMode(Mode):
                     matrix = self.calculate_levels(data)
                     puffer_state = (len(self.channels)*2) * ['    ']
                     puffcount = 0
+                    puffmask = 0x00000000
                     for i in range(0, len(self.channels)):
                         diff = matrix[i] - self.means[i].mean()
                         if diff > 0:
@@ -141,6 +142,7 @@ class MusicPlayMode(Mode):
                                     puffer_idx += 1
                                 self.channels[i] = not(self.channels[i])
                                 puffer_state[puffer_idx] = 'PUFF'
+                                puffmask = puffmask | self.puffers[puffer_idx]
                                 puffcount += 1
                         else:
                             self.means[i].push(matrix[i])
@@ -156,6 +158,10 @@ class MusicPlayMode(Mode):
                             puff_density, 
                             self.threshold,
                             '  '.join(puffer_state)))
+                    if puffmask != 0:
+                        e = FpEvent(puffmask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration)
+                        log.debug('PUFF event: %s' % str(e))
+                        FpSerial().write(e.serialize())
                     self.out.write(data)
                 except Exception as e:
                     log.exception("END: %s: %s" % (type(e), e))
