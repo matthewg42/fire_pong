@@ -64,6 +64,35 @@ class SmallPufferSequence(Mode):
 class Sequence1(SmallPufferSequence):
     __displayname__ = 'S1'
     def sequence(self, pufferid):
+        log.info('Current Firmware Sequence with 150ms main puff length...')
+        self.spark(pufferid, on=True)
+        time.sleep(0.100)
+        self.solenoid(pufferid, on=True)
+        time.sleep(0.013)
+        self.solenoid(pufferid, on=False)
+        time.sleep(0.200)
+        self.solenoid(pufferid, on=True)
+        time.sleep(0.150)
+        self.solenoid(pufferid, on=False)
+        time.sleep(0.100)
+        self.spark(pufferid, on=False)
+
+class Sequence2(SmallPufferSequence):
+    __displayname__ = 'S2'
+    def sequence(self, pufferid):
+        log.info('Simple on off, with spark 200ms extra at start and end...')
+        self.spark(pufferid, on=True)
+        time.sleep(0.200)
+        self.solenoid(pufferid, on=True)
+        time.sleep(0.100)
+        self.solenoid(pufferid, on=False)
+        time.sleep(0.200)
+        self.spark(pufferid, on=False)
+
+class Sequence3(SmallPufferSequence):
+    __displayname__ = 'S3'
+    def sequence(self, pufferid):
+        log.info('Simple on off, with spark 100ms extra at start and end...')
         self.spark(pufferid, on=True)
         time.sleep(0.100)
         self.solenoid(pufferid, on=True)
@@ -72,14 +101,4 @@ class Sequence1(SmallPufferSequence):
         time.sleep(0.100)
         self.spark(pufferid, on=False)
 
-class Sequence2(SmallPufferSequence):
-    __displayname__ = 'S2'
-    def sequence(self, pufferid):
-        self.spark(pufferid, on=True)
-        time.sleep(0.200)
-        self.solenoid(pufferid, on=True)
-        time.sleep(0.100)
-        self.solenoid(pufferid, on=False)
-        time.sleep(0.200)
-        self.spark(pufferid, on=False)
 
