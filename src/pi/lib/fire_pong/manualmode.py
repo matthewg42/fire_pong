@@ -35,6 +35,7 @@ class ManualMode(Mode):
                 log.info('PUFF event: %s' % str(e))
                 FpSerial().write(e.serialize())
                 self.puffer_mask = 0
+            time.sleep(0.1)
 
         log.debug('ManualMode.run() END')
 
