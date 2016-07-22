@@ -99,88 +99,104 @@ class MusicPlayMode(Mode):
         self.inp = None
         self.out = None
 
-        for _ in range(0, len(self.puffers)/2):
-            self.means.append(RunningMean(self.meanlen))
-            self.means[-1].set(0)
-            self.channels.append(False)
+        try:
+            for _ in range(0, len(self.puffers)/2):
+                self.means.append(RunningMean(self.meanlen))
+                self.means[-1].set(0)
+                self.channels.append(False)
 
-        self.puff_frequency = RunningMean(self.frequencylen)
+            self.puff_frequency = RunningMean(self.frequencylen)
 
-        self.inp = alsa.PCM(alsa.PCM_CAPTURE, alsa.PCM_NORMAL, 'hw:Loopback,1,0')
-        self.out = alsa.PCM(alsa.PCM_PLAYBACK, alsa.PCM_NORMAL, 'plughw:0,0')
+            self.inp = alsa.PCM(alsa.PCM_CAPTURE, alsa.PCM_NORMAL, 'hw:Loopback,1,0')
+            self.out = alsa.PCM(alsa.PCM_PLAYBACK, alsa.PCM_NORMAL, 'plughw:0,0')
 
-        self.inp.setchannels(2)
-        self.inp.setrate(self.sample_rate)
-        self.inp.setformat(alsa.PCM_FORMAT_S16_LE)
-        self.inp.setperiodsize(self.chunk)
+            self.inp.setchannels(2)
+            self.inp.setrate(self.sample_rate)
+            self.inp.setformat(alsa.PCM_FORMAT_S16_LE)
+            self.inp.setperiodsize(self.chunk)
 
-        self.out.setchannels(2)
-        self.out.setrate(self.sample_rate)
-        self.out.setformat(alsa.PCM_FORMAT_S16_LE)
-        self.out.setperiodsize(self.chunk)
+            self.out.setchannels(2)
+            self.out.setrate(self.sample_rate)
+            self.out.setformat(alsa.PCM_FORMAT_S16_LE)
+            self.out.setperiodsize(self.chunk)
+        except Exception as e:
+            log.error('MusicPlayMode.__init__() %s: %s' % (type(e), e))
+            if self.inp:
+                self.inp.close()
+            if self.oup:
+                self.out.close()
         log.debug('MusicPlayMode.__init__() END')
 
     def run(self):
         log.debug('MusicPlayMode.run() START')
         time.sleep(0.5)
-        self.start_playback()
-        while not self.terminate:
-            l, data = self.inp.read()
-            self.inp.pause(1)
-            if l:
-                try:
-                    matrix = self.calculate_levels(data)
-                    puffer_state = (len(self.channels)*2) * ['    ']
-                    puffcount = 0
-                    puffmask = 0x00000000
-                    for i in range(0, len(self.channels)):
-                        diff = matrix[i] - self.means[i].mean()
-                        if diff > 0:
-                            self.means[i].set(matrix[i])
-                            if diff > self.threshold:
-                                puffer_idx = i*2
-                                if self.channels[i]:
-                                    puffer_idx += 1
-                                self.channels[i] = not(self.channels[i])
-                                puffer_state[puffer_idx] = 'PUFF'
-                                puffmask = puffmask | self.puffers[puffer_idx]
-                                puffcount += 1
-                        else:
-                            self.means[i].push(matrix[i])
+        try:
+            self.start_playback()
+            while not self.terminate:
+                l, data = self.inp.read()
+                self.inp.pause(1)
+                if l:
+                    try:
+                        matrix = self.calculate_levels(data)
+                        puffer_state = (len(self.channels)*2) * ['    ']
+                        puffcount = 0
+                        puffmask = 0x00000000
+                        for i in range(0, len(self.channels)):
+                            diff = matrix[i] - self.means[i].mean()
+                            if diff > 0:
+                                self.means[i].set(matrix[i])
+                                if diff > self.threshold:
+                                    puffer_idx = i*2
+                                    if self.channels[i]:
+                                        puffer_idx += 1
+                                    self.channels[i] = not(self.channels[i])
+                                    puffer_state[puffer_idx] = 'PUFF'
+                                    puffmask = puffmask | self.puffers[puffer_idx]
+                                    puffcount += 1
+                            else:
+                                self.means[i].push(matrix[i])
 
-                    self.puff_frequency.push(puffcount)
-                    puff_density = self.puff_frequency.mean()
-                    if self.target_density > puff_density and self.threshold > self.min_threshold:
-                        self.threshold -= self.threshold_step
-                    elif self.threshold < self.max_threshold:
-                        self.threshold += self.threshold_step
-                    log.debug('t=%5.2f d=%5.3f t=%5.3f | %s' % (
-                            time.time() - self.start,
-                            puff_density, 
-                            self.threshold,
-                            '  '.join(puffer_state)))
-                    if puffmask != 0:
-                        e = FpEvent(puffmask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration))
-                        log.info('PUFF event: %s' % str(e))
-                        FpSerial().write(e.serialize())
-                    self.out.write(data)
-                except Exception as e:
-                    log.exception("END: %s: %s" % (type(e), e))
-                    break
-            self.inp.pause(0)
-        self.stop_playback()
+                        self.puff_frequency.push(puffcount)
+                        puff_density = self.puff_frequency.mean()
+                        if self.target_density > puff_density and self.threshold > self.min_threshold:
+                            self.threshold -= self.threshold_step
+                        elif self.threshold < self.max_threshold:
+                            self.threshold += self.threshold_step
+                        log.debug('t=%5.2f d=%5.3f t=%5.3f | %s' % (
+                                time.time() - self.start,
+                                puff_density, 
+                                self.threshold,
+                                '  '.join(puffer_state)))
+                        if puffmask != 0:
+                            e = FpEvent(puffmask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration))
+                            log.info('PUFF event: %s' % str(e))
+                            FpSerial().write(e.serialize())
+                        self.out.write(data)
+                    except Exception as e:
+                        log.exception("END: %s: %s" % (type(e), e))
+                        break
+                self.inp.pause(0)
+            self.stop_playback()
+        finally:
+            try:
+                self.inp.close()
+                self.oup.close()
+            except Exception as e:
+                log.error('while closing ALSA devices %s: %s' % (type(e), e))
         log.debug('MusicPlayMode.run() END')
 
     def start_playback(self):
+        # Ensure mixer level is good
+        subprocess.call(['amixer', '-q', 'set', 'PCM', '95%'])
         # Clear the queue
-        subprocess.call(["mocp", "-c", self.music_file])
+        subprocess.call(['mocp', '-c', self.music_file])
         # Enqueue the track 
-        subprocess.call(["mocp", "-q", self.music_file])
+        subprocess.call(['mocp', '-q', self.music_file])
         # Start playback
-        subprocess.call(["mocp", "-p", self.music_file])
+        subprocess.call(['mocp', '-p', self.music_file])
  
     def stop_playback(self):
-        subprocess.call(["mocp", "-s", self.music_file])
+        subprocess.call(['mocp', '-s', self.music_file])
         
     def calculate_levels(self, data):
         # Convert raw data to numpy array
