@@ -1,10 +1,9 @@
 import threading
 import re
-import logging
 import os
 import json
 
-log = logging
+log = None
 
 config = {}
 
