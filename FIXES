@@ -18,3 +18,4 @@ Following big test, 2016-07-21 at Ian's place:
     d.  work out what happens when sequences overlap (refuse to start new seq when one is already running for a given puffer)
 6.  Add brief large puff at PongGame win
 7.  End small puffer doesn't light if hit is on second to last puffer
+8.  Calibrate wiimotes!
