@@ -68,7 +68,8 @@
     },
     "MusicMode": {
         "path": "/opt/firepong/share/music",
-        "puff_duration": 100
+        "puff_duration": 50,
+        "target_density": 0.02
     },
     "display": {
         "id": 16384

@@ -6,7 +6,7 @@ Following big test, 2016-07-21 at Ian's place:
     b.  make big puffer puff shorter (s/100/30 works well) [DONE]
 2.  MusicMode fixes: 
     a.  When re-entering mode, cannot open device (still open from pervious use) [DONE]
-    b.  Too much fire - calm it down & re-tweak algorithm to focus more on bass
+    b.  Too much fire - calm it down & re-tweak algorithm to focus more on bass [DONE]
         -   perhaps have sensitivity adjustments per channel?
     c.  Add manual button processing
 3.  Pi shutdon daemon - monitor end two buttons for 5 second press

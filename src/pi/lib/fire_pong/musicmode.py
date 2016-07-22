@@ -78,29 +78,32 @@ class MusicPlayMode(Mode):
         # Make sure moc is running
         subprocess.call(["mocp", "-S"])
         self.music_file = music_file
-        self.puffers = config['LargePuffers']['ids']
-        self.puffers.extend(config['PongGame']['puffers'])
+        self.large_puffers = config['LargePuffers']['ids']
+        self.small_puffers = config['PongGame']['puffers']
+        self.all_puffers = self.large_puffers
+        self.all_puffers.extend(self.small_puffers)
         self.puff_duration = config['MusicMode']['puff_duration']
         self.means = []
         self.meanlen = 10
         self.puff_frequency = None
         self.frequencylen = 30
-        self.threshold = 1
+        self.threshold = 0.2 
         self.threshold_step = 0.004
         self.min_threshold = 0.5
         self.max_threshold = 10
-        self.target_density = 0.05
+        self.target_density = config['MusicMode']['target_density']
         self.channels = []
         self.min_wait = 0.5
         self.max_wait = 2.5
-        self.chunk = (len(self.puffers)/2)*80 
+        self.chunk = (len(self.all_puffers)/2)*80 
         self.sample_rate = 44100
         self.start = time.time()
         self.inp = None
         self.out = None
+        self.manual_mask = 0
 
         try:
-            for _ in range(0, len(self.puffers)/2):
+            for _ in range(0, len(self.all_puffers)/2):
                 self.means.append(RunningMean(self.meanlen))
                 self.means[-1].set(0)
                 self.channels.append(False)
@@ -151,7 +154,7 @@ class MusicPlayMode(Mode):
                                         puffer_idx += 1
                                     self.channels[i] = not(self.channels[i])
                                     puffer_state[puffer_idx] = 'PUFF'
-                                    puffmask = puffmask | self.puffers[puffer_idx]
+                                    puffmask = puffmask | self.all_puffers[puffer_idx]
                                     puffcount += 1
                             else:
                                 self.means[i].push(matrix[i])
@@ -216,4 +219,14 @@ class MusicPlayMode(Mode):
     def event(self, event):
         if event == EventQuit():
             self.terminate = True
+
+        if event == EventButton('start'):
+            self.manual_mask = self.manual_mask | self.small_puffers[random.randint(0, len(self.small_puffers)-1)]
+
+        if type(event) is EventSwipe:
+            if event.player == '2UP': 
+                self.manual_mask = self.manual_mask | self.large_puffers[0]
+            else:
+                self.manual_mask = self.manual_mask | self.large_puffers[-1]
+
 
