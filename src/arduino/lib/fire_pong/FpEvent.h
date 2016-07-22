@@ -53,9 +53,9 @@ typedef uint32_t fp_id_t;
 #define FP_SERIAL_BUF_LEN (sizeof(fp_magic_t)+sizeof(fp_length_t)+sizeof(fp_id_t)+sizeof(fp_type_t)+(sizeof(fp_data_t)*FP_MAX_DATA_LEN)+sizeof(fp_checksum_t)+sizeof(fp_magic_t))
 #define FP_MINIMUM_PACKET_LEN (sizeof(fp_magic_t)+sizeof(fp_length_t)+sizeof(fp_id_t)+sizeof(fp_type_t)+sizeof(fp_checksum_t)+sizeof(fp_magic_t))
 #define FP_SERIAL_LENGTH_OFFSET (sizeof(fp_magic_t))
-#define FP_SERIAL_ID_OFFSET (FP_SERIAL_LENGTH_OFFSET + sizeof(fl_length_t))
-#define FP_SERIAL_TYPE_OFFSET (FP_SERIAL_ID_OFFSET + sizeof(fl_id_t))
-#define FP_SERIAL_DATA_OFFSET (FP_SERIAL_TYPE_OFFSET + sizeof(fl_type_t))
+#define FP_SERIAL_ID_OFFSET (FP_SERIAL_LENGTH_OFFSET + sizeof(fp_length_t))
+#define FP_SERIAL_TYPE_OFFSET (FP_SERIAL_ID_OFFSET + sizeof(fp_id_t))
+#define FP_SERIAL_DATA_OFFSET (FP_SERIAL_TYPE_OFFSET + sizeof(fp_type_t))
 
 class FpEvent {
 public:
