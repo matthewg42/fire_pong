@@ -35,6 +35,7 @@ typedef uint32_t fp_id_t;
 #define FP_EVENT_PUFF     4
 #define FP_EVENT_DISPLAY  5
 #define FP_EVENT_RELAY    6
+#define FP_EVENT_ALTPUFF  7
 #define FP_STR(x)         (reinterpret_cast<const fp_data_t*>(x))
 
 // Serialized packet structure:

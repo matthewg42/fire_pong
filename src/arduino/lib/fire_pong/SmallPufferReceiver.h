@@ -3,6 +3,8 @@
 #include <PufferReceiver.h>
 #include <Seq.h>
 
+#define MAX_SPARK_MILLIS 2000
+
 //! Controls an individual small puffer (i.e. sparker and solenoid relays)
 //! data : uint16_t duration in ms for main puff (100 is a typical value)
 class SmallPufferReceiver : public PufferReceiver {
@@ -17,5 +19,6 @@ public:
 
 protected:
 	uint8_t _sparker_pin;
+    unsigned long _sparker_timeout;
 };
 

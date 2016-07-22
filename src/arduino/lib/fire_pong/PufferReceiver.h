@@ -12,6 +12,7 @@
 
 #define RELAY_ON        LOW
 #define RELAY_OFF       HIGH
+#define MAX_OPEN_MILLIS 5000
 
 //! Controls an individual puffer by solenoid valve (e.g. large puffer)
 //! data : uint16_t duration in ms for main puff (100 is a typical value)
@@ -30,6 +31,6 @@ protected:
 	Seq _seq;
 
 	uint8_t _solenoid_pin;
-
+    unsigned long _solenoid_timeout;
 };
 
