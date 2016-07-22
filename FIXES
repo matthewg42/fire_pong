@@ -9,13 +9,13 @@ Following big test, 2016-07-21 at Ian's place:
     b.  Too much fire - calm it down & re-tweak algorithm to focus more on bass [DONE]
         -   perhaps have sensitivity adjustments per channel?
     c.  Add manual button processing [DONE]
-3.  Pi shutdon daemon - monitor end two buttons for 5 second press
-4.  Verify solenoid close signal gets sent when solenoid testing done
+3.  Pi shutdon daemon - monitor end two buttons for 5 second press [DONE]
+4.  Verify solenoid close signal gets sent when solenoid testing done [DONE]
 5.  Small Puffer Firmware:
     a.  Watchdog resets [DONE]
     b.  auto-close solenoid after being on for more than 5 seconds, sparker for 2 (when set by FP_EVENT_SOLENOID and FP_EVENT_SPARK) [DONE]
     c.  add new PUFFn modes for alternative puff sequences [ALTPUFF DONE]
-    d.  work out what happens when sequences overlap (refuse to start new seq when one is already running for a given puffer)
+    d.  work out what happens when sequences overlap (refuse to start new seq when one is already running for a given puffer) [DONE]
         ANSWER: reset() is called on _seq, so nothing bad should happen.
 6.  Add brief large puff at PongGame win
 7.  End small puffer doesn't light if hit is on second to last puffer

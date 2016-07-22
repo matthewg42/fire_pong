@@ -1,0 +1,24 @@
+#!/bin/bash
+# Power Off Daemon MONitor
+
+# Note these are WiringPi IDS, NOT BCM IDs...
+
+# Mode button
+PIN1=7
+# Start button
+PIN2=0
+
+count=0
+while true; do
+    if [ "$(gpio read $PIN1)" = "0" ] && [ "$(gpio read $PIN2)" = "0" ]; then
+        let count+=1
+        echo "detected both buttons pressed, count $count"
+        if [ $count = 10 ]; then
+            echo "Powering off..."
+            poweroff
+        fi
+    else
+        count=0
+    fi
+    sleep 1
+done

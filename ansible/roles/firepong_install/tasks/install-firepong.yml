@@ -31,6 +31,18 @@
 - name: replace path variable in firepong systemd service file
   replace: dest=/etc/systemd/system/firepong.service regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
 
+- name: install podmon systemd service file
+  copy: src=podmon.service dest=/etc/systemd/system mode=644
+
+- name: replace path variable in podmon systemd service file
+  replace: dest=/etc/systemd/system/podmon.service regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
+- name: install podmon service program
+  copy: src=../../../../src/pi/bin/podmon dest={{firepong_prefix}}/bin/ owner=root mode=0755
+
+- name: reload systemd daemon
+  shell: systemctl daemon-reload
+
 - name: enable firepong systemd service
   shell: systemctl enable firepong.service
 
@@ -38,6 +50,15 @@
   shell: systemctl stop firepong.service
 
 - name: start firepong systemd service
+  shell: systemctl start firepong.service
+
+- name: enable podmon systemd service
+  shell: systemctl enable firepong.service
+
+- name: stop podmon systemd service
+  shell: systemctl stop firepong.service
+
+- name: start podmon systemd service
   shell: systemctl start firepong.service
 
 - name: install awesome motd

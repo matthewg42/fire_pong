@@ -1,0 +1,12 @@
+[Unit]
+Description=Power Off Daemon Monitor
+
+[Service]
+ExecStart={{firepong_prefix}}/bin/podmon
+KillSignal=SIGKILL
+RestartSec=3s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
