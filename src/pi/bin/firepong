@@ -14,11 +14,9 @@ import fire_pong.util
 
 global args
 global log
-global serial_bus
-serial_bus = None
 
 def main():
-    global args, log, serial_bus
+    global args, log
     init_log()
     try:
         fire_pong.util.load_config(args)
@@ -35,8 +33,7 @@ def main():
         else:
             open(args.pid_file, 'w').write(pid)
 
-
-# Open serial connection
+    # Open serial connection
     try:
         from fire_pong.fp_serial import FpSerial
         FpSerial()
