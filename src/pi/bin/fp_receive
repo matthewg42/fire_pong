@@ -9,6 +9,7 @@ import os
 
 import fire_pong.util
 from fire_pong.util import load_config
+from fire_pong.fp_event import FpEvent
 
 
 global args
@@ -16,6 +17,22 @@ buf = None
 last_packet_start = 0
 packet_length = None
 log = None
+puffer_ids = [ ('L', 0x2000), 
+               ('S', 0x1), 
+               ('S', 0x2), 
+               ('S', 0x4),
+               ('S', 0x8), 
+               ('S', 0x10), 
+               ('S', 0x20), 
+               ('S', 0x40), 
+               ('S', 0x80), 
+               ('S', 0x100), 
+               ('S', 0x200), 
+               ('S', 0x400), 
+               ('S', 0x800), 
+               ('L', 0x1000)
+             ]
+display_text = ''
 
 # Some constants for parsing the FpEvent packets
 PACKET_TIMEOUT = 0.5
@@ -96,7 +113,35 @@ def read_events():
                 log.debug('buf filled: %s' % repr(buf))
                 e = FpEvent.from_bytes(buf)
                 log.info('Received Event: %s' % str(e))
+                if e.is_valid():
+                    visualize(e)
                 reset('RECEIVED')
+
+def visualize(e):
+    global display_text
+    l = 4 * ['']
+    for size, pid in puffer_ids:
+        if size is 'L':
+            l[0] += ' @ ' if pid & e.id_set > 0 else '   '
+            l[1] += ' @ ' if pid & e.id_set > 0 else '   '
+            l[2] += ' | '
+            l[3] += ' 0 '
+        else:
+            l[0] += '   '
+            l[1] += ' @ ' if pid & e.id_set > 0 else '   '
+            l[2] += ' @ ' if pid & e.id_set > 0 else '   '
+            l[3] += ' | '
+
+    if FpEvent.FP_TYPES[e.fp_type] is 'FP_EVENT_DISPLAY':
+        display_text = str(e.data)
+
+    l[0] += '     ' +  '+----+'
+    #l[1] += '     ' + ('+ %2s +' % display_text)
+    l[1] += '     ' + ('+ %2s +' % display_text)
+    l[2] += '     ' +  '+----+'
+    l[3] += '     ' +  '  ||  '
+    for s in l:
+        print(s)
 
 def reset(msg):
     global buf
