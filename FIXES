@@ -13,10 +13,11 @@ Following big test, 2016-07-21 at Ian's place:
 4.  Verify solenoid close signal gets sent when solenoid testing done
 5.  Small Puffer Firmware:
     a.  Watchdog resets [DONE]
-    b.  auto-close solenoid / sparker after being on for more than 2 seconds
-    c.  add new PUFFn modes for alternative puff sequences
+    b.  auto-close solenoid after being on for more than 5 seconds, sparker for 2 (when set by FP_EVENT_SOLENOID and FP_EVENT_SPARK) [DONE]
+    c.  add new PUFFn modes for alternative puff sequences [ALTPUFF DONE]
     d.  work out what happens when sequences overlap (refuse to start new seq when one is already running for a given puffer)
         ANSWER: reset() is called on _seq, so nothing bad should happen.
 6.  Add brief large puff at PongGame win
 7.  End small puffer doesn't light if hit is on second to last puffer
 8.  Calibrate wiimotes!
+9.  Implement ALTPUFF in main program code
