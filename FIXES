@@ -12,7 +12,7 @@ Following big test, 2016-07-21 at Ian's place:
 3.  Pi shutdon daemon - monitor end two buttons for 5 second press
 4.  Verify solenoid close signal gets sent when solenoid testing done
 5.  Small Puffer Firmware:
-    a.  Watchdog resets
+    a.  Watchdog resets [DONE]
     b.  auto-close solenoid / sparker after being on for more than 2 seconds
     c.  add new PUFFn modes for alternative puff sequences
     d.  work out what happens when sequences overlap (refuse to start new seq when one is already running for a given puffer)
