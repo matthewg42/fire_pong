@@ -8,6 +8,7 @@ import audioop
 import math
 import numpy as np
 import random
+import copy
 from os import listdir
 from struct import pack, unpack
 from fire_pong.util import log, config
@@ -80,14 +81,16 @@ class MusicPlayMode(Mode):
         self.music_file = music_file
         self.large_puffers = config['LargePuffers']['ids']
         self.small_puffers = config['PongGame']['puffers']
-        self.all_puffers = self.large_puffers
+        self.all_puffers = copy.copy(self.large_puffers)
         self.all_puffers.extend(self.small_puffers)
+        log.info('MusicPlayMode.__init__() all_puffers: %s' % str([('%x' % x) for x in self.all_puffers]))
+        log.info('MusicPlayMode.__init__() large_puffers: %s' % str([('%x' % x) for x in self.large_puffers]))
         self.puff_duration = config['MusicMode']['puff_duration']
         self.means = []
         self.meanlen = 10
         self.puff_frequency = None
         self.frequencylen = 30
-        self.threshold = 0.2 
+        self.threshold = 2
         self.threshold_step = 0.004
         self.min_threshold = 0.5
         self.max_threshold = 10
@@ -126,7 +129,7 @@ class MusicPlayMode(Mode):
             log.error('MusicPlayMode.__init__() %s: %s' % (type(e), e))
             if self.inp:
                 self.inp.close()
-            if self.oup:
+            if self.out:
                 self.out.close()
         log.debug('MusicPlayMode.__init__() END')
 
@@ -170,6 +173,9 @@ class MusicPlayMode(Mode):
                                 puff_density, 
                                 self.threshold,
                                 '  '.join(puffer_state)))
+                        if self.manual_mask > 0:
+                            puffmask = puffmask | self.manual_mask
+                            self.manual_mask = 0
                         if puffmask != 0:
                             e = FpEvent(puffmask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration))
                             log.info('PUFF event: %s' % str(e))
@@ -183,7 +189,7 @@ class MusicPlayMode(Mode):
         finally:
             try:
                 self.inp.close()
-                self.oup.close()
+                self.out.close()
             except Exception as e:
                 log.error('while closing ALSA devices %s: %s' % (type(e), e))
         log.debug('MusicPlayMode.run() END')
