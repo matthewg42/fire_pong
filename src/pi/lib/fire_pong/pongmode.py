@@ -9,6 +9,7 @@ from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
+from fire_pong.menumode import MenuMode
 
 def strength2delay(strength):
     d = 0.8 - (float(strength)/300)
@@ -190,30 +191,30 @@ class PongGame(Mode):
                 log.info('Player %s MISS!' % event.player)
 
 class PongVictory(Mode):
-    __displayname__ = 'PV'
     ''' Wait for player to swipe, and then do single fast run of small
         puffers, followed by single big puffer next to ossposing player '''
-    def __init__(self, player=None):
+    __displayname__ = 'PV'
+    def __init__(self, player):
         Mode.__init__(self)
         if player == None:
             player = randint(1, 2)
         player = int(player)
         self.player = player
-        self.puffers = config['PongGame']['puffers']
         self.puff_duration = config['PongGame']['puff_duration']
         self.large_puff_duration_ms = 100
         self.idx = 0
         if player == 1:
+            self.puffers = config['PongGame']['puffers']
             self.large_puffer = config['LargePuffers']['ids'][0]
         else:
-            self.puffers.reverse()
+            self.puffers = list(reversed(config['PongGame']['puffers']))
             self.large_puffer = config['LargePuffers']['ids'][1]
         self.delay = None
 
     def run(self):
         log.debug('PongVictory.run() START')
         # Wait for a swipe (indicated by setting self.delay to not None)
-        ScoreBoard().display('V%d' % self.player)
+        ScoreBoard().display('v%d' % self.player)
         log.info('Waiting for player %d swipe...' % self.player)
         while self.terminate is False and self.delay is None:
             time.sleep(0.1)
@@ -254,19 +255,35 @@ class PongVictory(Mode):
             self.terminate = True
 
         if event == EventButton('start'):
-            strength = randint(20,120)
+            strength = randint(60,250)
+
         if type(event) is EventSwipe:
             if event.player == '%dUP' % self.player:
                 strength = event.strength
 
-            if strength:
-                self.delay = strength2delay(strength) / 3.0
-                self.large_puff_duration_ms = 25.0 / self.delay
-                log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
-                            event.player, 
-                            event.strength, 
-                            self.delay,
-                            self.large_puff_duration_ms))
+        if strength:
+            self.delay = strength2delay(strength) / 3.0
+            self.large_puff_duration_ms = 25.0 / self.delay
+            log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
+                        self.player, 
+                        strength, 
+                        self.delay,
+                        self.large_puff_duration_ms))
+
+class PongVictoryPlayer1(PongVictory):
+    __displayname__ = 'V1'
+    def __init__(self):
+        PongVictory.__init__(self, 1)
+
+class PongVictoryPlayer2(PongVictory):
+    __displayname__ = 'V2'
+    def __init__(self):
+        PongVictory.__init__(self, 2)
+
+class PongVictoryMenu(MenuMode):
+    __displayname__ = 'PV'
+    def __init__(self):
+        MenuMode.__init__(self, [PongVictoryPlayer1, PongVictoryPlayer2 ])
 
 if __name__ == '__main__':
     import logging
