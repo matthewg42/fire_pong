@@ -1,4 +1,9 @@
 #include <MatrixText.h>
+#include <FpEvent.h>
+#include <EventBuffer.h>
+#include "MessageStore.h"
+
+using namespace std;
 
 /*
     FirePong Display Client
@@ -15,6 +20,11 @@
 const int DISPLAY_WIDTH     = 12;
 const int DISPLAY_HEIGHT    = 8;
 
+// Default messages for this firmware
+const char* MESSAGE1         = "Welcome to Nottingham Hackspace";
+const char* MESSAGE2         = "www.nottinghack.org.uk";
+const char* MESSAGE3         = "Ask me for a hackspace tour...";
+
 // Inputs and Outputs
 const int SLATCH_PIN        = 2;    // Pin connected to ST_CP of 74HC595
 const int SCLK_PIN          = 3;    // Pin connected to SH_CP of 74HC595
@@ -22,19 +32,15 @@ const int SDATA_PIN         = 4;    // Pin connected to DS of 74HC595
 const int LED_PIN           = 13;   // LED of ProMini
 const int MODE_BUTTON_PIN   = 5;    // Pin attached to mode selection button
 
-// Number of modes (to be replaced with enum)
-const int maxModes          = 3;
-
-// Static display messages
-const char text[]           = "Welcome to Nottingham Hackspace";
-const char text1[]          = "www.nottinghack.org.uk";
-const char text2[]          = "Ask me for a hackspace tour...";
+// This will hold our messages
+MessageStore messageStore;
+int currentMessage          = 0;    // Current message index
 
 // Buffer for display data
 uint8_t dataArray[DISPLAY_WIDTH];
 
 // Object to generate display data (using D. Swann's library)
-MatrixText *mt1;
+MatrixText *matrixText;
 
 int SWcounter               = 0;    // Debounce counter for the switch
 int currentMode             = 0;    // This holds the mode we are in
@@ -42,6 +48,7 @@ bool lastPress              = HIGH; // This is to latch the button press
 
 // Function declatations for Makefile build
 void set_xy (uint16_t x, uint16_t y, byte val);
+bool addMessage(const char* message);
 
 void setup()
 {
@@ -52,21 +59,24 @@ void setup()
     pinMode(LED_PIN, OUTPUT);   
     pinMode(MODE_BUTTON_PIN, INPUT_PULLUP); 
 
-    mt1 = new MatrixText(set_xy);
-    mt1->show_text(text, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-    mt1->set_scroll_speed(100); // Advance text position every 100ms
+    messageStore.add(MESSAGE1);
+    messageStore.add(MESSAGE2);
+    messageStore.add(MESSAGE3);
+
+    matrixText = new MatrixText(set_xy);
+    matrixText->show_text(messageStore[currentMessage], 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    matrixText->set_scroll_speed(100); // Advance text position every 100ms
 
     memset(dataArray,0,sizeof(uint8_t)*DISPLAY_WIDTH);  // Set dataArray to clear it 
 }
 
 void loop()
 { 
-    mt1->loop(); // do scrolling text
+    matrixText->loop(); // do scrolling text
   
     // Write the dataArray to the LED matrix:
     digitalWrite(SLATCH_PIN, LOW);  
-    for(int j=0;j<sizeof(dataArray);j++)
-    {     
+    for(unsigned int j=0;j<sizeof(dataArray);j++) {     
         shiftOut(SDATA_PIN, SCLK_PIN, LSBFIRST, dataArray[j]);  // Rotated text
     }
     digitalWrite(SLATCH_PIN, HIGH); 
@@ -74,39 +84,18 @@ void loop()
     // Only want to do this if the switch has been pressed
     if(lastPress==HIGH)
     {  
-        // Choose what to do depending upon the mode:
-        // Mode are:
-        // 0 = flash random colours
-        // 1 = Write "Nottingham Hackspace"
-        // 2 = Write "ERROR"
-        switch(currentMode)
-        {
-            case 0:
-                // Mode = 0   
-                // Output text from text 1
-                mt1->show_text(text, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-                break;
-            case 1:
-                // Mode = 1
-                // In this case show text 2
-                mt1->show_text(text1, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-                break;
-            case 2:
-                // Mode = 2
-                // In this case show text 2
-                mt1->show_text(text2, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-                break; 
-            case 3:
-                // Mode = 3
-                // Just show a full ON screen
-                for(int j=0;j<12;j++) {  
-                    dataArray[j] = B11111111;
-                }          
-                break;   
-            default:
-                // Do this when not in a mode
-                break;    
-        }  
+        currentMessage++;
+        if (currentMessage == messageStore.size()-1) {
+            // "after" the last message we will have an additional test mode
+            // where we show every pixel ON
+            for(int w=0;w<DISPLAY_WIDTH;w++) {  
+                dataArray[w] = 0xff;
+            }      
+        } else {
+            // wrap if necessary
+            currentMessage = currentMessage % messageStore.size();
+            matrixText->show_text(messageStore[currentMessage], 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+        }
     }
 
     // Check the switch and change mode depending:
@@ -116,8 +105,7 @@ void loop()
         if(SWcounter>=50)
         {
             currentMode++;
-            if(currentMode>maxModes)
-            {
+            if(currentMode>MAX_MESSAGE_COUNT) {
                 currentMode=0;
             }
             lastPress=HIGH;
