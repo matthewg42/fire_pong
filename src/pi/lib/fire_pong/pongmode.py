@@ -281,6 +281,7 @@ class PongVictoryPlayer2(PongVictory):
         PongVictory.__init__(self, 2)
 
 class PongVictoryMenu(MenuMode):
+    __displayname__ = 'Victory Test'
     def __init__(self):
         MenuMode.__init__(self, [PongVictoryPlayer1, PongVictoryPlayer2 ])
 

@@ -9,6 +9,7 @@ import math
 import numpy as np
 import random
 import copy
+import os
 from os import listdir
 from struct import pack, unpack
 from fire_pong.util import log, config
@@ -45,7 +46,7 @@ class MusicMode(Mode):
             if self.display:
                 self.display = False
                 log.info('MusicMode.run() SELECTED idx=%d, song=%s' % (self.idx, self.music_files[self.idx]))
-                ScoreBoard().display(self.music_files[self.idx])
+                ScoreBoard().display(os.path.basename(self.music_files[self.idx]))
                 next
             if self.activate:
                 self.activate = False
@@ -196,7 +197,7 @@ class MusicPlayMode(Mode):
         log.debug('MusicPlayMode.run() END')
 
     def start_playback(self):
-        ScoreBoard().display('Playing: ' + self.music_file)
+        ScoreBoard().display('Playing: ' + os.path.basename(self.music_file))
         # Ensure mixer level is good
         subprocess.call(['amixer', '-q', 'set', 'PCM', '95%'])
         # Clear the queue
