@@ -23,7 +23,7 @@ class ManualMode(Mode):
         log.debug('ManualMode.__init__()')
         self.small_puffers = config['PongGame']['puffers']
         self.large_puffers = config['LargePuffers']['ids']
-        self.puff_duration = 50
+        self.puff_duration = config['ManualMode']['puff_duration']
         self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.puffer_mask =  0
 

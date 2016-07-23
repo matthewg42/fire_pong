@@ -75,4 +75,7 @@
     "display": {
         "id": 16384
     }
+    "ManualMode": {
+        "puff_duration": 50
+    }
 }
