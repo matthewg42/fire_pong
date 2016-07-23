@@ -45,7 +45,8 @@ def main():
     # Configure score board (singleton)
     try:
         from fire_pong.scoreboard import ScoreBoard
-        ScoreBoard()
+        ScoreBoard().display('Oh Hai')
+        time.sleep(2)
         log.info('ScoreBoard initialized OK')
     except Exception as e:
         log.exception('Failed to initialize ScoreBoard')
@@ -75,6 +76,7 @@ def main():
     mm.thread.join()
     InputManager().shutdown()
     InputManager().thread.join()
+    ScoreBoard().display('KTHXBYE')
     log.info('main() end')
     cleanup_and_exit(0)
 

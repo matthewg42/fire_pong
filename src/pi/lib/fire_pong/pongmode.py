@@ -209,7 +209,7 @@ class PongVictory(Mode):
     def run(self):
         log.debug('PongVictory.run() START')
         # Wait for a swipe (indicated by setting self.delay to not None)
-        ScoreBoard().display('v%d' % self.player)
+        ScoreBoard().display('P%d Swipe!' % self.player)
         log.info('Waiting for player %d swipe...' % self.player)
         while self.terminate is False and self.delay is None:
             time.sleep(0.1)
