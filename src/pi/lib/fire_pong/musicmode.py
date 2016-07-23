@@ -21,6 +21,7 @@ from fire_pong.fp_event import FpEvent
 from fire_pong.fp_serial import FpSerial
 from fire_pong.menumode import MenuMode
 from fire_pong.runningmean import RunningMean
+from fire_pong.visualizer import Visualizer
 
 class MusicMode(Mode):
     __displayname__ = 'Music Mode'
@@ -170,17 +171,17 @@ class MusicPlayMode(Mode):
                             self.threshold -= self.threshold_step
                         elif self.threshold < self.max_threshold:
                             self.threshold += self.threshold_step
-                        log.debug('t=%5.2f d=%5.3f t=%5.3f | %s' % (
+                        log.debug('Music t=%5.2f d=%5.3f t=%5.3f' % (
                                 time.time() - self.start,
                                 puff_density, 
-                                self.threshold,
-                                '  '.join(puffer_state)))
+                                self.threshold))
                         if self.manual_mask > 0:
                             puffmask = puffmask | self.manual_mask
                             self.manual_mask = 0
                         if puffmask != 0:
                             e = FpEvent(puffmask, self.puff_type, pack('<H', self.puff_duration))
                             log.info('Event: %s' % str(e))
+                            Visualizer().info(e)
                             FpSerial().write(e.serialize())
                         self.out.write(data)
                     except Exception as e:

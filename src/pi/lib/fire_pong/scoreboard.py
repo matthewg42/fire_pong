@@ -2,6 +2,7 @@ from fire_pong.fp_event import FpEvent
 from fire_pong.fp_serial import FpSerial
 from fire_pong.util import log
 from fire_pong.keyboard import Keyboard
+from fire_pong.visualizer import Visualizer
 import fire_pong.util
 
 # Follows the singleton pattern
@@ -24,6 +25,7 @@ class ScoreBoard:
             if disp_id is not None:
                 e = FpEvent(disp_id, 'FP_EVENT_DISPLAY', message)
                 log.info('DISPLAY: %s' % message)
+                Visualizer().update(e)
                 FpSerial().write(e.serialize())
             if self.keyboard is not None:
                 self.keyboard.display_text(message)

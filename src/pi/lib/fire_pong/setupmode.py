@@ -10,6 +10,7 @@ from fire_pong.fp_event import FpEvent
 from fire_pong.fp_serial import FpSerial
 from fire_pong.menumode import MenuMode
 from fire_pong.individualmode import IndividualMode
+from fire_pong.visualizer import Visualizer
 
 class SetupMenuMode(MenuMode):
     __displayname__ = 'Setup'
@@ -67,6 +68,7 @@ class SinglePuff(IndividualMode):
         log.info("%s id=%08X" % (self.puff_type, idmask))
         e = FpEvent(idmask, self.puff_type, struct.pack('<H', self.duration))
         log.info(str(e))
+        Visualizer().info(e)
         FpSerial().write(e.serialize())
 
 class LargePuff(IndividualMode):
@@ -82,6 +84,7 @@ class LargePuff(IndividualMode):
         log.info("%s id=%08X" % (self.puff_type, idmask))
         e = FpEvent(idmask, self.puff_type, struct.pack('<H', self.duration))
         log.info(str(e))
+        Visualizer().info(e)
         FpSerial().write(e.serialize())
 
 class LargePuffCycle(IndividualMode):
@@ -97,6 +100,7 @@ class LargePuffCycle(IndividualMode):
         log.info("%s id=%08X" % (self.puff_type, idmask))
         e = FpEvent(idmask, self.puff_type, struct.pack('<H', self.duration))
         log.info(str(e))
+        Visualizer().info(e)
         FpSerial().write(e.serialize())
         
     

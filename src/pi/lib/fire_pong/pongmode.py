@@ -10,6 +10,7 @@ from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
 from fire_pong.menumode import MenuMode
+from fire_pong.visualizer import Visualizer
 
 def strength2delay(strength):
     d = 0.8 - (float(strength)/300)
@@ -156,16 +157,10 @@ class PongGame(Mode):
                 self.win = 1
                 break
             elif self.idx >= 0 and self.idx < len(self.puffers):
-                d = ['', '', '']
-                for i in range(0, len(self.puffers)):
-                    d[0] += '   ' if i != self.idx else ' @ '
-                    d[1] += '   ' if i != self.idx else ' @ '
-                    d[2] += ' | ' if i != self.idx else ' | '
-                for i in range(0,3):
-                    log.info(d[i])
                 log.info("%s idx=%02d id=%08X" % (self.puff_type, self.idx, self.puffers[self.idx]))
                 e = FpEvent(self.puffers[self.idx], self.puff_type, struct.pack('<H', self.puff_duration))
                 log.info(str(e))
+                Visualizer().info(e)
                 FpSerial().write(e.serialize())
             time.sleep(self.delay)
             self.idx += self.inc
@@ -205,10 +200,10 @@ class PongVictory(Mode):
         self.idx = 0
         if player == 1:
             self.puffers = config['PongGame']['puffers']
-            self.large_puffer = config['LargePuffers']['ids'][0]
+            self.large_puffer = config['LargePuffers']['ids'][1]
         else:
             self.puffers = list(reversed(config['PongGame']['puffers']))
-            self.large_puffer = config['LargePuffers']['ids'][1]
+            self.large_puffer = config['LargePuffers']['ids'][0]
         self.delay = None
 
     def run(self):
@@ -224,30 +219,18 @@ class PongVictory(Mode):
         while self.idx < len(self.puffers):
             if self.terminate:
                 return 'Quit'
-            self.pic(False)
             log.info("%s idx=%02d id=%08X" % (self.puff_type, self.idx, self.puffers[self.idx]))
             e = FpEvent(self.puffers[self.idx], self.puff_type, struct.pack('<H', self.puff_duration))
             log.info(str(e))
+            Visualizer().info(e)
             FpSerial().write(e.serialize())
             time.sleep(self.delay)
             self.idx += 1
-        self.pic(True)
         log.info('LARGE PUFFER id=%08X duration (ms)=%d' % (self.large_puffer, self.large_puff_duration_ms))
         e = FpEvent(self.large_puffer, 'FP_EVENT_PUFF', struct.pack('<H', self.large_puff_duration_ms))
+        Visualizer().info(e)
         FpSerial().write(e.serialize())
             
-    def pic(self, large=False):
-        d = ['', '', '']
-        for i in range(0, len(self.puffers)):
-            d[0] += '   ' if i != self.idx else ' @ '
-            d[1] += '   ' if i != self.idx else ' @ '
-            d[2] += ' | ' if i != self.idx else ' | '
-        d[0] += ' @ ' if large else '   '
-        d[1] += ' | '
-        d[2] += ' 0 '
-        for i in range(0,3):
-                log.info(d[i])
-
     def event(self, event):
         log.info('PongVictory.debug: %s' % event)
         strength = None

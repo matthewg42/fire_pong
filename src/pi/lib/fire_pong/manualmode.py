@@ -10,7 +10,7 @@ from fire_pong.scoreboard import ScoreBoard
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_event import FpEvent
 from fire_pong.fp_serial import FpSerial
-
+from fire_pong.visualizer import Visualizer
 
 class ManualMode(Mode):
     __displayname__ = 'Manual Mode'
@@ -34,6 +34,7 @@ class ManualMode(Mode):
             if self.puffer_mask != 0:
                 e = FpEvent(self.puffer_mask, self.puff_type, pack('<H', self.puff_duration))
                 log.info('Event: %s' % str(e))
+                Visualizer().info(e)
                 FpSerial().write(e.serialize())
                 self.puffer_mask = 0
             time.sleep(0.1)
