@@ -26,9 +26,9 @@ const int MODE_BUTTON_PIN   = 5;    // Pin attached to mode selection button
 const int maxModes          = 3;
 
 // Static display messages
-const char text[]           = "Rule Zero*";
-const char text1[]          = "More of a guideline, really";
-const char text2[]          = "Setting Up - please do not disturb crew";
+const char text[]           = "Welcome to Nottingham Hackspace";
+const char text1[]          = "www.nottinghack.org.uk";
+const char text2[]          = "Ask me for a hackspace tour...";
 
 // Buffer for display data
 uint8_t dataArray[DISPLAY_WIDTH];
