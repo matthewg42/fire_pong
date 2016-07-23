@@ -40,6 +40,9 @@
 - name: install podmon service program
   copy: src=../../../../src/pi/bin/podmon dest={{firepong_prefix}}/bin/ owner=root mode=0755
 
+- name: replace path variable in podmon script
+  replace: dest={{firepong_prefix}}/bin/podmon regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
 - name: reload systemd daemon
   shell: systemctl daemon-reload
 
