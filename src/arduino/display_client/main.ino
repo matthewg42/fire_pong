@@ -1,6 +1,7 @@
 #include <MatrixText.h>
 #include <FpEvent.h>
 #include <EventBuffer.h>
+#include <Heartbeat.h>
 #include "MessageStore.h"
 
 using namespace std;
@@ -42,6 +43,9 @@ uint8_t dataArray[DISPLAY_WIDTH];
 // Object to generate display data (using D. Swann's library)
 MatrixText *matrixText;
 
+// So we can know what's happening by looking at the LED
+Heartbeat heartbeat(LED_PIN);
+
 int SWcounter               = 0;    // Debounce counter for the switch
 int currentMode             = 0;    // This holds the mode we are in
 bool lastPress              = HIGH; // This is to latch the button press
@@ -56,8 +60,9 @@ void setup()
     pinMode(SLATCH_PIN, OUTPUT);
     pinMode(SCLK_PIN, OUTPUT);
     pinMode(SDATA_PIN, OUTPUT);
-    pinMode(LED_PIN, OUTPUT);   
     pinMode(MODE_BUTTON_PIN, INPUT_PULLUP); 
+
+    heartbeat.setup();  // this will set the mode of LED_PIN
 
     messageStore.add(MESSAGE1);
     messageStore.add(MESSAGE2);
@@ -68,10 +73,21 @@ void setup()
     matrixText->set_scroll_speed(100); // Advance text position every 100ms
 
     memset(dataArray,0,sizeof(uint8_t)*DISPLAY_WIDTH);  // Set dataArray to clear it 
+
+    // Blink rapidly for a period so we know setup() ran
+    heartbeat.setMode(Heartbeat::Quick);
+    unsigned long int start = millis();
+    for (unsigned long int i=start; i<start+400; i++) {
+        heartbeat.tick();
+    }
+    heartbeat.setMode(Heartbeat::Normal);
 }
 
 void loop()
 { 
+    // blinky blink
+    heartbeat.tick();
+
     matrixText->loop(); // do scrolling text
   
     // Write the dataArray to the LED matrix:
@@ -99,7 +115,7 @@ void loop()
     }
 
     // Check the switch and change mode depending:
-    if(digitalRead(MODE_BUTTON_PIN)==LOW&&lastPress==LOW) {
+    if (digitalRead(MODE_BUTTON_PIN) == LOW && lastPress == LOW) {
         // Button pressed so count up
         SWcounter++;
         if(SWcounter>=50)
@@ -111,8 +127,7 @@ void loop()
             lastPress=HIGH;
         }
     }
-    else if (digitalRead(MODE_BUTTON_PIN)==HIGH&&lastPress==HIGH)
-    {
+    else if (digitalRead(MODE_BUTTON_PIN) == HIGH && lastPress == HIGH) {
         // Button NOT pressed - reset everything
         SWcounter=0;
         lastPress=LOW;
