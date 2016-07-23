@@ -68,7 +68,7 @@ class FpEvent():
         e.checksum = checksum
         return e
 
-    FP_MAX_DATA_LEN = 16
+    FP_MAX_DATA_LEN = 64
     FP_MAGIC = 0x5066
     FP_PACK = '<HBIB%dsBH'
     FP_MAX_PACKET_LEN = struct.calcsize(FP_PACK%FP_MAX_DATA_LEN)

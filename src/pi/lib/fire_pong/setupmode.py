@@ -12,12 +12,12 @@ from fire_pong.menumode import MenuMode
 from fire_pong.individualmode import IndividualMode
 
 class SetupMenuMode(MenuMode):
-    __displayname__ = 'Setup Mode'
+    __displayname__ = 'Setup'
     def __init__(self):
         MenuMode.__init__(self, [TestSparker, TestSolenoid, SinglePuff, LargePuff, LargePuffCycle])
 
 class TestSparker(IndividualMode):
-    __displayname__ = 'Sparker Only Test'
+    __displayname__ = 'Sparks'
     ''' Spark a single spearker, selected with swipes '''
     def __init__(self):
         puffers = config['PongGame']['puffers']
@@ -37,7 +37,7 @@ class TestSparker(IndividualMode):
         
 class TestSolenoid(IndividualMode):
     ''' Open and then close a single solenoid, selected with swipes '''
-    __displayname__ = 'Solenoid Only Test'
+    __displayname__ = 'Solenoids'
     def __init__(self):
         puffers = config['PongGame']['puffers']
         IndividualMode.__init__(self, puffers, self.callback)
@@ -56,7 +56,7 @@ class TestSolenoid(IndividualMode):
     
 class SinglePuff(IndividualMode):
     ''' Call puff sequence for a single puffer '''
-    __displayname__ = 'Single Puff Test'
+    __displayname__ = 'Small Puffs'
     def __init__(self):
         puffers = config['PongGame']['puffers']
         IndividualMode.__init__(self, puffers, self.callback)
@@ -71,7 +71,7 @@ class SinglePuff(IndividualMode):
 
 class LargePuff(IndividualMode):
     ''' Do a long puff for a big puffer '''
-    __displayname__ = 'Large Puff Test'
+    __displayname__ = 'Large Puffs'
     def __init__(self):
         puffers = config['LargePuffers']['ids']
         IndividualMode.__init__(self, puffers, self.callback)
@@ -86,7 +86,7 @@ class LargePuff(IndividualMode):
 
 class LargePuffCycle(IndividualMode):
     ''' Do a very long puff for a bif puffer (used while cycling accumulator '''
-    __displayname__ = 'Large Puffer Cycle (5 second)'
+    __displayname__ = 'Flush Large Puffers'
     def __init__(self):
         puffers = config['LargePuffers']['ids']
         IndividualMode.__init__(self, puffers, self.callback)

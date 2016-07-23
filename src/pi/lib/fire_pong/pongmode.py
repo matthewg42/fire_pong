@@ -194,11 +194,9 @@ class PongGame(Mode):
 class PongVictory(Mode):
     ''' Wait for player to swipe, and then do single fast run of small
         puffers, followed by single big puffer next to ossposing player '''
-    __displayname__ = 'Pong Victory'
+    __displayname__ = 'Victory'
     def __init__(self, player):
         Mode.__init__(self)
-        if player == None:
-            player = randint(1, 2)
         player = int(player)
         self.player = player
         self.puff_duration = config['PongGame']['puff_duration']
@@ -273,17 +271,16 @@ class PongVictory(Mode):
                         self.large_puff_duration_ms))
 
 class PongVictoryPlayer1(PongVictory):
-    __displayname__ = 'Victory Player 1'
+    __displayname__ = 'P1'
     def __init__(self):
         PongVictory.__init__(self, 1)
 
 class PongVictoryPlayer2(PongVictory):
-    __displayname__ = 'Victory Player 2'
+    __displayname__ = 'P2'
     def __init__(self):
         PongVictory.__init__(self, 2)
 
 class PongVictoryMenu(MenuMode):
-    __displayname__ = 'Pong Victory Test'
     def __init__(self):
         MenuMode.__init__(self, [PongVictoryPlayer1, PongVictoryPlayer2 ])
 

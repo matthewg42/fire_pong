@@ -45,7 +45,7 @@ class MusicMode(Mode):
             if self.display:
                 self.display = False
                 log.info('MusicMode.run() SELECTED idx=%d, song=%s' % (self.idx, self.music_files[self.idx]))
-                ScoreBoard().display(self.idx)
+                ScoreBoard().display(self.music_files[self.idx])
                 next
             if self.activate:
                 self.activate = False
@@ -71,7 +71,7 @@ class MusicMode(Mode):
             self.display = True
 
 class MusicPlayMode(Mode):
-    __displayname__ = 'Playing'
+    __displayname__ = 'Music Player'
     ''' Play a tune, and puff along with it! '''
     def __init__(self, music_file):
         log.debug('MusicPlayMode.__init__() START')
@@ -196,6 +196,7 @@ class MusicPlayMode(Mode):
         log.debug('MusicPlayMode.run() END')
 
     def start_playback(self):
+        ScoreBoard().display('Playing: ' + self.music_file)
         # Ensure mixer level is good
         subprocess.call(['amixer', '-q', 'set', 'PCM', '95%'])
         # Clear the queue
