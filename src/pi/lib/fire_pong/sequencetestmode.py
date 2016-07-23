@@ -13,7 +13,7 @@ from fire_pong.fp_serial import FpSerial
 from fire_pong.menumode import MenuMode
 
 class SequenceTestMode(MenuMode):
-    __displayname__ = 'ST'
+    __displayname__ = 'Sequence Test'
     def __init__(self):
         MenuMode.__init__(self, [Sequence1, Sequence2, Sequence3])
 
@@ -60,7 +60,7 @@ class SmallPufferSequence(Mode):
         FpSerial().write(e.serialize())
 
 class Sequence1(SmallPufferSequence):
-    __displayname__ = 'S1'
+    __displayname__ = 'Sequence 1 (double puffs)'
     def sequence(self, pufferid):
         log.info('Current Firmware Sequence with 150ms main puff length...')
         self.spark(pufferid, on=True)
@@ -76,7 +76,7 @@ class Sequence1(SmallPufferSequence):
         self.spark(pufferid, on=False)
 
 class Sequence2(SmallPufferSequence):
-    __displayname__ = 'S2'
+    __displayname__ = 'Sequence 2 (200ms pre & post spark)'
     def sequence(self, pufferid):
         log.info('Simple on off, with spark 200ms extra at start and end...')
         self.spark(pufferid, on=True)
@@ -88,7 +88,7 @@ class Sequence2(SmallPufferSequence):
         self.spark(pufferid, on=False)
 
 class Sequence3(SmallPufferSequence):
-    __displayname__ = 'S3'
+    __displayname__ = 'Sequence 3 (100ms pre & post spark)'
     def sequence(self, pufferid):
         log.info('Simple on off, with spark 100ms extra at start and end...')
         self.spark(pufferid, on=True)

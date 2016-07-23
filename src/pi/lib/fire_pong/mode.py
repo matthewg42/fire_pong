@@ -35,7 +35,7 @@ class Mode(object):
             return cls.__name__[0].upper()
 
 class DebugEventsMode(Mode):
-    __displayname__ = 'mD'
+    __displayname__ = 'Debug Events'
     def __init__(self):
         Mode.__init__(self)
 

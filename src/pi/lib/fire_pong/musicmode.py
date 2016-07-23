@@ -22,7 +22,7 @@ from fire_pong.menumode import MenuMode
 from fire_pong.runningmean import RunningMean
 
 class MusicMode(Mode):
-    __displayname__ = 'MM'
+    __displayname__ = 'Music Mode'
     ''' Select a tune to play '''
     def __init__(self):
         Mode.__init__(self)
@@ -71,7 +71,7 @@ class MusicMode(Mode):
             self.display = True
 
 class MusicPlayMode(Mode):
-    __displayname__ = 'MP'
+    __displayname__ = 'Playing'
     ''' Play a tune, and puff along with it! '''
     def __init__(self, music_file):
         log.debug('MusicPlayMode.__init__() START')

@@ -11,7 +11,7 @@ from fire_pong.scoreboard import ScoreBoard
 
 class ContinuousMode(Mode):
     ''' Cycle between waiting and continuous mode '''
-    __displayname__ = 'CM'
+    __displayname__ = 'Continuous Puffs'
     def __init__(self):
         Mode.__init__(self)
 

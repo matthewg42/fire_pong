@@ -18,7 +18,7 @@ def strength2delay(strength):
     return d
 
 class PongMode(Mode):
-    __displayname__ = 'PM'
+    __displayname__ = 'Pong Match'
     def __init__(self):
         Mode.__init__(self)
         self.winning_score = config['PongMatch']['winning_score']
@@ -194,7 +194,7 @@ class PongGame(Mode):
 class PongVictory(Mode):
     ''' Wait for player to swipe, and then do single fast run of small
         puffers, followed by single big puffer next to ossposing player '''
-    __displayname__ = 'PV'
+    __displayname__ = 'Pong Victory'
     def __init__(self, player):
         Mode.__init__(self)
         if player == None:
@@ -273,17 +273,17 @@ class PongVictory(Mode):
                         self.large_puff_duration_ms))
 
 class PongVictoryPlayer1(PongVictory):
-    __displayname__ = 'V1'
+    __displayname__ = 'Victory Player 1'
     def __init__(self):
         PongVictory.__init__(self, 1)
 
 class PongVictoryPlayer2(PongVictory):
-    __displayname__ = 'V2'
+    __displayname__ = 'Victory Player 2'
     def __init__(self):
         PongVictory.__init__(self, 2)
 
 class PongVictoryMenu(MenuMode):
-    __displayname__ = 'PV'
+    __displayname__ = 'Pong Victory Test'
     def __init__(self):
         MenuMode.__init__(self, [PongVictoryPlayer1, PongVictoryPlayer2 ])
 

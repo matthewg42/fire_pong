@@ -13,7 +13,7 @@ from fire_pong.fp_serial import FpSerial
 
 
 class ManualMode(Mode):
-    __displayname__ = 'MA'
+    __displayname__ = 'Manual Mode'
     ''' Make puffs happen with buttons
         START button: random small puffer
         SWIPE1 large puff 1
@@ -29,7 +29,7 @@ class ManualMode(Mode):
 
     def run(self):
         log.debug('ManualMode.run() START')
-        ScoreBoard().display(ManualMode.__displayname__.lower())
+        ScoreBoard().display('Yellow=random small puff; Green=Large 1; Blue=Large 2')
         while not self.terminate:
             if self.puffer_mask != 0:
                 e = FpEvent(self.puffer_mask, self.puff_type, pack('<H', self.puff_duration))
