@@ -196,6 +196,10 @@ void displayText(const char* message)
     Serial.print(F("DISPLAY: "));   
     Serial.println(message);
 #endif    
+    messageStore.clear();
+    messageStore.add(message);
+    currentMessage = 0;
+    matrixText->show_text(messageStore[currentMessage], 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 }
 
 
