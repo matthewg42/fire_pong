@@ -65,8 +65,8 @@ DisplayReceiver displayReceiver(pid, displayText);
 
 void setup()
 {
-#ifdef DEBUG
     Serial.begin(115200);
+#ifdef DEBUG
     delay(400);
     Serial.println(F("display client setup() BEGIN"));
 #endif
@@ -186,7 +186,7 @@ void handleEvent(FpEvent& e)
 void displayText(const char* message)
 {
 #ifdef DEBUG
-    Serial.print(F("DISPLAY: "));   
+    Serial.print(F("MESSAGE: "));   
     Serial.println(message);
 #endif    
     messageStore.clear();

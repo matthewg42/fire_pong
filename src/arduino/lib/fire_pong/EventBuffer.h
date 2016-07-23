@@ -4,7 +4,7 @@
 #include <Heartbeat.h>
 
 #define SERIAL_CLEAR_MS     30
-#define PACKET_TIMEOUT_MS   500
+#define PACKET_TIMEOUT_MS   600
 
 #define WAITING             Heartbeat::Normal
 #define RECEIVING           Heartbeat::Quick
