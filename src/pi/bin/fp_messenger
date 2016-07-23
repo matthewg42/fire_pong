@@ -55,7 +55,7 @@ def main():
     log.info('main() start')
 
     try:
-        read_events()
+        send_and_monitor(args.message)
     except Exception as e:
         log.exception('While reading events: %s' % e)
         cleanup_and_exit(5)
@@ -86,72 +86,20 @@ def cleanup_and_exit(level):
     global log, args
     sys.exit(level)
 
-def read_events():
+def send_and_monitor(message):
     from fire_pong.fp_event import FpEvent
     from fire_pong.fp_serial import FpSerial
-    reset('START')
+    from fire_pong.scoreboard import ScoreBoard
+
+    ScoreBoard().display(message)
     while True:
-        buf.append(FpSerial().serial.read())
-        if bidx() == 1:
-            if buf[0] != ord('f'):
-                reset('bad magic@%d: %s' % (bidx(), buf))
-            else:
-                last_packet_start = time.time()
-                packet_timeout = last_packet_start + PACKET_TIMEOUT;
-        elif bidx() == 2:
-            if buf[1] != ord('P'):
-                reset('bad magic@%d: %s' % (bidx(), buf))
-        elif bidx() == 3:
-            packet_length = buf[2]
-            if packet_length > FP_SERIAL_BUF_LEN or packet_length < FP_MINIMUM_PACKET_LEN:
-                reset('bad packet length: %d < %d < %d' % (FP_SERIAL_BUF_LEN, packet_length, FP_MINIMUM_PACKET_LEN))
-        else:
-            if bidx() >= packet_length:
-                log.debug('buf filled: %s' % repr(buf))
-                e = FpEvent.from_bytes(buf)
-                log.info('Received Event: %s' % str(e))
-                if e.is_valid():
-                    visualize(e)
-                reset('RECEIVED')
-
-def mypuff(pid, e):
-    t = FpEvent.FP_TYPES[e.fp_type]
-    return pid & e.id_set > 0 and t in ['FP_EVENT_PUFF', 'FP_EVENT_ALTPUFF']
-
-def visualize(e):
-    global display_text
-    l = 4 * ['']
-    for size, pid, _, _ in puffer_ids:
-        if size is 'L':
-            l[0] += ' @ ' if mypuff(pid, e) > 0 else '   '
-            l[1] += ' @ ' if mypuff(pid, e) > 0 else '   '
-            l[2] += ' | '
-            l[3] += ' 0 '
-        else:
-            l[0] += '   '
-            l[1] += ' @ ' if mypuff(pid, e) > 0 else '   '
-            l[2] += ' @ ' if mypuff(pid, e) > 0 else '   '
-            l[3] += ' | '
-
-    if FpEvent.FP_TYPES[e.fp_type] is 'FP_EVENT_DISPLAY':
-        display_text = str(e.data)
-
-    l[0] += '     ' +  '+----+'
-    #l[1] += '     ' + ('+ %2s +' % display_text)
-    l[1] += '     ' + ('+ %2s +' % display_text)
-    l[2] += '     ' +  '+----+'
-    l[3] += '     ' +  '  ||  '
-    for s in l:
-        print(s)
+        sys.stdout.write(FpSerial().serial.read())
+        sys.stdout.flush()
 
 def reset(msg):
     global buf
     buf = bytearray()
     log.debug('reset: %s' % msg)
-
-def bidx():
-    return len(buf)
-
 
 if __name__ == '__main__':
     import argparse
@@ -172,6 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--log-ts', dest='log_timestamps', 
         action='store_const', const=True, default=False, 
         help='write informational output in the log')
+    parser.add_argument('message', type=str, nargs='*', help='what to display')
     args = parser.parse_args()
 
     main()

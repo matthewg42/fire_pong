@@ -2,6 +2,7 @@
 #include <FpEvent.h>
 #include <EventBuffer.h>
 #include <Heartbeat.h>
+#include <DisplayReceiver.h>
 #include "MessageStore.h"
 
 using namespace std;
@@ -26,6 +27,9 @@ const char* MESSAGE1        = "Welcome to Nottingham Hackspace";
 const char* MESSAGE2        = "www.nottinghack.org.uk";
 const char* MESSAGE3        = "Ask me for a hackspace tour...";
 
+// Firepong PID for display node
+const uint32_t pid = 0x4000; 
+
 // Inputs and Outputs
 const int SLATCH_PIN        = 2;    // Pin connected to ST_CP of 74HC595
 const int SCLK_PIN          = 3;    // Pin connected to SH_CP of 74HC595
@@ -46,12 +50,20 @@ MatrixText *matrixText;
 // So we can know what's happening by looking at the LED
 Heartbeat heartbeat(LED_PIN);
 
+
 int SWcounter               = 0;    // Debounce counter for the switch
 int currentMode             = 0;    // This holds the mode we are in
 bool lastPress              = HIGH; // This is to latch the button press
 
 // Function declatations for Makefile build
 void set_xy (uint16_t x, uint16_t y, byte val);
+void handleEvent(FpEvent& e);
+void displayText(const char* message);
+
+// This object parses incoming FpEvent messages over serial
+EventBuffer eventBuffer(handleEvent, &heartbeat);
+
+DisplayReceiver displayReceiver(pid, displayText);
 
 void setup()
 {
@@ -68,6 +80,7 @@ void setup()
 
     heartbeat.setup();  // this will set the mode of LED_PIN
 
+    messageStore.clear();
     messageStore.add(MESSAGE1);
     messageStore.add(MESSAGE2);
     messageStore.add(MESSAGE3);
@@ -80,7 +93,7 @@ void setup()
 
     // Blink rapidly for a period so we know setup() ran
     heartbeat.setMode(Heartbeat::Quick);
-    for (unsigned long int wait=millis() + 400; millis()<wait; 1) {
+    for (unsigned long int wait=millis() + 400; millis()<wait;) {
         heartbeat.tick();
     }
     heartbeat.setMode(Heartbeat::Normal);
@@ -95,7 +108,11 @@ void loop()
     // blinky blink
     heartbeat.tick();
 
-    matrixText->loop(); // do scrolling text
+    // handle incoming serial data
+    eventBuffer.tick();
+
+    // do scrolling text
+    matrixText->loop();
   
     // Write the dataArray to the LED matrix:
     digitalWrite(SLATCH_PIN, LOW);  
@@ -163,5 +180,23 @@ void set_xy (uint16_t x, uint16_t y, byte val)
         dataArray[x] &= ~(1 << actual_y); // Clear bit
     }
 }
+
+void handleEvent(FpEvent& e)
+{
+#ifdef DEBUG
+    Serial.print(F("Display received event: "));   
+    e.dump();
+#endif    
+    displayReceiver.process_event(e);
+}
+
+void displayText(const char* message)
+{
+#ifdef DEBUG
+    Serial.print(F("DISPLAY: "));   
+    Serial.println(message);
+#endif    
+}
+
 
 

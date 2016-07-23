@@ -118,7 +118,7 @@ void EventBuffer::tick () {
                     }
                     else {
 #ifdef DEBUG
-                        Serial.print(F("Sendig event to callback: "));
+                        Serial.print(F("Sending event to callback: "));
                         Serial.println((unsigned long)_callback, HEX);
 #endif
                         _callback(e);

@@ -17,9 +17,9 @@ public:
     // how many messages are stored
     const int size();
 
-private:
     void clear();
 
+private:
     char _messages[MAX_MESSAGE_COUNT][MAX_MESSAGE_LEN+1];
     unsigned int _count;
 };
