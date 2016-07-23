@@ -1,7 +1,9 @@
 #pragma once
 
+#include <FpEvent.h>
+
 #define MAX_MESSAGE_COUNT       5
-#define MAX_MESSAGE_LEN         80
+#define MAX_MESSAGE_LEN         FP_MAX_DATA_LEN
 
 class MessageStore {
 public:

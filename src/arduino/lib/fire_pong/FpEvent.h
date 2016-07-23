@@ -27,7 +27,7 @@ typedef uint8_t fp_data_t;
 typedef uint8_t fp_checksum_t;
 typedef uint32_t fp_id_t;
 
-#define FP_MAX_DATA_LEN   16
+#define FP_MAX_DATA_LEN   64
 #define FP_EVENT_HALT     0
 #define FP_EVENT_RESET    1
 #define FP_EVENT_SPARK    2
