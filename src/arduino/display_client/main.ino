@@ -37,12 +37,13 @@ see www.re-innovation.co.uk for more details
 void set_xy (uint16_t x, uint16_t y, byte val);
 
 // This is for the serial shifted output data
-const int sLatch = 0;   //Pin connected to ST_CP of 74HC595
-const int sClk =  1;    //Pin connected to SH_CP of 74HC595
-const int sData = 4;    //Pin connected to DS of 74HC595
-const int led = 6;  //LED of Minimus
-const int swInputA = 7;  // An input switch
-const int maxModes = 3;  // Total number of switch modes
+const int sLatch =      2;   //Pin connected to ST_CP of 74HC595
+const int sClk =        3;    //Pin connected to SH_CP of 74HC595
+const int sData =       4;    //Pin connected to DS of 74HC595
+const int led =         13;  //LED of Minimus
+const int swInputA =    5;  // An input switch
+
+const int maxModes =    3;  // Total number of switch modes
 
 int number = 0;  // This will be the displayed data
 
