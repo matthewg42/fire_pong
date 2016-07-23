@@ -20,4 +20,4 @@ Following big test, 2016-07-21 at Ian's place:
 6.  Add brief large puff at PongGame win
 7.  End small puffer doesn't light if hit is on second to last puffer
 8.  Calibrate wiimotes!
-9.  Implement ALTPUFF in main program code
+9.  Implement ALTPUFF in main program code [DONE]
