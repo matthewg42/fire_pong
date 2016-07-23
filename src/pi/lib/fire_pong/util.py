@@ -31,7 +31,8 @@ def load_config(args):
         config['serial']['port'] = args.serial_device
     if 'serial' not in config:
         config['serial'] = dict()
-    config['serial']['debug'] = args.serial_debug
+    if args.serial_debug is not None:
+        config['serial']['debug'] = args.serial_debug
     log.debug('load_config: config=%s' % config)
 
 def set_test_config():

@@ -145,7 +145,7 @@ if __name__ == '__main__':
         const=logging.DEBUG, default=logging.WARN, 
         help='write debugging output in the log')
     parser.add_argument('--serial-debug', dest='serial_debug', action='store_const',
-        const=True, default=False, 
+        const=True, default=None, 
         help='write dditional debugging for serial events (when --debug used)')
     parser.add_argument('--info', dest='logging_level', action='store_const',
         const=logging.INFO, help='write informational output in the log')
