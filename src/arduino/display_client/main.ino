@@ -19,7 +19,7 @@ using namespace std;
 */
 
 // Our matrix display dimensions
-const int DISPLAY_WIDTH     = 12;
+const int DISPLAY_WIDTH     = 13;
 const int DISPLAY_HEIGHT    = 8;
 
 // Default messages for this firmware
@@ -199,7 +199,10 @@ void displayText(const char* message)
     messageStore.clear();
     messageStore.add(message);
     currentMessage = 0;
-    matrixText->show_text(messageStore[currentMessage], 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    if (strlen(message) <= 2)
+        matrixText->show_text(messageStore[currentMessage], 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, false);
+    else
+        matrixText->show_text(messageStore[currentMessage], 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, true);
 }
 
 
