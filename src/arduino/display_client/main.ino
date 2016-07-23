@@ -1,33 +1,14 @@
 #include <MatrixText.h>
 
-/********************************************************
-/****** 7 Segment LED driver board Basic Code 1 *********
-/****** by Matt Little **********************************
-/****** Date: 5/4/13 ************************************
-/****** info@re-innovation.co.uk ************************
-/****** www.re-innovation.co.uk *************************
-/********************************************************
+/*
+    FirePong Display Client
 
-/* Adaped by Daniel Swann 26/08/2014 to test MatrixText *
+    2016-07-23  Mouse;        Adapted for FirePong
+    2014-08-26  Daniel Swann; Adapted to test MatrixText 
+    2013-04-04  Matt Little;  Original code; info@re-innovation.co.uk; www.re-innovation.co.uk
 
-This example uses the Serial Shift output to control a 7 segment LED display
-Data is shifted out serially and only when all the shift registers are filled does the latch cause
-the LED outputs to update.
-The LED boards require 12V supply as they contain strings of 4 LEDs.
-The wiring for each board is as follows (P1 and P2):
-
-  Pin 1  ->  Serial LATCH -> A3 on Arduino (in this example)
-  Pin 2  ->  Serial CLOCK -> A5 on Arduino (in this example)
-  Pin 3  ->  Serial DATA  -> A4 on Arduino (in this example)  
-  Pin 4  ->  GROUND       -> GND on Arduino
-  Pin 5  ->  +5V          -> +5V on Arduino
-  Pin 6  ->  GROUND       -> GND for LED supply
-  Pin 7  ->  +12V         -> +12V for LED supply
-
-Use a 0.1uF capacitor between Pin 1 (sLATCH) and Pin 4 (GND) to prevent flicker on the display.
-
-see www.re-innovation.co.uk for more details
- 
+    see also http://www.instructables.com/files/orig/F8R/C5ME/I2P3NA7V/F8RC5MEI2P3NA7V.zip
+    and http://www.instructables.com/id/Large-Scrolling-LED-display/?ALLSTEPS
 */
 
 // Our matrix display dimensions
