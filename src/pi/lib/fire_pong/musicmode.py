@@ -86,6 +86,7 @@ class MusicPlayMode(Mode):
         log.info('MusicPlayMode.__init__() all_puffers: %s' % str([('%x' % x) for x in self.all_puffers]))
         log.info('MusicPlayMode.__init__() large_puffers: %s' % str([('%x' % x) for x in self.large_puffers]))
         self.puff_duration = config['MusicMode']['puff_duration']
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.means = []
         self.meanlen = 10
         self.puff_frequency = None
@@ -177,8 +178,8 @@ class MusicPlayMode(Mode):
                             puffmask = puffmask | self.manual_mask
                             self.manual_mask = 0
                         if puffmask != 0:
-                            e = FpEvent(puffmask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration))
-                            log.info('PUFF event: %s' % str(e))
+                            e = FpEvent(puffmask, self.puff_type, pack('<H', self.puff_duration))
+                            log.info('Event: %s' % str(e))
                             FpSerial().write(e.serialize())
                         self.out.write(data)
                     except Exception as e:

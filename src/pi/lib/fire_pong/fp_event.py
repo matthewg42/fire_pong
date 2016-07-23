@@ -78,7 +78,8 @@ class FpEvent():
                  3: 'FP_EVENT_SOLENOID', 
                  4: 'FP_EVENT_PUFF', 
                  5: 'FP_EVENT_DISPLAY',
-                 6: 'FP_EVENT_RELAY' } 
+                 6: 'FP_EVENT_RELAY', 
+                 7: 'FP_EVENT_ALTPUFF' } 
     @classmethod
     def get_type_id(cls, t):
         for key, value in cls.FP_TYPES.items():

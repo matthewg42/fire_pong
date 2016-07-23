@@ -61,10 +61,11 @@ class SinglePuff(IndividualMode):
         puffers = config['PongGame']['puffers']
         IndividualMode.__init__(self, puffers, self.callback)
         self.duration = config['PongGame']['puff_duration']
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
 
     def callback(self, idmask):
-        log.info("PUFF id=%08X" % idmask)
-        e = FpEvent(idmask, 'FP_EVENT_PUFF', struct.pack('<H', self.duration))
+        log.info("%s id=%08X" % (self.puff_type, idmask))
+        e = FpEvent(idmask, self.puff_type, struct.pack('<H', self.duration))
         log.info(str(e))
         FpSerial().write(e.serialize())
 
@@ -75,10 +76,11 @@ class LargePuff(IndividualMode):
         puffers = config['LargePuffers']['ids']
         IndividualMode.__init__(self, puffers, self.callback)
         self.duration = config['LargePuffers']['puff_duration']
+        self.puff_type = 'FP_EVENT_PUFF'
 
     def callback(self, idmask):
-        log.info("PUFF id=%08X" % idmask)
-        e = FpEvent(idmask, 'FP_EVENT_PUFF', struct.pack('<H', self.duration))
+        log.info("%s id=%08X" % (self.puff_type, idmask))
+        e = FpEvent(idmask, self.puff_type, struct.pack('<H', self.duration))
         log.info(str(e))
         FpSerial().write(e.serialize())
 
@@ -89,10 +91,11 @@ class LargePuffCycle(IndividualMode):
         puffers = config['LargePuffers']['ids']
         IndividualMode.__init__(self, puffers, self.callback)
         self.duration = config['LargePuffers']['cycle_duration']
+        self.puff_type = 'FP_EVENT_PUFF'
 
     def callback(self, idmask):
-        log.info("PUFF id=%08X" % idmask)
-        e = FpEvent(idmask, 'FP_EVENT_PUFF', struct.pack('<H', self.duration))
+        log.info("%s id=%08X" % (self.puff_type, idmask))
+        e = FpEvent(idmask, self.puff_type, struct.pack('<H', self.duration))
         log.info(str(e))
         FpSerial().write(e.serialize())
         

@@ -24,15 +24,16 @@ class ManualMode(Mode):
         self.small_puffers = config['PongGame']['puffers']
         self.large_puffers = config['LargePuffers']['ids']
         self.puff_duration = 50
-        self.puffer_mask = 0
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
+        self.puffer_mask =  0
 
     def run(self):
         log.debug('ManualMode.run() START')
         ScoreBoard().display(ManualMode.__displayname__.lower())
         while not self.terminate:
             if self.puffer_mask != 0:
-                e = FpEvent(self.puffer_mask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration))
-                log.info('PUFF event: %s' % str(e))
+                e = FpEvent(self.puffer_mask, self.puff_type, pack('<H', self.puff_duration))
+                log.info('Event: %s' % str(e))
                 FpSerial().write(e.serialize())
                 self.puffer_mask = 0
             time.sleep(0.1)

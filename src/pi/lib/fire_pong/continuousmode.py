@@ -61,6 +61,7 @@ class ContinuousModePuffs(Mode):
         self.puffers = config['PongGame']['puffers']
         self.delay = config['PongGame']['initial_delay']
         self.puff_duration = config['PongGame']['puff_duration']
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.idx = 0
         self.inc = 1
         self.terminate = False
@@ -79,8 +80,8 @@ class ContinuousModePuffs(Mode):
             for i in range(0,3):
                 log.info(d[i])
 
-            log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
-            e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
+            log.info("%s idx=%02d id=%08X" % (self.puff_type, self.idx, self.puffers[self.idx]))
+            e = FpEvent(self.puffers[self.idx], self.puff_type, struct.pack('<H', self.puff_duration))
             log.info(str(e))
             FpSerial().write(e.serialize())
 
