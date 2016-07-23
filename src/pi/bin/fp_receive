@@ -124,7 +124,7 @@ def mypuff(pid, e):
 def visualize(e):
     global display_text
     l = 4 * ['']
-    for size, pid in puffer_ids:
+    for size, pid, _, _ in puffer_ids:
         if size is 'L':
             l[0] += ' @ ' if mypuff(pid, e) > 0 else '   '
             l[1] += ' @ ' if mypuff(pid, e) > 0 else '   '
