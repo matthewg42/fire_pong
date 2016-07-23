@@ -91,10 +91,13 @@ def send_and_monitor(message):
     from fire_pong.fp_serial import FpSerial
     from fire_pong.scoreboard import ScoreBoard
 
-    ScoreBoard().display(message)
-    while True:
-        sys.stdout.write(FpSerial().serial.read())
-        sys.stdout.flush()
+    time.sleep(0.1)
+    start = time.time()
+    ScoreBoard().display(' '.join(message))
+    if args.logging_level == logging.DEBUG:
+        while True and time.time() < start + 5:
+            sys.stdout.write(FpSerial().serial.read())
+            sys.stdout.flush()
 
 def reset(msg):
     global buf
@@ -115,7 +118,7 @@ if __name__ == '__main__':
         const=logging.DEBUG, default=logging.INFO, 
         help='write debugging output in the log')
     parser.add_argument('--serial-debug', dest='serial_debug', action='store_const',
-        const=True, default=False, 
+        const=True, default=None, 
         help='write dditional debugging for serial events (when --debug used)')
     parser.add_argument('--log-ts', dest='log_timestamps', 
         action='store_const', const=True, default=False, 
