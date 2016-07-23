@@ -111,7 +111,7 @@ class PongCounterMode(Mode):
     def run(self):
         log.debug('PongCounterMode.run()')
         while not self.terminate and self.count != self.end + self.step:
-            ScoreBoard().display(str(self.count))
+            ScoreBoard().display(' %d' % self.count)
             self.count += self.step
             time.sleep(self.time)
         log.debug('PongCounterMode.run() END %s' % self.start)
@@ -129,9 +129,11 @@ class PongGame(Mode):
     def __init__(self, start_player):
         Mode.__init__(self)
         self.puffers = config['PongGame']['puffers']
+        self.large_puffers = config['LargePuffers']['ids']
         self.delay = config['PongGame']['initial_delay']
         self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.puff_duration = config['PongGame']['puff_duration']
+        self.large_puff_duration = config['PongGame']['large_puff_duration']
         self.hit_idx = {'1UP': [0, 1], '2UP': [len(self.puffers)-2, len(self.puffers)-1]}
         self.win = None
         self.quit = False
@@ -167,6 +169,11 @@ class PongGame(Mode):
         if self.quit:
             return None
         else:
+            death_puffer = self.large_puffers[1 if self.win == 1 else 0]
+            e = FpEvent(death_puffer, 'FP_EVENT_PUFF', struct.pack('<H', self.large_puff_duration))
+            log.info(str(e))
+            Visualizer().info(e)
+            FpSerial().write(e.serialize())
             return self.win
             
     def event(self, event):

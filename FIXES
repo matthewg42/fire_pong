@@ -17,7 +17,7 @@ Following big test, 2016-07-21 at Ian's place:
     c.  add new PUFFn modes for alternative puff sequences [ALTPUFF DONE]
     d.  work out what happens when sequences overlap (refuse to start new seq when one is already running for a given puffer) [DONE]
         ANSWER: reset() is called on _seq, so nothing bad should happen.
-6.  Add brief large puff at PongGame win
-7.  End small puffer doesn't light if hit is on second to last puffer
+6.  Add brief large puff at PongGame win [DONE]
+7.  End small puffer doesn't light if hit is on second to last puffer [DONT CARE]
 8.  Calibrate wiimotes!
 9.  Implement ALTPUFF in main program code [DONE]

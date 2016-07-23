@@ -45,8 +45,8 @@ def main():
     # Configure score board (singleton)
     try:
         from fire_pong.scoreboard import ScoreBoard
-        ScoreBoard().display('Oh Hai')
-        time.sleep(2)
+        ScoreBoard().display('Hai')
+        time.sleep(0.8)
         log.info('ScoreBoard initialized OK')
     except Exception as e:
         log.exception('Failed to initialize ScoreBoard')
