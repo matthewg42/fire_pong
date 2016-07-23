@@ -1,15 +1,14 @@
 #include "MessageStore.h"
 #include <string.h>
 
-MessageStore::MessageStore()
+MessageStore::MessageStore() : _count(0)
 {
-    clear();
 }
 
 void MessageStore::clear() {
     for(int i=0; i<MAX_MESSAGE_COUNT; i++) 
     {
-        memset(_messages, 0, sizeof(char) * MAX_MESSAGE_LEN);
+        memset(_messages[i], 0, sizeof(char) * MAX_MESSAGE_LEN);
     }
     _count = 0;
 }
@@ -32,7 +31,7 @@ void MessageStore::add(const char* message)
 const char* MessageStore::operator[](unsigned int n)
 {
     if (n < _count) {
-        return _messages[_count];
+        return _messages[n];
     } else {
         return NULL;
     }

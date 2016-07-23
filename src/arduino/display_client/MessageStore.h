@@ -20,6 +20,6 @@ public:
 private:
     void clear();
 
-    char* _messages[MAX_MESSAGE_COUNT];
+    char _messages[MAX_MESSAGE_COUNT][MAX_MESSAGE_LEN+1];
     unsigned int _count;
 };

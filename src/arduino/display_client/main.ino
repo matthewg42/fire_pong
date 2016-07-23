@@ -22,9 +22,9 @@ const int DISPLAY_WIDTH     = 12;
 const int DISPLAY_HEIGHT    = 8;
 
 // Default messages for this firmware
-const char* MESSAGE1         = "Welcome to Nottingham Hackspace";
-const char* MESSAGE2         = "www.nottinghack.org.uk";
-const char* MESSAGE3         = "Ask me for a hackspace tour...";
+const char* MESSAGE1        = "Welcome to Nottingham Hackspace";
+const char* MESSAGE2        = "www.nottinghack.org.uk";
+const char* MESSAGE3        = "Ask me for a hackspace tour...";
 
 // Inputs and Outputs
 const int SLATCH_PIN        = 2;    // Pin connected to ST_CP of 74HC595
@@ -52,10 +52,14 @@ bool lastPress              = HIGH; // This is to latch the button press
 
 // Function declatations for Makefile build
 void set_xy (uint16_t x, uint16_t y, byte val);
-bool addMessage(const char* message);
 
 void setup()
 {
+#ifdef DEBUG
+    Serial.begin(115200);
+    delay(400);
+    Serial.println(F("display client setup() BEGIN"));
+#endif
     //set pins to output so you can control the shift register
     pinMode(SLATCH_PIN, OUTPUT);
     pinMode(SCLK_PIN, OUTPUT);
@@ -76,11 +80,14 @@ void setup()
 
     // Blink rapidly for a period so we know setup() ran
     heartbeat.setMode(Heartbeat::Quick);
-    unsigned long int start = millis();
-    for (unsigned long int i=start; i<start+400; i++) {
+    for (unsigned long int wait=millis() + 400; millis()<wait; 1) {
         heartbeat.tick();
     }
     heartbeat.setMode(Heartbeat::Normal);
+
+#ifdef DEBUG
+    Serial.println(F("display client setup() END"));
+#endif
 }
 
 void loop()
