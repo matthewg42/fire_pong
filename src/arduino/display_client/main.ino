@@ -23,9 +23,7 @@ const int DISPLAY_WIDTH     = 13;
 const int DISPLAY_HEIGHT    = 8;
 
 // Default messages for this firmware
-const char* MESSAGE1        = "Welcome to Nottingham Hackspace";
-const char* MESSAGE2        = "www.nottinghack.org.uk";
-const char* MESSAGE3        = "Ask me for a hackspace tour...";
+const char* MESSAGE         = "Rule Zero*   *More of a guideline";
 
 // Firepong PID for display node
 const uint32_t pid = 0x4000; 
@@ -81,13 +79,11 @@ void setup()
     heartbeat.setup();  // this will set the mode of LED_PIN
 
     messageStore.clear();
-    messageStore.add(MESSAGE1);
-    messageStore.add(MESSAGE2);
-    messageStore.add(MESSAGE3);
+    messageStore.add(MESSAGE);
 
     matrixText = new MatrixText(set_xy);
     matrixText->show_text(messageStore[currentMessage], 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-    matrixText->set_scroll_speed(100); // Advance text position every 100ms
+    matrixText->set_scroll_speed(60); // Advance position every this many ms
 
     memset(dataArray,0,sizeof(uint8_t)*DISPLAY_WIDTH);  // Set dataArray to clear it 
 
@@ -156,9 +152,6 @@ void loop()
         SWcounter=0;
         lastPress=LOW;
     }
-
-    // This is the main delay and slows everything down a bit.
-    delay(10);
 
 }
 
