@@ -30,7 +30,7 @@ class PongMode(Mode):
         self.score = [0,0]
 
     def display_score(self):
-        ScoreBoard().display('%d%d' % tuple(self.score))
+        ScoreBoard().display('%d%d' % tuple(reversed(self.score)))
 
     def run(self):
         log.debug('PongMode.run() START')
@@ -252,7 +252,7 @@ class PongVictory(Mode):
                 strength = event.strength
 
         if strength:
-            self.delay = strength2delay(strength) / 3.0
+            self.delay = strength2delay(strength) / 5.0
             self.large_puff_duration_ms = 25.0 / self.delay
             log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
                         self.player, 
