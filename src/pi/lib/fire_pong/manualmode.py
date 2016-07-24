@@ -23,16 +23,18 @@ class ManualMode(Mode):
         log.debug('ManualMode.__init__()')
         self.small_puffers = config['PongGame']['puffers']
         self.large_puffers = config['LargePuffers']['ids']
-        self.puff_duration = config['ManualMode']['puff_duration']
+        self.small_puff_duration = config['ManualMode']['small_puff_duration']
+        self.large_puff_duration = config['ManualMode']['large_puff_duration']
         self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.puffer_mask =  0
+        self.duration = 0
 
     def run(self):
         log.debug('ManualMode.run() START')
         ScoreBoard().display('Yellow=random small puff; Green=Large 1; Blue=Large 2')
         while not self.terminate:
             if self.puffer_mask != 0:
-                e = FpEvent(self.puffer_mask, self.puff_type, pack('<H', self.puff_duration))
+                e = FpEvent(self.puffer_mask, self.puff_type, pack('<H', self.duration))
                 log.info('Event: %s' % str(e))
                 Visualizer().info(e)
                 FpSerial().write(e.serialize())
@@ -47,9 +49,11 @@ class ManualMode(Mode):
             self.terminate = True
 
         if event == EventButton('start'):
+            self.duration = self.small_puff_duration
             self.puffer_mask = self.puffer_mask | self.small_puffers[random.randint(0, len(self.small_puffers)-1)]
 
         if type(event) is EventSwipe:
+            self.duration = self.large_puff_duration
             if event.player == '2UP': 
                 self.puffer_mask = self.puffer_mask | self.large_puffers[0]
             else:

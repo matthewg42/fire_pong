@@ -14,5 +14,7 @@ alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
 alias log='journalctl -f'
 alias display='fp_messenger -c "$FPROOT/etc/firepong.json"'
+alias config='vi "$FPROOT/etc/firepong.json"'
+alias cdf='cd $FPROOT/'
 
 export PYTHONPATH=/opt/firepong/lib/python2/dist-packages

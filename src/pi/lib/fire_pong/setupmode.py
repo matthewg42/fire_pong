@@ -15,7 +15,35 @@ from fire_pong.visualizer import Visualizer
 class SetupMenuMode(MenuMode):
     __displayname__ = 'Setup'
     def __init__(self):
-        MenuMode.__init__(self, [TestSparker, TestSolenoid, SinglePuff, LargePuff, LargePuffCycle])
+        MenuMode.__init__(self, [DisplayOptions, TestSparker, TestSolenoid, SinglePuff, LargePuff, LargePuffCycle])
+
+class DisplayOptions(MenuMode):
+    __displayname__ = 'Display options'
+    def __init__(self):
+        MenuMode.__init__(self, [MuteDisplay, UnmuteDisplay])
+
+class MuteDisplay(Mode):
+    __displayname__ = 'Mute Display'
+    def __init__(self):
+        Mode.__init__(self)
+
+    def run(self):
+        ScoreBoard().display('No more display updates from firepong daemon...')
+        ScoreBoard().mute()
+
+    def event(self, event):
+        pass
+
+class UnmuteDisplay(Mode):
+    __displayname__ = 'Unmute Display'
+    def __init__(self):
+        Mode.__init__(self)
+
+    def run(self):
+        ScoreBoard().unmute()
+
+    def event(self, event):
+        pass
 
 class TestSparker(IndividualMode):
     __displayname__ = 'Sparks'

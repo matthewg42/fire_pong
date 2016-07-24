@@ -25,12 +25,11 @@ __________      .__            \       /   __________                     \|/
 
 
 Firepong install root:               {{firepong_prefix}}
-Edit config                          vi {{firepong_prefix}}/etc/firepong.json
 Restart firepong daemon:             systemctl restart firepong
-Follow all logs:                     log
-Follow only the firepong log:        journalctl -f -u firepong
-Message to display:                  display [message]
+Edit config:                         config
+Follow logs:                         log
+Send message to display board:       display [message]
 
-Daemon will auto-restart after a few seconds if Q is selected from main menu
+Daemon will auto-restart after a few seconds if RED button pressed in main menu.
 
 

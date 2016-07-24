@@ -11,6 +11,7 @@ class ScoreBoard:
         def __init__(self):
             log.debug('ScoreBoard display id=%08X' % self.get_id())
             self.keyboard = None
+            self.muted = False
             try:
                 self.keyboard = Keyboard()
             except Exception as e:
@@ -19,6 +20,12 @@ class ScoreBoard:
         def get_id(self):
             return fire_pong.util.config['display']['id']
 
+        def mute(self):
+            self.muted = True
+
+        def unmute(self):
+            self.muted = False
+
         def display(self, message):
             message = str(message)[0:FpEvent.FP_MAX_DATA_LEN]
             disp_id = self.get_id()
@@ -26,7 +33,8 @@ class ScoreBoard:
                 e = FpEvent(disp_id, 'FP_EVENT_DISPLAY', message)
                 log.info('DISPLAY: %s' % message)
                 Visualizer().update(e)
-                FpSerial().write(e.serialize())
+                if self.muted is False:
+                    FpSerial().write(e.serialize())
             if self.keyboard is not None:
                 self.keyboard.display_text(message)
 
