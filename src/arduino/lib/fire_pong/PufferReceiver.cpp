@@ -20,7 +20,7 @@ PufferReceiver::~PufferReceiver()
 
 bool PufferReceiver::want(const FpEvent& e)
 {
-	return e.type() == FP_EVENT_PUFF || e.type() == FP_EVENT_SOLENOID;
+	return e.type() == FP_EVENT_PUFF || e.type() == FP_EVENT_ALTPUFF || e.type() == FP_EVENT_SOLENOID;
 }
 
 void PufferReceiver::setup()
@@ -37,6 +37,7 @@ void PufferReceiver::handle(const FpEvent& e)
 	uint16_t t = 0;
 	uint8_t state;
 	switch (e.type()) {
+    case FP_EVENT_ALTPUFF:
 	case FP_EVENT_PUFF:
 		if (e.data_length() != sizeof(uint16_t)) {
 #ifdef DESKTOP 
