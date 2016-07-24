@@ -27,16 +27,15 @@ class Mode(object):
         ''' returns a short (no more than 2 characters) name for use on the display in MenuMode '''
         try:
             # if class.__displayname__ is defined, use that
-            log.debug('cls = %s' % cls)
             return cls.__displayname__
         except Exception as e:
-            log.warning('could not find __displayname__ class variable: %s: %s' % (type(e), e))
+            log.debug('could not find __displayname__ class variable: %s: %s' % (type(e), e))
             # otherwise just use the first character of the mode class name
             # capitalized.
             return cls.__name__[0].upper()
 
 class DebugEventsMode(Mode):
-    __displayname__ = 'mD'
+    __displayname__ = 'Debug Events'
     def __init__(self):
         Mode.__init__(self)
 

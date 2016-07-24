@@ -1,0 +1,31 @@
+#!/bin/bash
+# Power Off Daemon MONitor
+
+# Note these are WiringPi IDS, NOT BCM IDs...
+
+# Mode button
+PIN1=7
+# Start button
+PIN2=0
+
+START=5
+FPROOT="{{firepong_prefix}}"
+export PYTHONPATH="${FPROOT}/lib/python2/dist-packages"
+
+count=$START
+while true; do
+    if [ "$(gpio read $PIN1)" = "0" ] && [ "$(gpio read $PIN2)" = "0" ]; then
+        let count-=1
+        if [ $count -le 3 ]; then
+            echo "Power off in $count..."
+            "${FPROOT}/bin/fp_messenger" -c "${FPROOT}/etc/firepong.json" " $count"
+            if [ $count -eq 0 ]; then
+                "${FPROOT}/bin/fp_messenger" -c "${FPROOT}/etc/firepong.json" "Powering down..."
+                poweroff
+            fi
+        fi
+    else
+        count=$START
+    fi
+    sleep 1
+done

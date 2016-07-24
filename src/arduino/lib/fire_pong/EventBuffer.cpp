@@ -61,11 +61,18 @@ void EventBuffer::reset() {
 
 void EventBuffer::tick () {
     if (millis() > _packet_timeout) {
+#ifdef DEBUG
+        Serial.println(F("RST timeout"));
+#endif
         reset();
     }
 
 	if (Serial.available() > 0) {
 		_buf[_ptr] = Serial.read();
+#ifdef DEBUG
+        Serial.print(F("+"));
+        Serial.print(_buf[_ptr], HEX);
+#endif
 		switch(_ptr++) {
 		case 0:
 			if (_buf[0] != 'f') {
@@ -77,12 +84,23 @@ void EventBuffer::tick () {
 			break;
 		case 1:
 			if (_buf[1] != 'P') {
+#ifdef DEBUG
+        Serial.println(F("RST magic P"));
+#endif
 				reset();
 			}
 			break;
         case FP_SERIAL_LENGTH_OFFSET+sizeof(fp_length_t)-1:
             _packet_length = *(reinterpret_cast<fp_length_t*>(_buf+FP_SERIAL_LENGTH_OFFSET));
             if (_packet_length > FP_SERIAL_BUF_LEN || _packet_length < FP_MINIMUM_PACKET_LEN) {
+#ifdef DEBUG
+                Serial.print(F("RST plen="));
+                Serial.print(_packet_length);
+                Serial.print(F(", max="));
+                Serial.print(FP_SERIAL_BUF_LEN);
+                Serial.print(F(", min="));
+                Serial.println(FP_MINIMUM_PACKET_LEN);
+#endif
                 reset();
             }
             break;
@@ -118,7 +136,7 @@ void EventBuffer::tick () {
                     }
                     else {
 #ifdef DEBUG
-                        Serial.print(F("Sendig event to callback: "));
+                        Serial.print(F("Sending event to callback: "));
                         Serial.println((unsigned long)_callback, HEX);
 #endif
                         _callback(e);
@@ -130,6 +148,9 @@ void EventBuffer::tick () {
                     e.dump();
 #endif
                 }
+#ifdef DEBUG
+        Serial.println(F("RST END"));
+#endif
                 reset();
             }
 		}

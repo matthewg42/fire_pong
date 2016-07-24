@@ -6,6 +6,9 @@ from fire_pong.util import log
 import struct
 
 class FpEvent():
+    RELAY_ON = struct.pack('<B', 1)
+    RELAY_OFF = struct.pack('<B', 0)
+
     def __init__(self, id_set, fp_type, data=b''):
         self.id_set = id_set
         if fp_type in FpEvent.FP_TYPES.values():
@@ -65,7 +68,7 @@ class FpEvent():
         e.checksum = checksum
         return e
 
-    FP_MAX_DATA_LEN = 16
+    FP_MAX_DATA_LEN = 64
     FP_MAGIC = 0x5066
     FP_PACK = '<HBIB%dsBH'
     FP_MAX_PACKET_LEN = struct.calcsize(FP_PACK%FP_MAX_DATA_LEN)
@@ -75,7 +78,8 @@ class FpEvent():
                  3: 'FP_EVENT_SOLENOID', 
                  4: 'FP_EVENT_PUFF', 
                  5: 'FP_EVENT_DISPLAY',
-                 6: 'FP_EVENT_RELAY' } 
+                 6: 'FP_EVENT_RELAY', 
+                 7: 'FP_EVENT_ALTPUFF' } 
     @classmethod
     def get_type_id(cls, t):
         for key, value in cls.FP_TYPES.items():

@@ -14,11 +14,9 @@ import fire_pong.util
 
 global args
 global log
-global serial_bus
-serial_bus = None
 
 def main():
-    global args, log, serial_bus
+    global args, log
     init_log()
     try:
         fire_pong.util.load_config(args)
@@ -35,8 +33,7 @@ def main():
         else:
             open(args.pid_file, 'w').write(pid)
 
-
-# Open serial connection
+    # Open serial connection
     try:
         from fire_pong.fp_serial import FpSerial
         FpSerial()
@@ -48,7 +45,8 @@ def main():
     # Configure score board (singleton)
     try:
         from fire_pong.scoreboard import ScoreBoard
-        ScoreBoard()
+        ScoreBoard().display('Hai')
+        time.sleep(0.8)
         log.info('ScoreBoard initialized OK')
     except Exception as e:
         log.exception('Failed to initialize ScoreBoard')
@@ -78,6 +76,7 @@ def main():
     mm.thread.join()
     InputManager().shutdown()
     InputManager().thread.join()
+    ScoreBoard().display('KTHXBYE')
     log.info('main() end')
     cleanup_and_exit(0)
 
@@ -148,7 +147,7 @@ if __name__ == '__main__':
         const=logging.DEBUG, default=logging.WARN, 
         help='write debugging output in the log')
     parser.add_argument('--serial-debug', dest='serial_debug', action='store_const',
-        const=True, default=False, 
+        const=True, default=None, 
         help='write dditional debugging for serial events (when --debug used)')
     parser.add_argument('--info', dest='logging_level', action='store_const',
         const=logging.INFO, help='write informational output in the log')

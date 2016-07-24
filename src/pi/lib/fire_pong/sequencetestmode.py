@@ -13,15 +13,13 @@ from fire_pong.fp_serial import FpSerial
 from fire_pong.menumode import MenuMode
 
 class SequenceTestMode(MenuMode):
-    __displayname__ = 'ST'
+    __displayname__ = 'Sequence Test'
     def __init__(self):
         MenuMode.__init__(self, [Sequence1, Sequence2, Sequence3])
 
 class SmallPufferSequence(Mode):
     ''' to be sub-classed - will execute sequence member function on a
         random small puffer whenever the start button is pressed '''
-    RELAY_ON = pack('<B', 0)
-    RELAY_OFF = pack('<B', 1)
     def __init__(self):
         Mode.__init__(self)
         self.puffers = config['PongGame']['puffers']
@@ -29,7 +27,7 @@ class SmallPufferSequence(Mode):
 
     def run(self):
         log.debug('%s.run() START' % self.__class__.__name__)
-        ScoreBoard().display(self.__displayname__.lower())
+        ScoreBoard().display('GO')
         try:
             while not self.terminate:
                 if self.idx:
@@ -52,17 +50,17 @@ class SmallPufferSequence(Mode):
             self.idx = random.randint(0,len(self.puffers)-1)
 
     def spark(self, pufferid, on=False):
-        e = FpEvent(pufferid, 'FP_EVENT_SPARK', SmallPufferSequence.RELAY_ON if on else SmallPufferSequence.RELAY_OFF)
+        e = FpEvent(pufferid, 'FP_EVENT_SPARK', FpEvent.RELAY_ON if on else FpEvent.RELAY_OFF)
         log.info('%s.spark() sending: %s' % (self.__class__.__name__, str(e)))
         FpSerial().write(e.serialize())
 
     def solenoid(self, pufferid, on=False):
-        e = FpEvent(pufferid, 'FP_EVENT_SOLENOID', SmallPufferSequence.RELAY_ON if on else SmallPufferSequence.RELAY_OFF)
+        e = FpEvent(pufferid, 'FP_EVENT_SOLENOID', FpEvent.RELAY_ON if on else FpEvent.RELAY_OFF)
         log.info('%s.solenoid() sending: %s' % (self.__class__.__name__, str(e)))
         FpSerial().write(e.serialize())
 
 class Sequence1(SmallPufferSequence):
-    __displayname__ = 'S1'
+    __displayname__ = '1: double puffs'
     def sequence(self, pufferid):
         log.info('Current Firmware Sequence with 150ms main puff length...')
         self.spark(pufferid, on=True)
@@ -78,7 +76,7 @@ class Sequence1(SmallPufferSequence):
         self.spark(pufferid, on=False)
 
 class Sequence2(SmallPufferSequence):
-    __displayname__ = 'S2'
+    __displayname__ = '2: 200ms pre/post spark)'
     def sequence(self, pufferid):
         log.info('Simple on off, with spark 200ms extra at start and end...')
         self.spark(pufferid, on=True)
@@ -90,7 +88,7 @@ class Sequence2(SmallPufferSequence):
         self.spark(pufferid, on=False)
 
 class Sequence3(SmallPufferSequence):
-    __displayname__ = 'S3'
+    __displayname__ = '3: 100ms pre/post spark)'
     def sequence(self, pufferid):
         log.info('Simple on off, with spark 100ms extra at start and end...')
         self.spark(pufferid, on=True)

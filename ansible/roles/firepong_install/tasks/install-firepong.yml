@@ -8,25 +8,43 @@
     - "{{firepong_prefix}}/share/music"
 
 - name: install firepong program
-  copy: src=../../../../src/pi/bin/firepong dest={{firepong_prefix}}/bin/firepong owner=root mode=0755
+  copy: src=../../../../src/pi/bin/firepong dest={{firepong_prefix}}/bin/ owner=root mode=0755
+
+- name: install fp_receive program
+  copy: src=../../../../src/pi/bin/fp_receive dest={{firepong_prefix}}/bin/ owner=root mode=0755
 
 - name: install fire_pong python modules
   copy: src=../../../../src/pi/lib/fire_pong/ dest={{firepong_prefix}}/lib/python2/dist-packages/fire_pong/ owner=root 
 
 - name: install config file
-  copy: src=../../../../src/pi/etc/firepong.json dest=/{{firepong_prefix}}/etc/firepong.json owner=root mode=0664 
+  copy: src=../../../../src/pi/etc/firepong.json dest=/{{firepong_prefix}}/etc/ owner=root mode=0664 
 
 - name: copy program to modify config
   copy: src=config_edit.py dest=/tmp/config_edit.py owner=root mode=0755 
 
 - name: call config editor to customize config file
-  shell: /tmp/config_edit.py /{{firepong_prefix}}/etc/firepong.json
+  shell: python2 /tmp/config_edit.py /{{firepong_prefix}}/etc/firepong.json
 
 - name: install firepong systemd service file
   copy: src=firepong.service dest=/etc/systemd/system mode=644
 
 - name: replace path variable in firepong systemd service file
   replace: dest=/etc/systemd/system/firepong.service regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
+- name: install podmon systemd service file
+  copy: src=podmon.service dest=/etc/systemd/system mode=644
+
+- name: replace path variable in podmon systemd service file
+  replace: dest=/etc/systemd/system/podmon.service regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
+- name: install podmon service program
+  copy: src=../../../../src/pi/bin/podmon dest={{firepong_prefix}}/bin/ owner=root mode=0755
+
+- name: replace path variable in podmon script
+  replace: dest={{firepong_prefix}}/bin/podmon regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
+- name: reload systemd daemon
+  shell: systemctl daemon-reload
 
 - name: enable firepong systemd service
   shell: systemctl enable firepong.service
@@ -37,7 +55,16 @@
 - name: start firepong systemd service
   shell: systemctl start firepong.service
 
-- name: install motd
+- name: enable podmon systemd service
+  shell: systemctl enable firepong.service
+
+- name: stop podmon systemd service
+  shell: systemctl stop firepong.service
+
+- name: start podmon systemd service
+  shell: systemctl start firepong.service
+
+- name: install awesome motd
   copy: src=motd dest=/etc/motd mode=644
 
 - name: replace variable in motd

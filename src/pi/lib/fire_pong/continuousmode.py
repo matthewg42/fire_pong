@@ -8,10 +8,11 @@ from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
 from fire_pong.scoreboard import ScoreBoard
+from fire_pong.visualizer import Visualizer
 
 class ContinuousMode(Mode):
     ''' Cycle between waiting and continuous mode '''
-    __displayname__ = 'CM'
+    __displayname__ = 'Continuous Puffs'
     def __init__(self):
         Mode.__init__(self)
 
@@ -61,6 +62,7 @@ class ContinuousModePuffs(Mode):
         self.puffers = config['PongGame']['puffers']
         self.delay = config['PongGame']['initial_delay']
         self.puff_duration = config['PongGame']['puff_duration']
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.idx = 0
         self.inc = 1
         self.terminate = False
@@ -71,17 +73,10 @@ class ContinuousModePuffs(Mode):
         ScoreBoard().display('CP')
         while self.terminate is False:
             # Print a little graphic of the puffers showing which one is active...
-            d = ['', '', '']
-            for i in range(0, len(self.puffers)):
-                d[0] += '   ' if i != self.idx else ' @ '
-                d[1] += '   ' if i != self.idx else ' @ '
-                d[2] += ' | ' if i != self.idx else ' | '
-            for i in range(0,3):
-                log.info(d[i])
-
-            log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
-            e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
+            log.info("%s idx=%02d id=%08X" % (self.puff_type, self.idx, self.puffers[self.idx]))
+            e = FpEvent(self.puffers[self.idx], self.puff_type, struct.pack('<H', self.puff_duration))
             log.info(str(e))
+            Visualizer().info(e)
             FpSerial().write(e.serialize())
 
             # Move the frixel by inc

@@ -27,7 +27,7 @@ typedef uint8_t fp_data_t;
 typedef uint8_t fp_checksum_t;
 typedef uint32_t fp_id_t;
 
-#define FP_MAX_DATA_LEN   16
+#define FP_MAX_DATA_LEN   64
 #define FP_EVENT_HALT     0
 #define FP_EVENT_RESET    1
 #define FP_EVENT_SPARK    2
@@ -35,6 +35,7 @@ typedef uint32_t fp_id_t;
 #define FP_EVENT_PUFF     4
 #define FP_EVENT_DISPLAY  5
 #define FP_EVENT_RELAY    6
+#define FP_EVENT_ALTPUFF  7
 #define FP_STR(x)         (reinterpret_cast<const fp_data_t*>(x))
 
 // Serialized packet structure:
@@ -53,9 +54,9 @@ typedef uint32_t fp_id_t;
 #define FP_SERIAL_BUF_LEN (sizeof(fp_magic_t)+sizeof(fp_length_t)+sizeof(fp_id_t)+sizeof(fp_type_t)+(sizeof(fp_data_t)*FP_MAX_DATA_LEN)+sizeof(fp_checksum_t)+sizeof(fp_magic_t))
 #define FP_MINIMUM_PACKET_LEN (sizeof(fp_magic_t)+sizeof(fp_length_t)+sizeof(fp_id_t)+sizeof(fp_type_t)+sizeof(fp_checksum_t)+sizeof(fp_magic_t))
 #define FP_SERIAL_LENGTH_OFFSET (sizeof(fp_magic_t))
-#define FP_SERIAL_ID_OFFSET (FP_SERIAL_LENGTH_OFFSET + sizeof(fl_length_t))
-#define FP_SERIAL_TYPE_OFFSET (FP_SERIAL_ID_OFFSET + sizeof(fl_id_t))
-#define FP_SERIAL_DATA_OFFSET (FP_SERIAL_TYPE_OFFSET + sizeof(fl_type_t))
+#define FP_SERIAL_ID_OFFSET (FP_SERIAL_LENGTH_OFFSET + sizeof(fp_length_t))
+#define FP_SERIAL_TYPE_OFFSET (FP_SERIAL_ID_OFFSET + sizeof(fp_id_t))
+#define FP_SERIAL_DATA_OFFSET (FP_SERIAL_TYPE_OFFSET + sizeof(fp_type_t))
 
 class FpEvent {
 public:

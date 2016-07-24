@@ -10,10 +10,10 @@ from fire_pong.scoreboard import ScoreBoard
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_event import FpEvent
 from fire_pong.fp_serial import FpSerial
-
+from fire_pong.visualizer import Visualizer
 
 class ManualMode(Mode):
-    __displayname__ = 'MA'
+    __displayname__ = 'Manual Mode'
     ''' Make puffs happen with buttons
         START button: random small puffer
         SWIPE1 large puff 1
@@ -23,16 +23,18 @@ class ManualMode(Mode):
         log.debug('ManualMode.__init__()')
         self.small_puffers = config['PongGame']['puffers']
         self.large_puffers = config['LargePuffers']['ids']
-        self.puff_duration = 50
-        self.puffer_mask = 0
+        self.puff_duration = config['ManualMode']['puff_duration']
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
+        self.puffer_mask =  0
 
     def run(self):
         log.debug('ManualMode.run() START')
-        ScoreBoard().display(ManualMode.__displayname__.lower())
+        ScoreBoard().display('Yellow=random small puff; Green=Large 1; Blue=Large 2')
         while not self.terminate:
             if self.puffer_mask != 0:
-                e = FpEvent(self.puffer_mask, 'FP_EVENT_PUFF', pack('<H', self.puff_duration))
-                log.info('PUFF event: %s' % str(e))
+                e = FpEvent(self.puffer_mask, self.puff_type, pack('<H', self.puff_duration))
+                log.info('Event: %s' % str(e))
+                Visualizer().info(e)
                 FpSerial().write(e.serialize())
                 self.puffer_mask = 0
             time.sleep(0.1)

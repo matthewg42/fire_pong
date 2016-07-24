@@ -6,7 +6,8 @@
 
 PufferReceiver::PufferReceiver(fp_id_t id, uint8_t solenoid_pin) :
 	EventReceiver(id),
-	_solenoid_pin(solenoid_pin)
+	_solenoid_pin(solenoid_pin),
+    _solenoid_timeout(0)
 {
 }
 
@@ -69,12 +70,20 @@ void PufferReceiver::handle(const FpEvent& e)
 		}
 		state = *(reinterpret_cast<const uint8_t*>(e.data()));
 		set_pin(_solenoid_pin, state ? RELAY_ON : RELAY_OFF);
+        _solenoid_timeout = state ? millis() + MAX_OPEN_MILLIS : 0;
 		break;
 	}
 }
 
 void PufferReceiver::tick()
 {
+#ifndef DESKTOP
+    // Implement timeout - make sure solenoid is off
+    if (_solenoid_timeout < millis() && _solenoid_timeout != 0) {
+		set_pin(_solenoid_pin, RELAY_OFF);
+        _solenoid_timeout = 0;
+    }
+#endif
 	_seq.tick();
 }
 

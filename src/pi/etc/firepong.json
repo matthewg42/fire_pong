@@ -54,11 +54,13 @@
     "PongGame": {
         "doc": "the 'seg' values here are not used - they're here to make it simple to turn on/off different combinations for testing (i.e. rename them to 'puffers')",
         "seg_all": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
+        "use_alt_puff": false,
         "seg_1": [1, 2, 4, 8],
         "seg_2": [16, 32, 64, 128],
         "seg_3": [256, 512, 1024, 2048],
         "puffers": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
         "puff_duration": 100,
+        "large_puff_duration": 50,
         "initial_delay": 0.4
     },
     "LargePuffers": {
@@ -68,9 +70,13 @@
     },
     "MusicMode": {
         "path": "/opt/firepong/share/music",
-        "puff_duration": 100
+        "puff_duration": 50,
+        "target_density": 0.02
     },
     "display": {
         "id": 16384
+    },
+    "ManualMode": {
+        "puff_duration": 50
     }
 }

@@ -1,0 +1,178 @@
+#!/usr/bin/env python2
+
+import serial
+import logging
+import logging.handlers
+import sys
+import time
+import os
+
+import fire_pong.util
+from fire_pong.util import load_config
+from fire_pong.fp_event import FpEvent
+
+
+global args
+buf = None
+last_packet_start = 0
+packet_length = None
+log = None
+puffer_ids = [ ('L', 0x2000, False, False), 
+               ('S', 0x1,    False, False), 
+               ('S', 0x2,    False, False), 
+               ('S', 0x4,    False, False),
+               ('S', 0x8,    False, False), 
+               ('S', 0x10,   False, False), 
+               ('S', 0x20,   False, False), 
+               ('S', 0x40,   False, False), 
+               ('S', 0x80,   False, False), 
+               ('S', 0x100,  False, False), 
+               ('S', 0x200,  False, False), 
+               ('S', 0x400,  False, False), 
+               ('S', 0x800,  False, False), 
+               ('L', 0x1000, False, False)
+             ]
+display_text = ''
+
+# Some constants for parsing the FpEvent packets
+PACKET_TIMEOUT = 0.5
+FP_SERIAL_BUF_LEN = 27
+FP_MINIMUM_PACKET_LEN = 11
+FP_SERIAL_LENGTH_OFFSET = 2
+FP_SERIAL_ID_OFFSET = 3
+FP_SERIAL_TYPE_OFFSET = 7
+FP_SERIAL_DATA_OFFSET = 8
+FP_MAX_DATA_LEN   = 16
+
+def main():
+    global args
+    init_log()
+    try:
+        load_config(args)
+    except Exception as e:
+        log.exception('%s' % e)
+        cleanup_and_exit(1)
+    log.info('main() start')
+
+    try:
+        read_events()
+    except Exception as e:
+        log.exception('While reading events: %s' % e)
+        cleanup_and_exit(5)
+        
+    log.info('main() end')
+    cleanup_and_exit(0)
+
+def init_log():
+    """ Initialize the log - use syslog if running as a daemon """
+    global args, log
+    program = os.path.basename(sys.argv[0])
+    handler = logging.StreamHandler()
+    fmt = ""
+    if args.log_timestamps:
+        fmt += '%%(asctime)s %s[%%(process)d] ' % program
+    fmt += '%(levelname)s: %(message)s'
+    handler.setFormatter(logging.Formatter(fmt))
+    log = logging.getLogger('fp_receive')
+    log.setLevel(args.logging_level)
+    log.addHandler(handler)
+    # Set logging in our various modules to use our new logger. These 
+    # hoops brought to you by the combination of daemon and logging 
+    # modules
+    fire_pong.util.log = log
+
+def cleanup_and_exit(level):
+    """ Remove PID file and exit the process """
+    global log, args
+    sys.exit(level)
+
+def read_events():
+    from fire_pong.fp_event import FpEvent
+    from fire_pong.fp_serial import FpSerial
+    reset('START')
+    while True:
+        buf.append(FpSerial().serial.read())
+        if bidx() == 1:
+            if buf[0] != ord('f'):
+                reset('bad magic@%d: %s' % (bidx(), buf))
+            else:
+                last_packet_start = time.time()
+                packet_timeout = last_packet_start + PACKET_TIMEOUT;
+        elif bidx() == 2:
+            if buf[1] != ord('P'):
+                reset('bad magic@%d: %s' % (bidx(), buf))
+        elif bidx() == 3:
+            packet_length = buf[2]
+            if packet_length > FP_SERIAL_BUF_LEN or packet_length < FP_MINIMUM_PACKET_LEN:
+                reset('bad packet length: %d < %d < %d' % (FP_SERIAL_BUF_LEN, packet_length, FP_MINIMUM_PACKET_LEN))
+        else:
+            if bidx() >= packet_length:
+                log.debug('buf filled: %s' % repr(buf))
+                e = FpEvent.from_bytes(buf)
+                log.info('Received Event: %s' % str(e))
+                if e.is_valid():
+                    visualize(e)
+                reset('RECEIVED')
+
+def mypuff(pid, e):
+    t = FpEvent.FP_TYPES[e.fp_type]
+    return pid & e.id_set > 0 and t in ['FP_EVENT_PUFF', 'FP_EVENT_ALTPUFF']
+
+def visualize(e):
+    global display_text
+    l = 4 * ['']
+    for size, pid, _, _ in puffer_ids:
+        if size is 'L':
+            l[0] += ' @ ' if mypuff(pid, e) > 0 else '   '
+            l[1] += ' @ ' if mypuff(pid, e) > 0 else '   '
+            l[2] += ' | '
+            l[3] += ' 0 '
+        else:
+            l[0] += '   '
+            l[1] += ' @ ' if mypuff(pid, e) > 0 else '   '
+            l[2] += ' @ ' if mypuff(pid, e) > 0 else '   '
+            l[3] += ' | '
+
+    if FpEvent.FP_TYPES[e.fp_type] is 'FP_EVENT_DISPLAY':
+        display_text = str(e.data)
+
+    l[0] += '     ' +  '+----+'
+    #l[1] += '     ' + ('+ %2s +' % display_text)
+    l[1] += '     ' + ('+ %2s +' % display_text)
+    l[2] += '     ' +  '+----+'
+    l[3] += '     ' +  '  ||  '
+    for s in l:
+        print(s)
+
+def reset(msg):
+    global buf
+    buf = bytearray()
+    log.debug('reset: %s' % msg)
+
+def bidx():
+    return len(buf)
+
+
+if __name__ == '__main__':
+    import argparse
+    global args
+    parser = argparse.ArgumentParser(description='Event Receiver')
+    parser.add_argument('-c', '--config-file', dest='config_file',
+        default='../etc/firepong.json',
+        help='specify the path to the config file')
+    parser.add_argument('-D', '--serial-device', dest='serial_device', 
+        default=None, 
+        help='over-ride config file serial device')
+    parser.add_argument('--debug', dest='logging_level', action='store_const',
+        const=logging.DEBUG, default=logging.INFO, 
+        help='write debugging output in the log')
+    parser.add_argument('--serial-debug', dest='serial_debug', action='store_const',
+        const=True, default=False, 
+        help='write dditional debugging for serial events (when --debug used)')
+    parser.add_argument('--log-ts', dest='log_timestamps', 
+        action='store_const', const=True, default=False, 
+        help='write informational output in the log')
+    args = parser.parse_args()
+
+    main()
+

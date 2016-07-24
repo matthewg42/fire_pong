@@ -9,6 +9,8 @@ from fire_pong.scoreboard import ScoreBoard
 from fire_pong.events import *
 from fire_pong.modemanager import ModeManager
 from fire_pong.fp_serial import FpSerial
+from fire_pong.menumode import MenuMode
+from fire_pong.visualizer import Visualizer
 
 def strength2delay(strength):
     d = 0.8 - (float(strength)/300)
@@ -17,7 +19,7 @@ def strength2delay(strength):
     return d
 
 class PongMode(Mode):
-    __displayname__ = 'PM'
+    __displayname__ = 'Pong Match'
     def __init__(self):
         Mode.__init__(self)
         self.winning_score = config['PongMatch']['winning_score']
@@ -109,7 +111,7 @@ class PongCounterMode(Mode):
     def run(self):
         log.debug('PongCounterMode.run()')
         while not self.terminate and self.count != self.end + self.step:
-            ScoreBoard().display(str(self.count))
+            ScoreBoard().display(' %d' % self.count)
             self.count += self.step
             time.sleep(self.time)
         log.debug('PongCounterMode.run() END %s' % self.start)
@@ -127,8 +129,11 @@ class PongGame(Mode):
     def __init__(self, start_player):
         Mode.__init__(self)
         self.puffers = config['PongGame']['puffers']
+        self.large_puffers = config['LargePuffers']['ids']
         self.delay = config['PongGame']['initial_delay']
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.puff_duration = config['PongGame']['puff_duration']
+        self.large_puff_duration = config['PongGame']['large_puff_duration']
         self.hit_idx = {'1UP': [0, 1], '2UP': [len(self.puffers)-2, len(self.puffers)-1]}
         self.win = None
         self.quit = False
@@ -154,22 +159,21 @@ class PongGame(Mode):
                 self.win = 1
                 break
             elif self.idx >= 0 and self.idx < len(self.puffers):
-                d = ['', '', '']
-                for i in range(0, len(self.puffers)):
-                    d[0] += '   ' if i != self.idx else ' @ '
-                    d[1] += '   ' if i != self.idx else ' @ '
-                    d[2] += ' | ' if i != self.idx else ' | '
-                for i in range(0,3):
-                    log.info(d[i])
-                log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
-                e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
+                log.info("%s idx=%02d id=%08X" % (self.puff_type, self.idx, self.puffers[self.idx]))
+                e = FpEvent(self.puffers[self.idx], self.puff_type, struct.pack('<H', self.puff_duration))
                 log.info(str(e))
+                Visualizer().info(e)
                 FpSerial().write(e.serialize())
             time.sleep(self.delay)
             self.idx += self.inc
         if self.quit:
             return None
         else:
+            death_puffer = self.large_puffers[1 if self.win == 1 else 0]
+            e = FpEvent(death_puffer, 'FP_EVENT_PUFF', struct.pack('<H', self.large_puff_duration))
+            log.info(str(e))
+            Visualizer().info(e)
+            FpSerial().write(e.serialize())
             return self.win
             
     def event(self, event):
@@ -190,29 +194,29 @@ class PongGame(Mode):
                 log.info('Player %s MISS!' % event.player)
 
 class PongVictory(Mode):
-    __displayname__ = 'PV'
     ''' Wait for player to swipe, and then do single fast run of small
         puffers, followed by single big puffer next to ossposing player '''
-    def __init__(self, player=None):
+    __displayname__ = 'Victory'
+    def __init__(self, player):
         Mode.__init__(self)
-        if player == None:
-            player = randint(1, 2)
+        player = int(player)
         self.player = player
-        self.puffers = config['PongGame']['puffers']
         self.puff_duration = config['PongGame']['puff_duration']
+        self.puff_type = 'FP_EVENT_ALTPUFF' if config['PongGame']['use_alt_puff'] else 'FP_EVENT_PUFF'
         self.large_puff_duration_ms = 100
         self.idx = 0
         if player == 1:
-            self.large_puffer = config['LargePuffers']['ids'][0]
-        else:
-            self.puffers.reverse()
+            self.puffers = config['PongGame']['puffers']
             self.large_puffer = config['LargePuffers']['ids'][1]
+        else:
+            self.puffers = list(reversed(config['PongGame']['puffers']))
+            self.large_puffer = config['LargePuffers']['ids'][0]
         self.delay = None
 
     def run(self):
         log.debug('PongVictory.run() START')
         # Wait for a swipe (indicated by setting self.delay to not None)
-        ScoreBoard().display('V%d' % self.player)
+        ScoreBoard().display('P%d Swipe!' % self.player)
         log.info('Waiting for player %d swipe...' % self.player)
         while self.terminate is False and self.delay is None:
             time.sleep(0.1)
@@ -222,30 +226,18 @@ class PongVictory(Mode):
         while self.idx < len(self.puffers):
             if self.terminate:
                 return 'Quit'
-            self.pic(False)
-            log.info("PUFF idx=%02d id=%08X" % (self.idx, self.puffers[self.idx]))
-            e = FpEvent(self.puffers[self.idx], 'FP_EVENT_PUFF', struct.pack('<H', self.puff_duration))
+            log.info("%s idx=%02d id=%08X" % (self.puff_type, self.idx, self.puffers[self.idx]))
+            e = FpEvent(self.puffers[self.idx], self.puff_type, struct.pack('<H', self.puff_duration))
             log.info(str(e))
+            Visualizer().info(e)
             FpSerial().write(e.serialize())
             time.sleep(self.delay)
             self.idx += 1
-        self.pic(True)
         log.info('LARGE PUFFER id=%08X duration (ms)=%d' % (self.large_puffer, self.large_puff_duration_ms))
         e = FpEvent(self.large_puffer, 'FP_EVENT_PUFF', struct.pack('<H', self.large_puff_duration_ms))
+        Visualizer().info(e)
         FpSerial().write(e.serialize())
             
-    def pic(self, large=False):
-        d = ['', '', '']
-        for i in range(0, len(self.puffers)):
-            d[0] += '   ' if i != self.idx else ' @ '
-            d[1] += '   ' if i != self.idx else ' @ '
-            d[2] += ' | ' if i != self.idx else ' | '
-        d[0] += ' @ ' if large else '   '
-        d[1] += ' | '
-        d[2] += ' 0 '
-        for i in range(0,3):
-                log.info(d[i])
-
     def event(self, event):
         log.info('PongVictory.debug: %s' % event)
         strength = None
@@ -253,19 +245,35 @@ class PongVictory(Mode):
             self.terminate = True
 
         if event == EventButton('start'):
-            strength = randint(20,120)
+            strength = randint(60,250)
+
         if type(event) is EventSwipe:
             if event.player == '%dUP' % self.player:
                 strength = event.strength
 
-            if strength:
-                self.delay = strength2delay(strength) / 3.0
-                self.large_puff_duration_ms = 100.0 / self.delay
-                log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
-                            event.player, 
-                            event.strength, 
-                            self.delay,
-                            self.large_puff_duration_ms))
+        if strength:
+            self.delay = strength2delay(strength) / 3.0
+            self.large_puff_duration_ms = 25.0 / self.delay
+            log.info("Player %s VICTORY SWIPE (str=%s) => delay=%s; bigg puff=%s" % (
+                        self.player, 
+                        strength, 
+                        self.delay,
+                        self.large_puff_duration_ms))
+
+class PongVictoryPlayer1(PongVictory):
+    __displayname__ = 'P1'
+    def __init__(self):
+        PongVictory.__init__(self, 1)
+
+class PongVictoryPlayer2(PongVictory):
+    __displayname__ = 'P2'
+    def __init__(self):
+        PongVictory.__init__(self, 2)
+
+class PongVictoryMenu(MenuMode):
+    __displayname__ = 'Victory Test'
+    def __init__(self):
+        MenuMode.__init__(self, [PongVictoryPlayer1, PongVictoryPlayer2 ])
 
 if __name__ == '__main__':
     import logging
