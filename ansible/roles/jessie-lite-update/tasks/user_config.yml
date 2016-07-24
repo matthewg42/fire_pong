@@ -9,6 +9,9 @@
 - name: Copy bashrc to root
   copy: src=root_bashrc owner=root dest=/root/.bashrc mode=0600
 
+- name: replace path variable in root bashrc
+  replace: dest=/root/.bashrc regexp='\{\{firepong_prefix\}\}' replace={{firepong_prefix}}
+
 - name: Copy tmux.conf to root user
   copy: src=tmux.conf owner=root dest=/root/.tmux.conf mode=0600
 
